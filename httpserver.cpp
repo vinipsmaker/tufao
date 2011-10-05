@@ -16,15 +16,26 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUFAO_GLOBAL_H
-#define TUFAO_GLOBAL_H
+#include "httpserver.h"
+#include <QVariant>
 
-#include <QtCore/qglobal.h>
 
-#if defined(TUFAO_LIBRARY)
-#  define TUFAOSHARED_EXPORT Q_DECL_EXPORT
-#else
-#  define TUFAOSHARED_EXPORT Q_DECL_IMPORT
-#endif
+namespace Tufao {
 
-#endif // TUFAO_GLOBAL_H
+HttpServer::HttpServer(QObject *parent)
+{
+}
+
+bool HttpServer::listen(const QHostAddress &address, quint16 port)
+{
+}
+
+void HttpServer::close()
+{
+}
+
+void HttpServer::upgrade(HttpServerRequest *request, QAbstractSocket *socket, QByteArray head)
+{
+}
+
+} // namespace Tufao

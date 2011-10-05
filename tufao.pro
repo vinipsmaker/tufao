@@ -13,10 +13,10 @@ TEMPLATE = lib
 
 DEFINES += TUFAO_LIBRARY
 
-SOURCES += server.cpp
+SOURCES += httpserver.cpp
 
-HEADERS += server.h\
-        tufao_global.h
+HEADERS += httpserver.h\
+    tufao_global.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
