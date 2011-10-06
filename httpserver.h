@@ -34,19 +34,20 @@ class TUFAOSHARED_EXPORT HttpServer : public QObject
 {
     Q_OBJECT
 public:
-    HttpServer(QObject *parent = 0);
+    explicit HttpServer(QObject *parent = 0);
 
-    bool listen(const QHostAddress &address = QHostAddress::Any, quint16 port = 0);
+    bool listen(const QHostAddress &address = QHostAddress::Any,
+                quint16 port = 0);
 
 signals:
     void request(HttpServerRequest *request, HttpServerResponse *response);
-    void closed();
 
 public slots:
     void close();
 
 protected:
-    virtual void upgrade(HttpServerRequest *request, QAbstractSocket *socket, QByteArray head);
+    virtual void upgrade(HttpServerRequest *request, QAbstractSocket *socket,
+                         const QByteArray &head);
 };
 
 } // namespace Tufao

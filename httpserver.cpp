@@ -22,7 +22,8 @@
 
 namespace Tufao {
 
-HttpServer::HttpServer(QObject *parent)
+HttpServer::HttpServer(QObject *parent) :
+    QObject(parent)
 {
 }
 
@@ -34,7 +35,8 @@ void HttpServer::close()
 {
 }
 
-void HttpServer::upgrade(HttpServerRequest *request, QAbstractSocket *socket, QByteArray head)
+void HttpServer::upgrade(HttpServerRequest *request, QAbstractSocket *socket,
+                         const QByteArray &head)
 {
 }
 
