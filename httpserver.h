@@ -114,9 +114,6 @@ public slots:
     void close();
 
 protected:
-    void handleConnection(QAbstractSocket *connection);
-    virtual void incomingConnection(int socketDescriptor);
-
     /*!
       Call this function will make Tufao::HttpServer handle the connection
       \p connection.
