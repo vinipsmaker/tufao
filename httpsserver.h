@@ -21,6 +21,9 @@
 
 #include "httpserver.h"
 
+class QSslCertificate;
+class QSslKey;
+
 namespace Tufao {
 
 class HttpsServer : public HttpServer
@@ -28,6 +31,9 @@ class HttpsServer : public HttpServer
     Q_OBJECT
 public:
     explicit HttpsServer(QObject *parent = 0);
+
+    void setLocalCertificate(const QSslCertificate &certificate);
+    void setPrivateKey(const QSslKey &key);
 
 protected:
     void incomingConnection(int socketDescriptor);
