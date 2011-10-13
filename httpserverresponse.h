@@ -42,9 +42,10 @@ public slots:
     void writeHead(int statusCode, const QByteArray &reasonPhrase,
                    const QMap<QByteArray, QByteArray> &headers);
     void writeHead(int statusCode);
+    void write(const QByteArray &chunk);
 
     void addTrailers(const QMap<QByteArray, QByteArray> &headers);
-    void end();
+    void end(const QByteArray &chunk = QByteArray());
 };
 
 } // namespace Tufao

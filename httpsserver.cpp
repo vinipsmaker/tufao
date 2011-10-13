@@ -16,26 +16,12 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "httpserver.h"
-#include <QVariant>
+#include "httpsserver.h"
 
 namespace Tufao {
 
-HttpServer::HttpServer(QObject *parent) :
-    QObject(parent)
-{
-}
-
-bool HttpServer::listen(const QHostAddress &address, quint16 port)
-{
-}
-
-void HttpServer::close()
-{
-}
-
-void HttpServer::upgrade(HttpServerRequest *request, QAbstractSocket *socket,
-                         const QByteArray &head)
+HttpsServer::HttpsServer(QObject *parent) :
+    HttpServer(parent)
 {
 }
 

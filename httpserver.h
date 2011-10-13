@@ -19,8 +19,7 @@
 #ifndef TUFAO_SERVER_H
 #define TUFAO_SERVER_H
 
-#include <QtCore/QObject>
-#include <QtNetwork/QHostAddress>
+#include <QtNetwork/QTcpServer>
 #include "tufao_global.h"
 
 class QAbstractSocket;
@@ -40,12 +39,16 @@ public:
                 quint16 port = 0);
 
 signals:
-    void request(HttpServerRequest *request, HttpServerResponse *response);
+    void request(Tufao::HttpServerRequest *request,
+                 Tufao::HttpServerResponse *response);
 
 public slots:
     void close();
 
 protected:
+    void handleConnection(QAbstractSocket *connection);
+    virtual void incomingConnection(int socketDescriptor);
+
     virtual void upgrade(HttpServerRequest *request, QAbstractSocket *socket,
                          const QByteArray &head);
 };

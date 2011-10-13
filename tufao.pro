@@ -15,12 +15,14 @@ DEFINES += TUFAO_LIBRARY
 
 SOURCES += httpserver.cpp \
     httpserverrequest.cpp \
-    httpserverresponse.cpp
+    httpserverresponse.cpp \
+    httpsserver.cpp
 
 HEADERS += httpserver.h\
     tufao_global.h \
     httpserverrequest.h \
-    httpserverresponse.h
+    httpserverresponse.h \
+    httpsserver.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
