@@ -17,14 +17,16 @@ SOURCES += httpserver.cpp \
     httpserverrequest.cpp \
     httpserverresponse.cpp \
     httpsserver.cpp \
-    url.cpp
+    url.cpp \
+    querystring.cpp
 
 HEADERS += httpserver.h\
     tufao_global.h \
     httpserverrequest.h \
     httpserverresponse.h \
     httpsserver.h \
-    url.h
+    url.h \
+    querystring.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
