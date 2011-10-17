@@ -41,8 +41,9 @@ namespace QueryString {
   another.
   \return The serialized string.
   */
-QByteArray stringify(QMap<QByteArray, QByteArray> obj, char sep = '&', eq = '=',
-                     bool percentEncoding = true, char percent = '%');
+QByteArray stringify(QMap<QByteArray, QByteArray> obj, char sep = '&',
+                     char eq = '=', bool percentEncoding = true,
+                     char percent = '%');
 
 /*!
   Deserialize a query string to an object.

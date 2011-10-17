@@ -20,8 +20,4 @@
 
 namespace Tufao {
 
-QueryString::QueryString()
-{
-}
-
 } // namespace Tufao
