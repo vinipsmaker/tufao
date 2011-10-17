@@ -88,8 +88,7 @@ public slots:
       \param headers The response headers.
       */
     void writeHead(int statusCode, const QByteArray &reasonPhrase,
-                   const QMap<QByteArray, QByteArray> &headers
-                   = QMap<QByteArray, QByteArray>());
+                   const QMap<QByteArray, QByteArray> &headers);
 
     /*!
       This is an overloaded function.
