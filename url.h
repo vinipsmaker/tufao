@@ -23,23 +23,118 @@
 
 namespace Tufao {
 
+/*!
+  This class provides a convenient interface for parsing URLs.
+
+  You should take the following url as reference:
+  \verbatim
+scheme://userinfo@hostname:port/path?query#fragment
+  \endverbatim
+  */
 class TUFAOSHARED_EXPORT Url
 {
 public:
+    /*!
+      Constructs a empty URL.
+      */
     Url();
+
+    /*!
+      Constructs a Tufao::Url parsing \p url.
+      */
     Url(const QByteArray &url);
 
+    /*!
+      Returns the QByteArray representation of the URL.
+      */
     operator QByteArray() const;
 
-    QByteArray href() const;
-    QByteArray protocol() const;
-    QByteArray host() const;
-    QByteArray auth() const;
-    QByteArray hostname() const;
-    QByteArray port() const;
-    QByteArray pathname() const;
+    /*!
+      The protocol.
+
+      Examples:
+        - "http"
+        - "ftp"
+      */
+    QByteArray scheme() const;
+
+    /*!
+      The authority.
+
+      The authority is composed of:
+        - userinfo
+        - hostname
+        - port
+
+      Examples:
+        - "username:password@hostname:port"
+        - "userinfo@hostname:port"
+        - "example.com"
+      */
+    QByteArray authority() const;
+
+    /*!
+      The path.
+
+      Examples:
+        - "/path"
+        - "/index"
+      */
+    QByteArray path() const;
+
+    /*!
+      The query string.
+
+      Examples:
+        - "querystring"
+        - "type=human&name=tux"
+      */
     QByteArray query() const;
-    QByteArray hash() const;
+
+    /*!
+      The hash.
+
+      Examples:
+        - "fragment"
+      */
+    QByteArray fragment() const;
+
+    /*!
+      The userinfo.
+
+      The userinfo is composed of username and password.
+
+      \note You shouldn't user password in url.
+
+      Examples:
+        - "username:password"
+        - "cn=br;user=admin"
+      */
+    QByteArray userinfo() const;
+
+    /*!
+      The hostname.
+
+      Examples:
+        - "hostname"
+        - "example.com"
+      */
+    QByteArray hostname() const;
+
+    /*!
+      The port.
+      */
+    QByteArray port() const;
+
+    /*!
+      The username.
+      */
+    QByteArray username() const;
+
+    /*!
+      The password.
+      */
+    QByteArray password() const;
 };
 
 } // namespace Tufao
