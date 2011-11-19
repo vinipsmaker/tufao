@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = Tufão
-PROJECT_NUMBER         = 0.0
+PROJECT_NUMBER         = 0.1
 PROJECT_BRIEF          = "A web framework for Qt"
 PROJECT_LOGO           = 
 OUTPUT_DIRECTORY       = ./doc
@@ -101,11 +101,11 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = .
+INPUT                  = src
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.cpp \
                          *.h
-RECURSIVE              = YES
+RECURSIVE              = NO
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = 

@@ -13,20 +13,20 @@ TEMPLATE = lib
 
 DEFINES += TUFAO_LIBRARY
 
-SOURCES += httpserver.cpp \
-    httpserverrequest.cpp \
-    httpserverresponse.cpp \
-    httpsserver.cpp \
-    url.cpp \
-    querystring.cpp
+SOURCES += src/httpserver.cpp \
+    src/httpserverrequest.cpp \
+    src/httpserverresponse.cpp \
+    src/httpsserver.cpp \
+    src/url.cpp \
+    src/querystring.cpp
 
-HEADERS += httpserver.h\
-    tufao_global.h \
-    httpserverrequest.h \
-    httpserverresponse.h \
-    httpsserver.h \
-    url.h \
-    querystring.h
+HEADERS += src/httpserver.h\
+    src/tufao_global.h \
+    src/httpserverrequest.h \
+    src/httpserverresponse.h \
+    src/httpsserver.h \
+    src/url.h \
+    src/querystring.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
