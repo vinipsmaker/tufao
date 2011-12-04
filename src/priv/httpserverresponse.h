@@ -16,43 +16,41 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUFAO_HTTPSSERVER_H
-#define TUFAO_HTTPSSERVER_H
+#ifndef TUFAO_PRIV_HTTPSERVERRESPONSE_H
+#define TUFAO_PRIV_HTTPSERVERRESPONSE_H
 
-#include "httpserver.h"
-
-class QSslCertificate;
-class QSslKey;
+#include "../httpserverresponse.h"
+#include <QIODevice>
+#include "caseinsensitivebytearraymap.h"
 
 namespace Tufao {
-
 namespace Priv {
 
-struct HttpsServer;
-
-} // namespace Priv
-
-class HttpsServer : public HttpServer
+enum HttpResponseFormattingState
 {
-    Q_OBJECT
-public:
-    explicit HttpsServer(QObject *parent = 0);
-
-    /*!
-      Destroys the object.
-      */
-    ~HttpsServer();
-
-    void setLocalCertificate(const QSslCertificate &certificate);
-    void setPrivateKey(const QSslKey &key);
-
-protected:
-    void incomingConnection(int socketDescriptor);
-
-private:
-    Priv::HttpsServer *priv;
+    STATUS_LINE,
+    HEADERS,
+    MESSAGE_BODY,
+    TRAILERS,
+    END
 };
 
+struct HttpServerResponse
+{
+    HttpServerResponse(QIODevice *device,
+                       Tufao::HttpServerResponse::Options options) :
+        device(device),
+        formattingState(STATUS_LINE),
+        options(options)
+    {}
+
+    QIODevice *device;
+    HttpResponseFormattingState formattingState;
+    Tufao::HttpServerResponse::Options options;
+    CaseInsensitiveByteArrayMap headers;
+};
+
+} // namespace Priv
 } // namespace Tufao
 
-#endif // TUFAO_HTTPSSERVER_H
+#endif // TUFAO_PRIV_HTTPSERVERRESPONSE_H

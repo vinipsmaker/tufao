@@ -17,26 +17,85 @@
 */
 
 #include "httpserver.h"
-#include <QVariant>
+#include "priv/httpserver.h"
+#include "httpserverrequest.h"
+#include <QTcpSocket>
 
 namespace Tufao {
 
 HttpServer::HttpServer(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    priv(new Priv::HttpServer)
 {
+    connect(&priv->tcpServer, SIGNAL(newConnection(int)),
+            this, SLOT(onNewConnection(int)));
+}
+
+HttpServer::~HttpServer()
+{
+    delete priv;
 }
 
 bool HttpServer::listen(const QHostAddress &address, quint16 port)
 {
+    return priv->tcpServer.listen(address, port);
 }
 
 void HttpServer::close()
 {
+    priv->tcpServer.close();
 }
 
-void HttpServer::upgrade(HttpServerRequest *request, QAbstractSocket *socket,
-                         const QByteArray &head)
+void HttpServer::incomingConnection(int socketDescriptor)
 {
+    QTcpSocket *socket = new QTcpSocket;
+
+    if (!socket->setSocketDescriptor(socketDescriptor)) {
+        delete socket;
+        return;
+    }
+
+    handleConnection(socket);
+}
+
+void HttpServer::handleConnection(QAbstractSocket *socket)
+{
+    socket->setParent(this);
+    HttpServerRequest *handle = new HttpServerRequest(socket, this);
+
+    connect(handle, SIGNAL(ready(Tufao::HttpServerResponse::Options)),
+            this, SLOT(onRequestReady(Tufao::HttpServerResponse::Options)));
+    connect(socket, SIGNAL(disconnected()), handle, SLOT(deleteLater()));
+    connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
+}
+
+void HttpServer::upgrade(HttpServerRequest *, QAbstractSocket *socket,
+                         const QByteArray &)
+{
+    socket->close();
+}
+
+void HttpServer::onNewConnection(int socketDescriptor)
+{
+    incomingConnection(socketDescriptor);
+}
+
+void HttpServer::onRequestReady(Tufao::HttpServerResponse::Options options)
+{
+    HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
+    // This shouldn't happen
+    if (!request)
+        return;
+
+    QAbstractSocket *socket = request->connection();
+    HttpServerResponse *response = new HttpServerResponse(socket,
+                                                          options,
+                                                          this);
+
+    connect(socket, SIGNAL(disconnected()), response, SLOT(deleteLater()));
+    connect(response, SIGNAL(finished()), response, SLOT(deleteLater()));
+
+    emit requestReady(request, response);
 }
 
 } // namespace Tufao

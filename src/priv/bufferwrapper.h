@@ -16,43 +16,50 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUFAO_HTTPSSERVER_H
-#define TUFAO_HTTPSSERVER_H
+#ifndef TUFAO_PRIV_BUFFERWRAPPER_H
+#define TUFAO_PRIV_BUFFERWRAPPER_H
 
-#include "httpserver.h"
-
-class QSslCertificate;
-class QSslKey;
+#include "../tufao_global.h"
+#include <QByteArray>
 
 namespace Tufao {
-
 namespace Priv {
 
-struct HttpsServer;
-
-} // namespace Priv
-
-class HttpsServer : public HttpServer
+class BufferWrapper
 {
-    Q_OBJECT
 public:
-    explicit HttpsServer(QObject *parent = 0);
+    BufferWrapper(QByteArray &buffer);
 
-    /*!
-      Destroys the object.
-      */
-    ~HttpsServer();
-
-    void setLocalCertificate(const QSslCertificate &certificate);
-    void setPrivateKey(const QSslKey &key);
-
-protected:
-    void incomingConnection(int socketDescriptor);
+    bool line();
+    QByteArray takeLine();
 
 private:
-    Priv::HttpsServer *priv;
+    QByteArray &buffer;
+    int i;
 };
 
+inline BufferWrapper::BufferWrapper(QByteArray &buffer) :
+    buffer(buffer),
+    i(-1)
+{}
+
+inline bool BufferWrapper::line()
+{
+    i = buffer.indexOf("\r\n");
+    return i != -1;
+}
+
+inline QByteArray BufferWrapper::takeLine()
+{
+    if (i == -1)
+        return QByteArray();
+
+    QByteArray ret = buffer.left(i);
+    buffer.remove(0, i + 2);
+    return ret;
+}
+
+} // namespace Priv
 } // namespace Tufao
 
-#endif // TUFAO_HTTPSSERVER_H
+#endif // TUFAO_PRIV_BUFFERWRAPPER_H

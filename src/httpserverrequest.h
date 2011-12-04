@@ -19,17 +19,22 @@
 #ifndef HTTPSERVERREQUEST_H
 #define HTTPSERVERREQUEST_H
 
-#include <QObject>
-#include "tufao_global.h"
+#include "httpserverresponse.h"
 
 class QAbstractSocket;
 template <class Key, class T> class QMap;
 
 namespace Tufao {
 
+namespace Priv {
+
+struct HttpServerRequest;
+
+} // namespace Priv
+
 /*!
   \brief The Tufao::HttpServer represents a HTTP request received by
-  Tufao::HttpServer
+  Tufao::HttpServer.
 
   \sa Tufao::HttpServer
   */
@@ -38,33 +43,24 @@ class TUFAOSHARED_EXPORT HttpServerRequest : public QObject
     Q_OBJECT
 public:
     /*!
-      This enum describes the communication errors that can occur.
-      */
-    enum Error {
-        /*!
-          It indicates that the client has closed the underlaying connection
-          prematurely.
-
-          All incoming connections have a default timeout of 2 minutes.
-          */
-        ABORTED,
-        /*!
-          It indicates that the underlaying connection timed out.
-          */
-        TIMEOUT
-    };
-
-    /*!
       Constructs a Tufao::HttpServerRequest object.
 
       \p parent is passed to the QObject constructor.
+
+      \param socket The connection used by Tufao::HttpServerRequest to receive
+      HTTP messages. If you pass NULL, the object will be useless.
       */
-    explicit HttpServerRequest(QObject *parent = 0);
+    explicit HttpServerRequest(QAbstractSocket *socket, QObject *parent = 0);
+
+    /*!
+      Destroys the object.
+      */
+    ~HttpServerRequest();
 
     /*!
       The request method.
 
-      The allowed methods are:
+      It can assume the following values:
         - "HEAD"
         - "GET"
         - "POST"
@@ -98,6 +94,13 @@ Accept: text/plain\r\n
     /*!
       The HTTP headers sent by the client before the header.
 
+      \note To save memory space, Tufao::HttpServerRequest will apply the
+      QByteArray::simplified member function to every header field and value.
+
+      \note If Tufao::HttpServerRequest receives several headers with same
+      header key/name, then it will group their header values within the same
+      header key and separate them by using commas.
+
       \sa Tufao::HttpServerRequest::trailers()
       */
     QMap<QByteArray, QByteArray> headers() const;
@@ -110,7 +113,9 @@ Accept: text/plain\r\n
     /*!
       The HTTP protocol version as a string.
 
-      Allowed versions are "HTTP/1.0" and "HTTP/1.1"
+      It can assume the following values:
+        - "HTTP/1.0"
+        - "HTTP/1.1"
       */
     QByteArray httpVersion() const;
 
@@ -120,11 +125,38 @@ Accept: text/plain\r\n
       This will be a QTcpSocket object if created by Tufao::HttpServer and a
       QSslSocket if created by Tufao::HttpsServer.
       */
-    QAbstractSocket *connection();
+    QAbstractSocket *connection() const;
 
 signals:
     /*!
+      This signal is emitted when most of the data about the request was
+      gathered.
+
+      After this signal is emitted, you can safely interpret the request.
+      */
+    void ready(Tufao::HttpServerResponse::Options);
+
+    /*!
       This signal is emitted each time a piece of the message body is received.
+
+      Tufao::HttpServerRequest handles for you numerous transformations that may
+      be applied by the http user agent to the entity body, so you can focus on
+      parse the raw body.
+
+      The list of transformations handled by Tufao:
+        - "Content-Encoding" >> TODO
+        - "Transfer-Encoding"
+
+      The list of transformations types handled by Tufao:
+        - chunked
+        - gzip >> TODO
+        - compress >> TODO
+        - deflate >> TODO
+        - identity (no transformation at all)
+
+      The list of transformations NOT handled by Tufao (you need manually parse
+      them):
+        - "Content-Encoding"
       */
     void data(QByteArray data);
 
@@ -137,17 +169,20 @@ signals:
 
     /*!
       This signal is emitted when the underlaying connection is terminated
-      before Tufao::HttpServerRequest::end is emitted or able to flush.
-
-      \param error It indicates the reason for the timeout.
+      due to invalid request.
 
       Just like Tufao::HttpServerRequest::end, this signal is emitted only once
       per request, and no more data signals will fire afterwards.
-
-      \note Tufao::HttpServerRequest::close can fire after end, but not vice
-      versa.
       */
-    void close(Tufao::HttpServerRequest::Error error);
+    void close();
+
+private slots:
+    void onReadyRead();
+
+private:
+    void clear();
+
+    Priv::HttpServerRequest *priv;
 };
 
 } // namespace Tufao

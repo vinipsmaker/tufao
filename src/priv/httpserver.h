@@ -16,43 +16,20 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUFAO_HTTPSSERVER_H
-#define TUFAO_HTTPSSERVER_H
+#ifndef TUFAO_PRIV_HTTPSERVER_H
+#define TUFAO_PRIV_HTTPSERVER_H
 
-#include "httpserver.h"
-
-class QSslCertificate;
-class QSslKey;
+#include "tcpserverwrapper.h"
 
 namespace Tufao {
-
 namespace Priv {
 
-struct HttpsServer;
-
-} // namespace Priv
-
-class HttpsServer : public HttpServer
+struct HttpServer
 {
-    Q_OBJECT
-public:
-    explicit HttpsServer(QObject *parent = 0);
-
-    /*!
-      Destroys the object.
-      */
-    ~HttpsServer();
-
-    void setLocalCertificate(const QSslCertificate &certificate);
-    void setPrivateKey(const QSslKey &key);
-
-protected:
-    void incomingConnection(int socketDescriptor);
-
-private:
-    Priv::HttpsServer *priv;
+    TcpServerWrapper tcpServer;
 };
 
+} // namespace Priv
 } // namespace Tufao
 
-#endif // TUFAO_HTTPSSERVER_H
+#endif // TUFAO_PRIV_HTTPSERVER_H

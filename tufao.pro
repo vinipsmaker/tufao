@@ -18,7 +18,9 @@ SOURCES += src/httpserver.cpp \
     src/httpserverresponse.cpp \
     src/httpsserver.cpp \
     src/url.cpp \
-    src/querystring.cpp
+    src/querystring.cpp \
+    src/priv/tcpserverwrapper.cpp \
+    src/priv/reasonphrase.cpp
 
 HEADERS += src/httpserver.h\
     src/tufao_global.h \
@@ -26,7 +28,15 @@ HEADERS += src/httpserver.h\
     src/httpserverresponse.h \
     src/httpsserver.h \
     src/url.h \
-    src/querystring.h
+    src/querystring.h \
+    src/priv/tcpserverwrapper.h \
+    src/priv/httpserver.h \
+    src/priv/httpserverrequest.h \
+    src/priv/bufferwrapper.h \
+    src/priv/caseinsensitivebytearraymap.h \
+    src/priv/httpsserver.h \
+    src/priv/httpserverresponse.h \
+    src/priv/reasonphrase.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

@@ -20,7 +20,7 @@
 #define TUFAO_SERVER_H
 
 #include <QtNetwork/QTcpServer>
-#include "tufao_global.h"
+#include "httpserverresponse.h"
 
 class QAbstractSocket;
 
@@ -28,6 +28,12 @@ namespace Tufao {
 
 class HttpServerRequest;
 class HttpServerResponse;
+
+namespace Priv {
+
+struct HttpServer;
+
+} // namespace Priv
 
 /*!
   \brief The Tufao::HttpServer class provides an implementation of the HTTP
@@ -76,11 +82,16 @@ class TUFAOSHARED_EXPORT HttpServer : public QObject
     Q_OBJECT
 public:
     /*!
-      Constructs a HttpServer object.
+      Constructs a Tufao::HttpServer object.
 
       \p parent is passed to the QObject constructor.
       */
     explicit HttpServer(QObject *parent = 0);
+
+    /*!
+      Destroys the object.
+      */
+    ~HttpServer();
 
     /*!
       \brief Tells the server to listen for incoming connections on address
@@ -99,12 +110,17 @@ signals:
       This signal is emitted each time there is request. Note that there may be
       multiple requests per connection (in the case of keep-alive connections).
 
+      You don't need to worry about delete \p request and \p response. \p
+      request and \p response will be queued for deletion when the connection
+      closes. Additionally, \p response will also be deleted when you are done
+      with it (eg., calling Tufao::HttpServerResponse::end).
+
       \param request An instance of HttpServerRequest
 
       \param response An instance of HttpServerResponse
       */
-    void request(Tufao::HttpServerRequest *request,
-                 Tufao::HttpServerResponse *response);
+    void requestReady(Tufao::HttpServerRequest *request,
+                      Tufao::HttpServerResponse *response);
 
 public slots:
     /*!
@@ -117,6 +133,9 @@ protected:
     /*!
       Call this function will make Tufao::HttpServer handle the connection
       \p connection.
+
+      The Tufao::HttpServer object will take ownership of the \p connection
+      object and delete it when appropriate.
       */
     void handleConnection(QAbstractSocket *connection);
 
@@ -140,9 +159,20 @@ protected:
 
       Reimplement this function to alter the server's behavior when a http
       upgrade is requested.
+
+      \note You don't need to worry about free the resources passed through
+      arguments to this function. When you close the connection associated with
+      \p socket, all resources will freed by Tufão.
       */
-    virtual void upgrade(HttpServerRequest *request, QAbstractSocket *socket,
+    virtual void upgrade(HttpServerRequest *requestReady, QAbstractSocket *socket,
                          const QByteArray &head);
+
+private slots:
+    void onNewConnection(int socketDescriptor);
+    void onRequestReady(Tufao::HttpServerResponse::Options options);
+
+private:
+    Priv::HttpServer *priv;
 };
 
 } // namespace Tufao

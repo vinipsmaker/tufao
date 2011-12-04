@@ -17,12 +17,46 @@
 */
 
 #include "httpsserver.h"
+#include "priv/httpsserver.h"
+#include <QSslSocket>
 
 namespace Tufao {
 
 HttpsServer::HttpsServer(QObject *parent) :
-    HttpServer(parent)
+    HttpServer(parent),
+    priv(new Priv::HttpsServer)
 {
+}
+
+HttpsServer::~HttpsServer()
+{
+    delete priv;
+}
+
+void HttpsServer::setLocalCertificate(const QSslCertificate &certificate)
+{
+    priv->localCertificate = certificate;
+}
+
+void HttpsServer::setPrivateKey(const QSslKey &key)
+{
+    priv->privateKey = key;
+}
+
+void HttpsServer::incomingConnection(int socketDescriptor)
+{
+    QSslSocket *socket = new QSslSocket;
+    socket->setProtocol(QSsl::TlsV1);
+    socket->setLocalCertificate(priv->localCertificate);
+    socket->setPrivateKey(priv->privateKey);
+
+    if (!socket->setSocketDescriptor(socketDescriptor)) {
+        delete socket;
+        return;
+    }
+
+    socket->startServerEncryption();
+    handleConnection(socket);
 }
 
 } // namespace Tufao
