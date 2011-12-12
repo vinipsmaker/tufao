@@ -54,14 +54,14 @@ public:
         httpServer(new Tufao::HttpServer(this))
     {
         connect(httpServer,
-                SIGNAL(request(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*),
+                SIGNAL(requestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*),
                 this,
-                SLOT(onRequest(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)));
+                SLOT(onRequestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)));
     }
 
 private slots:
-    void onRequest(Tufao::HttpServerRequest *request,
-                   Tufao::HttpServerResponse *response)
+    void onRequestReady(Tufao::HttpServerRequest *request,
+                        Tufao::HttpServerResponse *response)
     {
         response->writeHead(200);
         response->setHeader("Content-Type", "text/plain");
