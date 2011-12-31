@@ -39,7 +39,7 @@ struct HttpServerResponse;
 
   \sa Tufao::HttpServer
   */
-class TUFAOSHARED_EXPORT HttpServerResponse : public QObject
+class TUFAO_EXPORT HttpServerResponse : public QObject
 {
     Q_OBJECT
 public:

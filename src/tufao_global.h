@@ -22,9 +22,9 @@
 #include <QtCore/qglobal.h>
 
 #if defined(TUFAO_LIBRARY)
-#  define TUFAOSHARED_EXPORT Q_DECL_EXPORT
+#  define TUFAO_EXPORT Q_DECL_EXPORT
 #else
-#  define TUFAOSHARED_EXPORT Q_DECL_IMPORT
+#  define TUFAO_EXPORT Q_DECL_IMPORT
 #endif
 
 #endif // TUFAO_GLOBAL_H

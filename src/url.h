@@ -31,7 +31,7 @@ namespace Tufao {
 scheme://userinfo@hostname:port/path?query#fragment
   \endverbatim
   */
-class TUFAOSHARED_EXPORT Url
+class TUFAO_EXPORT Url
 {
 public:
     /*!

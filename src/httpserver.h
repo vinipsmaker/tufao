@@ -77,7 +77,7 @@ private:
   \sa Tufao::HttpServerRequest
   Tufao::HttpServerResponse
   */
-class TUFAOSHARED_EXPORT HttpServer : public QObject
+class TUFAO_EXPORT HttpServer : public QObject
 {
     Q_OBJECT
 public:

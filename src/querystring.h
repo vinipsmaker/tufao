@@ -19,6 +19,7 @@
 #ifndef TUFAO_QUERYSTRING_H
 #define TUFAO_QUERYSTRING_H
 
+#include "tufao_global.h"
 #include <QMap>
 
 class QByteArray;
@@ -41,9 +42,10 @@ namespace QueryString {
   another.
   \return The serialized string.
   */
-QByteArray stringify(QMap<QByteArray, QByteArray> obj, char sep = '&',
-                     char eq = '=', bool percentEncoding = true,
-                     char percent = '%');
+TUFAO_EXPORT QByteArray stringify(QMap<QByteArray, QByteArray> obj,
+                                  char sep = '&', char eq = '=',
+                                  bool percentEncoding = true,
+                                  char percent = '%');
 
 /*!
   Deserialize a query string to an object.
@@ -56,9 +58,10 @@ QByteArray stringify(QMap<QByteArray, QByteArray> obj, char sep = '&',
   another.
   \return The deserialized object.
   */
-QMap<QByteArray, QByteArray> parse(const QByteArray &string, char sep = '&',
-                                   char eq = '=', bool percentEncoding = true,
-                                   char percent = '%');
+TUFAO_EXPORT QMap<QByteArray, QByteArray> parse(const QByteArray &string,
+                                                char sep = '&', char eq = '=',
+                                                bool percentEncoding = true,
+                                                char percent = '%');
 
 } // namespace QueryString
 

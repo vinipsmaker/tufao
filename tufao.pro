@@ -5,14 +5,51 @@
 #-------------------------------------------------
 
 QT       += network
-
 QT       -= gui
 
 TARGET = tufao
+
 TEMPLATE = lib
+
+CONFIG += dll
+
+VERSION = 0.1.0
 
 DEFINES += TUFAO_LIBRARY HTTP_PARSER_STRICT=0
 
+symbian {
+    MMP_RULES += EXPORTUNFROZEN
+    TARGET.UID3 = 0xE6DE46D1
+    TARGET.CAPABILITY =
+    TARGET.EPOCALLOWDLLDATA = 1
+    addFiles.sources = tufao.dll
+    addFiles.path = !:/sys/bin
+    DEPLOYMENT += addFiles
+}
+
+# Install data
+PREFIX = /usr/local
+
+headers.path = $$PREFIX/include/tufao
+headers.files = src/httpserver.h\
+    src/tufao_global.h \
+    src/httpserverrequest.h \
+    src/httpserverresponse.h \
+    src/httpsserver.h \
+    src/url.h \
+    src/querystring.h
+
+unix:!symbian {
+    maemo5 {
+        target.path = /opt/usr/lib
+    } else {
+        target.path = $$PREFIX/lib
+    }
+}
+
+INSTALLS += headers target
+
+# Project files
 SOURCES += src/httpserver.cpp \
     src/httpserverrequest.cpp \
     src/httpserverresponse.cpp \
@@ -40,27 +77,5 @@ HEADERS += src/httpserver.h\
     src/priv/http_parser_qt_helper.h \
     src/priv/http_parser.h
 
-symbian {
-    MMP_RULES += EXPORTUNFROZEN
-    TARGET.UID3 = 0xE6DE46D1
-    TARGET.CAPABILITY = 
-    TARGET.EPOCALLOWDLLDATA = 1
-    addFiles.sources = tufao.dll
-    addFiles.path = !:/sys/bin
-    DEPLOYMENT += addFiles
-}
-
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
-}
-
 OTHER_FILES += \
     Doxyfile
-
-
-

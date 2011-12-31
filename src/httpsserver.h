@@ -32,7 +32,7 @@ struct HttpsServer;
 
 } // namespace Priv
 
-class HttpsServer : public HttpServer
+class TUFAO_EXPORT HttpsServer : public HttpServer
 {
     Q_OBJECT
 public:
