@@ -168,13 +168,20 @@ signals:
     void end();
 
     /*!
-      This signal is emitted when the underlaying connection is terminated
-      due to invalid request.
+      This signal is emitted when the underlaying connection is closed (also
+      caused by invalid requests).
 
       Just like Tufao::HttpServerRequest::end, this signal is emitted only once
       per request, and no more data signals will fire afterwards.
       */
     void close();
+
+    /*!
+      This signal is emitted when a http upgrade is requested.
+
+      \param head The initial bytes from the new connection protocol.
+      */
+    void upgrade(QByteArray head);
 
 private slots:
     void onReadyRead();
@@ -183,6 +190,8 @@ private:
     void clear();
 
     Priv::HttpServerRequest *priv;
+
+    friend struct Tufao::Priv::HttpServerRequest;
 };
 
 } // namespace Tufao

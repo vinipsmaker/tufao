@@ -160,16 +160,18 @@ protected:
       Reimplement this function to alter the server's behavior when a http
       upgrade is requested.
 
-      \note You don't need to worry about free the resources passed through
-      arguments to this function. When you close the connection associated with
-      \p socket, all resources will freed by Tufão.
+      \note After this function returns, \p request object is deleted.
+
+      \note The connection object associated with \p request will be deleted
+      when disconnected. If you need to delete before sooner, just call
+      QIODevice::close or QObject::deleteLater.
       */
-    virtual void upgrade(HttpServerRequest *requestReady, QAbstractSocket *socket,
-                         const QByteArray &head);
+    virtual void upgrade(HttpServerRequest *request, const QByteArray &head);
 
 private slots:
     void onNewConnection(int socketDescriptor);
     void onRequestReady(Tufao::HttpServerResponse::Options options);
+    void onUpgrade(const QByteArray &head);
 
 private:
     Priv::HttpServer *priv;

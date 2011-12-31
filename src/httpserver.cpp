@@ -65,14 +65,15 @@ void HttpServer::handleConnection(QAbstractSocket *socket)
 
     connect(handle, SIGNAL(ready(Tufao::HttpServerResponse::Options)),
             this, SLOT(onRequestReady(Tufao::HttpServerResponse::Options)));
+    connect(handle, SIGNAL(upgrade(QByteArray)),
+            this, SLOT(onUpgrade(QByteArray)));
     connect(socket, SIGNAL(disconnected()), handle, SLOT(deleteLater()));
     connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
 }
 
-void HttpServer::upgrade(HttpServerRequest *, QAbstractSocket *socket,
-                         const QByteArray &)
+void HttpServer::upgrade(HttpServerRequest *request, const QByteArray &)
 {
-    socket->close();
+    request->connection()->close();
 }
 
 void HttpServer::onNewConnection(int socketDescriptor)
@@ -83,9 +84,7 @@ void HttpServer::onNewConnection(int socketDescriptor)
 void HttpServer::onRequestReady(Tufao::HttpServerResponse::Options options)
 {
     HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
-    // This shouldn't happen
-    if (!request)
-        return;
+    Q_ASSERT(request);
 
     QAbstractSocket *socket = request->connection();
     HttpServerResponse *response = new HttpServerResponse(socket,
@@ -96,6 +95,15 @@ void HttpServer::onRequestReady(Tufao::HttpServerResponse::Options options)
     connect(response, SIGNAL(finished()), response, SLOT(deleteLater()));
 
     emit requestReady(request, response);
+}
+
+void HttpServer::onUpgrade(const QByteArray &head)
+{
+    HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
+    Q_ASSERT(request);
+
+    upgrade(request, head);
+    delete request;
 }
 
 } // namespace Tufao

@@ -19,55 +19,47 @@
 #ifndef TUFAO_PRIV_HTTPSERVERREQUEST_H
 #define TUFAO_PRIV_HTTPSERVERREQUEST_H
 
-#include "../tufao_global.h"
+#include "../httpserverrequest.h"
 #include <QAbstractSocket>
 #include "caseinsensitivebytearraymap.h"
+#include "http_parser.h"
 
 namespace Tufao {
+
 namespace Priv {
-
-enum HttpRequestParsingState
-{
-    READING_REQUEST_LINE,
-    READING_HEADERS,
-    ANALYZYING_REQUEST,
-    READING_MESSAGE_BODY
-};
-
-enum MessageBodyTransformation
-{
-    IDENTITY = 0, // No transformation
-    CHUNKED  = 1, // Series of chunks
-    // TODO: implement the following:
-    GZIP     = 1 << 1,
-    COMPRESS = 1 << 2,
-    DEFLATE  = 1 << 3
-};
-
-Q_DECLARE_FLAGS(MessageBodyTransformations, MessageBodyTransformation)
 
 struct HttpServerRequest
 {
-    HttpServerRequest(QAbstractSocket *socket) :
+    HttpServerRequest(Tufao::HttpServerRequest *request,
+                      QAbstractSocket *socket) :
         socket(socket),
-        parsingState(READING_REQUEST_LINE),
-        messageBodyTransformations(IDENTITY),
-        messageLength(0)
-    {}
+        lastWasValue(true),
+        useTrailers(false)
+    {
+        http_parser_init(&parser, HTTP_REQUEST);
+        parser.data = request;
+    }
+
+    static int on_message_begin(http_parser *);
+    static int on_url(http_parser *, const char *, size_t);
+    static int on_header_field(http_parser *, const char *, size_t);
+    static int on_header_value(http_parser *, const char *, size_t);
+    static int on_headers_complete(http_parser *);
+    static int on_body(http_parser *, const char *, size_t);
+    static int on_message_complete(http_parser *);
 
     QAbstractSocket *socket;
     QByteArray buffer;
-    HttpRequestParsingState parsingState;
+    http_parser parser;
+    QByteArray lastHeader;
+    bool lastWasValue;
+    bool useTrailers;
 
     QByteArray method;
     QByteArray url;
     QByteArray httpVersion;
     CaseInsensitiveByteArrayMap headers;
     CaseInsensitiveByteArrayMap trailers;
-
-    MessageBodyTransformations messageBodyTransformations;
-    // Only used if CHUNKED transformation is NOT present
-    int messageLength;
 };
 
 } // namespace Priv

@@ -11,7 +11,7 @@ QT       -= gui
 TARGET = tufao
 TEMPLATE = lib
 
-DEFINES += TUFAO_LIBRARY
+DEFINES += TUFAO_LIBRARY HTTP_PARSER_STRICT=0
 
 SOURCES += src/httpserver.cpp \
     src/httpserverrequest.cpp \
@@ -20,7 +20,8 @@ SOURCES += src/httpserver.cpp \
     src/url.cpp \
     src/querystring.cpp \
     src/priv/tcpserverwrapper.cpp \
-    src/priv/reasonphrase.cpp
+    src/priv/reasonphrase.cpp \
+    src/priv/http_parser.cpp
 
 HEADERS += src/httpserver.h\
     src/tufao_global.h \
@@ -32,11 +33,12 @@ HEADERS += src/httpserver.h\
     src/priv/tcpserverwrapper.h \
     src/priv/httpserver.h \
     src/priv/httpserverrequest.h \
-    src/priv/bufferwrapper.h \
     src/priv/caseinsensitivebytearraymap.h \
     src/priv/httpsserver.h \
     src/priv/httpserverresponse.h \
-    src/priv/reasonphrase.h
+    src/priv/reasonphrase.h \
+    src/priv/http_parser_qt_helper.h \
+    src/priv/http_parser.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
@@ -59,3 +61,6 @@ unix:!symbian {
 
 OTHER_FILES += \
     Doxyfile
+
+
+
