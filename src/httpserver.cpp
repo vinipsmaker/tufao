@@ -73,7 +73,7 @@ void HttpServer::handleConnection(QAbstractSocket *socket)
 
 void HttpServer::upgrade(HttpServerRequest *request, const QByteArray &)
 {
-    request->connection()->close();
+    request->socket()->close();
 }
 
 void HttpServer::onNewConnection(int socketDescriptor)
@@ -86,7 +86,7 @@ void HttpServer::onRequestReady(Tufao::HttpServerResponse::Options options)
     HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
     Q_ASSERT(request);
 
-    QAbstractSocket *socket = request->connection();
+    QAbstractSocket *socket = request->socket();
     HttpServerResponse *response = new HttpServerResponse(socket,
                                                           options,
                                                           this);

@@ -125,7 +125,7 @@ Accept: text/plain\r\n
       This will be a QTcpSocket object if created by Tufao::HttpServer and a
       QSslSocket if created by Tufao::HttpsServer.
       */
-    QAbstractSocket *connection() const;
+    QAbstractSocket *socket() const;
 
 signals:
     /*!

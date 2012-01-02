@@ -85,7 +85,7 @@ QByteArray HttpServerRequest::httpVersion() const
     return priv->httpVersion;
 }
 
-QAbstractSocket *HttpServerRequest::connection() const
+QAbstractSocket *HttpServerRequest::socket() const
 {
     return priv->socket;
 }
