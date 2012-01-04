@@ -17,11 +17,102 @@
 */
 
 #include "url.h"
+#include "priv/url.h"
+
+// Groups:
+// 1  = scheme
+// 2  = authority
+// 3  = userinfo
+// 4  = username
+// 5  = userpass
+// 6  = hostname
+// 7  = port
+// 8  = path
+// 9  = query
+// 10 = fragment
+static QRegExp regex("^(?:([^:/?#]+):)?"
+                     "(?://((?:(([^/?#@:]*)(?::([^/?#@]*))?)@)?"
+                     "([^/?#:]*)(?::([^/?#]*))?))?"
+                     "([^?#]*)"
+                     "(?:\\?([^#]*))?"
+                     "(?:#(.*))?");
 
 namespace Tufao {
 
-Url::Url()
+Url::Url(const QString &url) :
+    priv(new Priv::Url(regex))
 {
+    priv->regex.indexIn(url);
+}
+
+Url::Url(const Url &url) :
+    priv(new Priv::Url(url.priv->regex))
+{
+}
+
+Url::~Url()
+{
+    delete priv;
+}
+
+Url &Url::operator =(const Url &url)
+{
+    if (this == &url)
+        return *this;
+
+    delete priv;
+    priv = new Priv::Url(url.priv->regex);
+    return *this;
+}
+
+QString Url::scheme() const
+{
+    return priv->regex.cap(1);
+}
+
+QString Url::authority() const
+{
+    return priv->regex.cap(2);
+}
+
+QString Url::path() const
+{
+    return priv->regex.cap(8);
+}
+
+QString Url::query() const
+{
+    return priv->regex.cap(9);
+}
+
+QString Url::fragment() const
+{
+    return priv->regex.cap(10);
+}
+
+QString Url::userinfo() const
+{
+    return priv->regex.cap(3);
+}
+
+QString Url::hostname() const
+{
+    return priv->regex.cap(6);
+}
+
+QString Url::port() const
+{
+    return priv->regex.cap(7);
+}
+
+QString Url::username() const
+{
+    return priv->regex.cap(4);
+}
+
+QString Url::password() const
+{
+    return priv->regex.cap(5);
 }
 
 } // namespace Tufao

@@ -20,34 +20,54 @@
 #define TUFAO_URL_H
 
 #include "tufao_global.h"
+#include <QString>
 
 namespace Tufao {
+
+namespace Priv {
+
+struct Url;
+
+} // namespace Priv
 
 /*!
   This class provides a convenient interface for parsing URLs.
 
-  You should take the following url as reference:
+  You should take the following url as reference for this document:
   \verbatim
 scheme://userinfo@hostname:port/path?query#fragment
   \endverbatim
+
+  Userinfo is compound of username and userpass in the form:
+  \verbatim
+username:userpass
+  \endverbatim
+
+  Some fields in URL are optionals. If the optional fields are not given to
+  Tufao::Url constructor, the object will return empty strings for these fields.
   */
 class TUFAO_EXPORT Url
 {
 public:
     /*!
-      Constructs a empty URL.
+      Constructs a Tufao::Url to extract information from \p url.
       */
-    Url();
+    Url(const QString &url = QString());
 
     /*!
-      Constructs a Tufao::Url parsing \p url.
+      Constructs a url as a copy of \p url.
       */
-    Url(const QByteArray &url);
+    Url(const Url &url);
 
     /*!
-      Returns the QByteArray representation of the URL.
+      Destroys the url.
       */
-    operator QByteArray() const;
+    ~Url();
+
+    /*!
+      Copies the url \p url and returns a reference to the copy.
+      */
+    Url &operator =(const Url &url);
 
     /*!
       The protocol.
@@ -56,22 +76,24 @@ public:
         - "http"
         - "ftp"
       */
-    QByteArray scheme() const;
+    QString scheme() const;
 
     /*!
       The authority.
 
       The authority is composed of:
-        - userinfo
+        - userinfo (optional field)
         - hostname
-        - port
+        - port (optional field)
+
+      \note userinfo and port are optionals.
 
       Examples:
         - "username:password@hostname:port"
         - "userinfo@hostname:port"
         - "example.com"
       */
-    QByteArray authority() const;
+    QString authority() const;
 
     /*!
       The path.
@@ -79,17 +101,18 @@ public:
       Examples:
         - "/path"
         - "/index"
+        - "/"
       */
-    QByteArray path() const;
+    QString path() const;
 
     /*!
       The query string.
 
       Examples:
         - "querystring"
-        - "type=human&name=tux"
+        - "type=peguim&name=tux"
       */
-    QByteArray query() const;
+    QString query() const;
 
     /*!
       The hash.
@@ -97,20 +120,22 @@ public:
       Examples:
         - "fragment"
       */
-    QByteArray fragment() const;
+    QString fragment() const;
 
     /*!
       The userinfo.
 
-      The userinfo is composed of username and password.
+      The userinfo usually is composed of username. Password is used sometimes
+      also.
 
-      \note You shouldn't user password in url.
+      \note It's usually unsafe to use password in url.
 
       Examples:
         - "username:password"
         - "cn=br;user=admin"
+        - "tux"
       */
-    QByteArray userinfo() const;
+    QString userinfo() const;
 
     /*!
       The hostname.
@@ -119,22 +144,36 @@ public:
         - "hostname"
         - "example.com"
       */
-    QByteArray hostname() const;
+    QString hostname() const;
 
     /*!
       The port.
+
+      Examples:
+        - "80"
+        - "443"
       */
-    QByteArray port() const;
+    QString port() const;
 
     /*!
       The username.
+
+      Examples:
+        - "username"
+        - "cn=br;user=admin"
+        - "tux"
       */
-    QByteArray username() const;
+    QString username() const;
 
     /*!
       The password.
+
+      \warning It's usually unsafe to use password in url.
       */
-    QByteArray password() const;
+    QString password() const;
+
+private:
+    Priv::Url *priv;
 };
 
 } // namespace Tufao

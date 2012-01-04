@@ -75,7 +75,10 @@ HEADERS += src/httpserver.h\
     src/priv/httpserverresponse.h \
     src/priv/reasonphrase.h \
     src/priv/http_parser_qt_helper.h \
-    src/priv/http_parser.h
+    src/priv/http_parser.h \
+    src/priv/url.h
 
 OTHER_FILES += \
     Doxyfile
+
+
