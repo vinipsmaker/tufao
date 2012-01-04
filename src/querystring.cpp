@@ -17,7 +17,69 @@
 */
 
 #include "querystring.h"
+#include <QByteArray>
 
 namespace Tufao {
+namespace QueryString {
 
+QByteArray stringify(const QMap<QByteArray, QByteArray> &map, char sep, char eq,
+                     bool percentEncoding, char percent)
+{
+    QByteArray ret;
+
+    if (percentEncoding) {
+        for (QMap<QByteArray, QByteArray>::const_iterator i = map.begin()
+             ;i != map.end();++i) {
+            ret.append(i.key().toPercentEncoding(QByteArray(), QByteArray(),
+                                                 percent)
+                       + eq + i.value().toPercentEncoding(QByteArray(),
+                                                          QByteArray(), percent)
+                       + sep);
+        }
+    } else {
+        for (QMap<QByteArray, QByteArray>::const_iterator i = map.begin()
+             ;i != map.end();++i) {
+            ret.append(i.key() + eq + i.value() + sep);
+        }
+    }
+
+    if (map.size())
+        ret.remove(ret.size() - 1, 1);
+
+    return ret;
+}
+
+QMap<QByteArray, QByteArray> parse(const QByteArray &string, char sep, char eq,
+                                   bool percentEncoding, char percent)
+{
+    QMap<QByteArray, QByteArray> ret;
+
+    if (percentEncoding) {
+        QList<QByteArray> map = string.split(sep);
+        for (QList<QByteArray>::iterator i = map.begin();i != map.end();++i) {
+            int j = i->indexOf(eq);
+            if (j == -1) {
+                ret[QByteArray::fromPercentEncoding(*i, percent)];
+            } else if(j != 0) {
+                ret[QByteArray::fromPercentEncoding(i->left(j), percent)]
+                        = QByteArray::fromPercentEncoding(i->mid(j + 1),
+                                                          percent);
+            }
+        }
+    } else {
+        QList<QByteArray> map = string.split(sep);
+        for (QList<QByteArray>::iterator i = map.begin();i != map.end();++i) {
+            int j = i->indexOf(eq);
+            if (j == -1) {
+                ret[*i];
+            } else if(j != 0) {
+                ret[i->left(j)] = i->mid(j + 1);
+            }
+        }
+    }
+
+    return ret;
+}
+
+} // namespace QueryString
 } // namespace Tufao

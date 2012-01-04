@@ -34,7 +34,7 @@ namespace QueryString {
 /*!
   Serialize an object to a query string.
 
-  \param obj The object to be serialized.
+  \param map The object to be serialized.
   \param sep The separator character.
   \param eq The assignment character.
   \param percentEncoding true if the function should escape the characters.
@@ -42,7 +42,7 @@ namespace QueryString {
   another.
   \return The serialized string.
   */
-TUFAO_EXPORT QByteArray stringify(QMap<QByteArray, QByteArray> obj,
+TUFAO_EXPORT QByteArray stringify(const QMap<QByteArray, QByteArray> &map,
                                   char sep = '&', char eq = '=',
                                   bool percentEncoding = true,
                                   char percent = '%');
@@ -50,7 +50,7 @@ TUFAO_EXPORT QByteArray stringify(QMap<QByteArray, QByteArray> obj,
 /*!
   Deserialize a query string to an object.
 
-  \param string The string to be parsed.
+  \param string The string to parse.
   \param sep The separator character.
   \param eq The assignment character.
   \param percentEncoding true if the function should escape the characters.
