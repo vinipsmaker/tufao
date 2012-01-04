@@ -110,7 +110,7 @@ public:
 
       Examples:
         - "querystring"
-        - "type=peguim&name=tux"
+        - "type=penguin&name=tux"
       */
     QString query() const;
 
