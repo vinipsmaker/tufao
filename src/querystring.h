@@ -38,6 +38,8 @@ namespace QueryString {
   \param sep The separator character.
   \param eq The assignment character.
   \param percentEncoding true if the function should escape the characters.
+  You should set it to false if you know there is no percent encoding applied
+  and need some performance improvement.
   \param percent It allows you to replace the percent sign character for
   another.
   \return The serialized string.
@@ -54,6 +56,8 @@ TUFAO_EXPORT QByteArray stringify(const QMap<QByteArray, QByteArray> &map,
   \param sep The separator character.
   \param eq The assignment character.
   \param percentEncoding true if the function should escape the characters.
+  You should set it to false if you know there is no percent encoding applied
+  and need some performance improvement.
   \param percent It allows you to replace the percent sign character for
   another.
   \return The deserialized object.

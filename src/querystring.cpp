@@ -55,26 +55,79 @@ QMap<QByteArray, QByteArray> parse(const QByteArray &string, char sep, char eq,
     QMap<QByteArray, QByteArray> ret;
 
     if (percentEncoding) {
-        QList<QByteArray> map = string.split(sep);
-        for (QList<QByteArray>::iterator i = map.begin();i != map.end();++i) {
-            int j = i->indexOf(eq);
-            if (j == -1) {
-                ret[QByteArray::fromPercentEncoding(*i, percent)];
-            } else if(j != 0) {
-                ret[QByteArray::fromPercentEncoding(i->left(j), percent)]
-                        = QByteArray::fromPercentEncoding(i->mid(j + 1),
-                                                          percent);
+        int i = 0;
+        while (string[i] == '&') ++i;
+        int j = string.indexOf(sep, i + 1);
+
+        while (j != -1) {
+            int k = string.indexOf(eq, i);
+
+            if (k == -1 || k > j) {
+                QByteArray key(string.mid(i, j - i));
+                if (key.size())
+                    ret[QByteArray::fromPercentEncoding(key, percent)];
+            } else {
+                QByteArray key(string.mid(i, k - i));
+                if (key.size())
+                    ret[QByteArray::fromPercentEncoding(key, percent)]
+                            = QByteArray::fromPercentEncoding(string
+                                                              .mid(k + 1,
+                                                                   j - k - 1),
+                                                              percent);
             }
+
+            i = j + 1;
+            j = string.indexOf(sep, j + 1);
+        }
+
+        int k = string.indexOf(eq, i);
+
+        if (k == -1) {
+            QByteArray key(string.mid(i, string.size() - i));
+            if (key.size())
+                ret[QByteArray::fromPercentEncoding(key, percent)];
+        } else {
+            QByteArray key(string.mid(i, k - i));
+            if (key.size())
+                ret[QByteArray::fromPercentEncoding(key, percent)]
+                        = QByteArray::fromPercentEncoding(string
+                                                          .mid(k + 1,
+                                                               string.size()
+                                                               - k - 1),
+                                                          percent);
         }
     } else {
-        QList<QByteArray> map = string.split(sep);
-        for (QList<QByteArray>::iterator i = map.begin();i != map.end();++i) {
-            int j = i->indexOf(eq);
-            if (j == -1) {
-                ret[*i];
-            } else if(j != 0) {
-                ret[i->left(j)] = i->mid(j + 1);
+        int i = 0;
+        while (string[i] == '&') ++i;
+        int j = string.indexOf(sep, i + 1);
+
+        while (j != -1) {
+            int k = string.indexOf(eq, i);
+
+            if (k == -1 || k > j) {
+                QByteArray key(string.mid(i, j - i));
+                if (key.size())
+                    ret[key];
+            } else {
+                QByteArray key(string.mid(i, k - i));
+                if (key.size())
+                    ret[key] = string.mid(k + 1, j - k - 1);
             }
+
+            i = j + 1;
+            j = string.indexOf(sep, j + 1);
+        }
+
+        int k = string.indexOf(eq, i);
+
+        if (k == -1) {
+            QByteArray key(string.mid(i, string.size() - i));
+            if (key.size())
+                ret[key];
+        } else {
+            QByteArray key(string.mid(i, k - i));
+            if (key.size())
+                ret[key] = string.mid(k + 1, string.size() - k - 1);
         }
     }
 
