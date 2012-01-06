@@ -29,29 +29,32 @@ symbian {
 
 # Install data
 PREFIX = /usr/local
-
-headers.path = $$PREFIX/include/tufao
-headers.files = src/httpserver.h\
-    src/tufao_global.h \
-    src/httpserverrequest.h \
-    src/httpserverresponse.h \
-    src/httpsserver.h \
-    src/url.h \
-    src/querystring.h
-
-documentation.path = $$PREFIX/share/doc/qt/qch
-documentation.files = doc/html/tufao.qch
-documentation.extra = doxygen
-
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = $$PREFIX/lib
-    }
+unix:!symbian:maemo5 {
+    PREFIX = /opt/usr
 }
 
-INSTALLS += target headers documentation
+unix:!symbian:target.path = $$PREFIX/lib
+
+unix {
+    headers.path = $$PREFIX/include/tufao
+    headers.files = src/httpserver.h\
+        src/tufao_global.h \
+        src/httpserverrequest.h \
+        src/httpserverresponse.h \
+        src/httpsserver.h \
+        src/url.h \
+        src/querystring.h
+
+    qmakefile.path = $$PREFIX/share/qt/mkspecs/features
+    qmakefile.files = tufao.prf
+
+    documentation.path = $$PREFIX/share/doc/qt/qch
+    documentation.files = doc/html/tufao.qch
+    documentation.extra = doxygen
+}
+
+INSTALLS += target
+unix:INSTALLS += headers qmakefile documentation
 
 # Project files
 SOURCES += src/httpserver.cpp \

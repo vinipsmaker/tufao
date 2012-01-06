@@ -6,4 +6,4 @@ if [ -z "$1" ]; then
     exit 0
 fi
 
-sed -i -r -e "s#(PREFIX = ).*\$#\1$1#g" ./tufao.pro
+sed -i -r -e "s#^(PREFIX = ).*\$#\1$1#g" ./tufao.pro
