@@ -1,0 +1,40 @@
+--- http_parser.c
++++ http_parser.c
+@@ -21,9 +21,7 @@
+  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  * IN THE SOFTWARE.
+  */
+-#include <http_parser.h>
+-#include <assert.h>
+-#include <stddef.h>
++#include "http_parser.h"
+ 
+ 
+ #ifndef MIN
+--- http_parser.h
++++ http_parser.h
+@@ -20,15 +20,11 @@
+  */
+ #ifndef http_parser_h
+ #define http_parser_h
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+ 
+ #define HTTP_PARSER_VERSION_MAJOR 1
+ #define HTTP_PARSER_VERSION_MINOR 0
+ 
+-#include <sys/types.h>
+-#include <stdint.h>
++#include "http_parser_qt_helper.h"
+ 
+ /* Compile with -DHTTP_PARSER_STRICT=0 to make less checks, but run
+  * faster
+@@ -256,7 +252,4 @@
+ /* Return a string description of the given error */
+ const char *http_errno_description(enum http_errno err);
+ 
+-#ifdef __cplusplus
+-}
+-#endif
+ #endif

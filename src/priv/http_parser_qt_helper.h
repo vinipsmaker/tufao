@@ -3,6 +3,9 @@
 
 #include <QtGlobal>
 
+// defines:
+#define HTTP_PARSER_STRICT 0
+
 // types:
 #define int8_t qint8
 #define uint8_t quint8
