@@ -39,8 +39,11 @@ struct HttpServer;
   \brief The Tufao::HttpServer class provides an implementation of the HTTP
   protocol.
 
-  To create a webserver, all you need to do is handle the
-  Tufao::HttpServer::request signal.
+  The HTTP is stateless request-response based protoccol. It let you create
+  distributed dynamic collaborative applications.
+
+  To create a webserver, all you need to do is call Tufao::HttpServer::listen
+  and handle the Tufao::HttpServer::requestReady signal.
 
   \code
 #include <Tufao/HttpServer>
@@ -56,12 +59,12 @@ public:
         connect(httpServer,
                 SIGNAL(requestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*),
                 this,
-                SLOT(onRequestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)));
+                SLOT(handleRequest(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)));
     }
 
 private slots:
-    void onRequestReady(Tufao::HttpServerRequest *request,
-                        Tufao::HttpServerResponse *response)
+    void handleRequest(Tufao::HttpServerRequest *request,
+                       Tufao::HttpServerResponse *response)
     {
         response->writeHead(200);
         response->setHeader("Content-Type", "text/plain");
@@ -97,10 +100,11 @@ public:
       \brief Tells the server to listen for incoming connections on address
       \p address and port \p port.
 
-      If \p port is 0, a port is chosen automatically.
+      If \p port is 0, a port is chosen automatically. The default registered
+      port to HTTP server is 80.
 
-      If \p address is QHostAddress::Any, the server will listen on all
-      network interfaces.
+      If \p address is QHostAddress::Any, the server will listen on all network
+      interfaces.
       */
     bool listen(const QHostAddress &address = QHostAddress::Any,
                 quint16 port = 0);
