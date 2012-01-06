@@ -39,6 +39,10 @@ headers.files = src/httpserver.h\
     src/url.h \
     src/querystring.h
 
+documentation.path = $$PREFIX/share/doc/qt/qch
+documentation.files = doc/html/tufao.qch
+documentation.extra = doxygen
+
 unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
@@ -47,7 +51,7 @@ unix:!symbian {
     }
 }
 
-INSTALLS += headers target
+INSTALLS += target headers documentation
 
 # Project files
 SOURCES += src/httpserver.cpp \
@@ -77,8 +81,3 @@ HEADERS += src/httpserver.h\
     src/priv/http_parser_qt_helper.h \
     src/priv/http_parser.h \
     src/priv/url.h
-
-OTHER_FILES += \
-    Doxyfile
-
-
