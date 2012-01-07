@@ -4,18 +4,15 @@
 #
 #-------------------------------------------------
 
+# General info
+TARGET = tufao
+TEMPLATE = lib
+VERSION = 0.1.0
+
 QT       += network
 QT       -= gui
 
-TARGET = tufao
-
-TEMPLATE = lib
-
 CONFIG += dll
-
-VERSION = 0.1.0
-
-DEFINES += TUFAO_LIBRARY
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
@@ -27,7 +24,13 @@ symbian {
     DEPLOYMENT += addFiles
 }
 
-# Install data
+# Build info
+DEFINES += TUFAO_LIBRARY
+OBJECTS_DIR = build
+MOC_DIR = build
+DESTDIR = lib
+
+# Install info
 PREFIX = /usr/local
 unix:!symbian:maemo5 {
     PREFIX = /opt/usr

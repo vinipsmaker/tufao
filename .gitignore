@@ -1,3 +1,5 @@
-*.pro.user
-*-build-desktop
 Makefile
+build/*
+doc/*
+lib/*
+*.pro.user
