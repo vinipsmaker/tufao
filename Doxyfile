@@ -103,8 +103,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 INPUT                  = src
 INPUT_ENCODING         = UTF-8
-FILE_PATTERNS          = *.cpp \
-                         *.h
+FILE_PATTERNS          = *.h
 RECURSIVE              = NO
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
