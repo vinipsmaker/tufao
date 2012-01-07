@@ -35,7 +35,14 @@ struct Url;
   This class provides a convenient interface for parsing URLs.
 
   Some fields in URLs are optionals. If the optional fields are absent, the
-  object will return empty strings for these fields.
+  object will return empty strings for these fields, but if you try to use this
+  class to parse an invalid url, you will get empty strings to all fields.
+
+  \note Currently URL usage become commonplace and it's easy to find abbreviated
+  URLs such as "www.example.com". These abbreviated URLs aren't valid and
+  Tufao::Url won't parse them, but this isn't really a problem if you are using
+  Tufao::Url just to parse urls received from Tufao::HttpServerRequest, because
+  user agents implementing the HTTP protocol always send valid URLs.
   */
 class TUFAO_EXPORT Url
 {
@@ -81,7 +88,7 @@ public:
         - port
 
       In the url "scheme://userinfo@hostname:port/path?query#fragment" the
-      authority will be "hostname:port".
+      authority will be "userinfo@hostname:port".
 
       Other examples:
         - "username:password@hostname:port"
