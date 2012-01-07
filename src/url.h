@@ -34,8 +34,8 @@ struct Url;
   \brief
   This class provides a convenient interface for parsing URLs.
 
-  Some fields in URL are optionals. If the optional fields are not given to
-  Tufao::Url constructor, the object will return empty strings for these fields.
+  Some fields in URLs are optionals. If the optional fields are absent, the
+  object will return empty strings for these fields.
   */
 class TUFAO_EXPORT Url
 {
