@@ -31,17 +31,8 @@ struct Url;
 } // namespace Priv
 
 /*!
+  \brief
   This class provides a convenient interface for parsing URLs.
-
-  You should take the following url as reference for this document:
-  \verbatim
-scheme://userinfo@hostname:port/path?query#fragment
-  \endverbatim
-
-  Userinfo is compound of username and userpass in the form:
-  \verbatim
-username:userpass
-  \endverbatim
 
   Some fields in URL are optionals. If the optional fields are not given to
   Tufao::Url constructor, the object will return empty strings for these fields.
@@ -72,7 +63,10 @@ public:
     /*!
       The protocol.
 
-      Examples:
+      In the url "scheme://userinfo@hostname:port/path?query#fragment" the
+      scheme will be "scheme".
+
+      Other examples:
         - "http"
         - "ftp"
       */
@@ -81,14 +75,15 @@ public:
     /*!
       The authority.
 
-      The authority is composed of:
-        - userinfo (optional field)
+      The authority contains:
+        - userinfo
         - hostname
-        - port (optional field)
+        - port
 
-      \note userinfo and port are optionals.
+      In the url "scheme://userinfo@hostname:port/path?query#fragment" the
+      authority will be "hostname:port".
 
-      Examples:
+      Other examples:
         - "username:password@hostname:port"
         - "userinfo@hostname:port"
         - "example.com"
@@ -98,8 +93,10 @@ public:
     /*!
       The path.
 
-      Examples:
-        - "/path"
+      In the url "scheme://userinfo@hostname:port/path?query#fragment" the path
+      will be "/path".
+
+      Other examples:
         - "/index"
         - "/"
       */
@@ -108,29 +105,42 @@ public:
     /*!
       The query string.
 
-      Examples:
-        - "querystring"
+      In the url "scheme://userinfo@hostname:port/path?query#fragment" the query
+      string will be "query".
+
+      Other examples:
         - "type=penguin&name=tux"
+        - "type=penguin&name=tux&age=20"
       */
     QString query() const;
 
     /*!
-      The hash.
+      The fragment id, also know as hash.
 
-      Examples:
-        - "fragment"
+      In the url "scheme://userinfo@hostname:port/path?query#fragment" the hash
+      will be "fragment".
+
+      \note The frament id is used by the user agents in the html and not sent
+      to the browser, so this field may be always empty when reading from
+      Tufao::HttpServerRequest.
+
+      Other examples:
+        - "title1"
+        - "title1-1"
       */
     QString fragment() const;
 
     /*!
       The userinfo.
 
-      The userinfo usually is composed of username. Password is used sometimes
-      also.
+      The userinfo contains the username and password.
+
+      In the url "scheme://userinfo@hostname:port/path?query#fragment" the
+      userinfo will be "userinfo".
 
       \note It's usually unsafe to use password in url.
 
-      Examples:
+      Other examples:
         - "username:password"
         - "cn=br;user=admin"
         - "tux"
@@ -140,16 +150,23 @@ public:
     /*!
       The hostname.
 
-      Examples:
+      In the url "scheme://userinfo@hostname:port/path?query#fragment" the
+      hostname will be "hostname"
+
+      Other examples:
         - "hostname"
         - "example.com"
+        - "127.0.0.1"
       */
     QString hostname() const;
 
     /*!
       The port.
 
-      Examples:
+      In the url "scheme://userinfo@hostname:port/path?query#fragment" the port
+      will be "port".
+
+      Other examples:
         - "80"
         - "443"
       */
@@ -158,17 +175,47 @@ public:
     /*!
       The username.
 
-      Examples:
+      \warning This field is deprecated by the RFC and is here only to provide
+      compatibility with old applications. You problably want use
+      Tufao::Url::userinfo.
+
+      This username is extracted from the userinfo assuming that userinfo
+      uses the format "username:password".
+
+      In the url "scheme://userinfo@hostname:port/path?query#fragment" the
+      username will be "userinfo".
+
+      Other examples:
         - "username"
         - "cn=br;user=admin"
         - "tux"
+
+      \sa
+      Tufao::Url::userinfo
+      Tufao::url::password
       */
     QString username() const;
 
     /*!
       The password.
 
-      \warning It's usually unsafe to use password in url.
+      \warning This field is deprecated by the RFC and is here only to provide
+      compatibility with old applications. It's usually unsafe to use passwords
+      in urls and you problably don't want to use this technique.
+
+      This password is extracted from the userinfo assuming that userinfo uses
+      the format "username:password".
+
+      In the url "scheme://userinfo@hostname:port/path?query#fragment" the
+      password will be "".
+
+      Other examples:
+        - "123456"
+        - "42"
+
+      \sa
+      Tufao::Url::userinfo
+      Tufao::Url::username
       */
     QString password() const;
 
