@@ -19,9 +19,9 @@
 #ifndef TUFAO_PRIV_HTTPSERVERREQUEST_H
 #define TUFAO_PRIV_HTTPSERVERREQUEST_H
 
+#include "../headers.h"
 #include "../httpserverrequest.h"
 #include <QAbstractSocket>
-#include "caseinsensitivebytearraymap.h"
 #include "http_parser.h"
 
 namespace Tufao {
@@ -58,8 +58,8 @@ struct HttpServerRequest
     QByteArray method;
     QByteArray url;
     QByteArray httpVersion;
-    CaseInsensitiveByteArrayMap headers;
-    CaseInsensitiveByteArrayMap trailers;
+    Headers headers;
+    Headers trailers;
 };
 
 } // namespace Priv

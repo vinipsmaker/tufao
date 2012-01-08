@@ -74,7 +74,6 @@ HEADERS += src/httpserver.h\
     src/priv/tcpserverwrapper.h \
     src/priv/httpserver.h \
     src/priv/httpserverrequest.h \
-    src/priv/caseinsensitivebytearraymap.h \
     src/priv/httpsserver.h \
     src/priv/httpserverresponse.h \
     src/priv/reasonphrase.h \

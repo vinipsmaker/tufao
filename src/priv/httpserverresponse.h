@@ -21,7 +21,7 @@
 
 #include "../httpserverresponse.h"
 #include <QIODevice>
-#include "caseinsensitivebytearraymap.h"
+#include "../headers.h"
 
 namespace Tufao {
 namespace Priv {
@@ -47,7 +47,7 @@ struct HttpServerResponse
     QIODevice *device;
     HttpResponseFormattingState formattingState;
     Tufao::HttpServerResponse::Options options;
-    CaseInsensitiveByteArrayMap headers;
+    Headers headers;
 };
 
 } // namespace Priv

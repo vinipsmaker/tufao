@@ -35,24 +35,9 @@ HttpServerResponse::~HttpServerResponse()
     delete priv;
 }
 
-void HttpServerResponse::setHeader(const QByteArray &name,
-                                   const QByteArray &value)
+Headers &HttpServerResponse::headers()
 {
-    priv->headers[name] = value;
-}
-
-QByteArray HttpServerResponse::header(const QByteArray &name)
-{
-    if (!priv->headers.contains(name)) {
-        return QByteArray();
-    }
-
-    return priv->headers[name];
-}
-
-void HttpServerResponse::removeHeader(const QByteArray &name)
-{
-    priv->headers.remove(name);
+    return priv->headers;
 }
 
 bool HttpServerResponse::writeContinue()
@@ -70,7 +55,7 @@ bool HttpServerResponse::writeContinue()
 
 bool HttpServerResponse::writeHead(int statusCode,
                                    const QByteArray &reasonPhrase,
-                                   const QMap<QByteArray, QByteArray> &headers)
+                                   const Headers &headers)
 {
     if (priv->formattingState != Priv::STATUS_LINE
             || !priv->device)
@@ -86,7 +71,7 @@ bool HttpServerResponse::writeHead(int statusCode,
     priv->device->write(reasonPhrase);
     priv->device->write("\r\n");
 
-    for (QMap<QByteArray, QByteArray>::const_iterator i = headers.constBegin()
+    for (Headers::const_iterator i = headers.constBegin()
          ;i != headers.end();++i) {
         priv->device->write(i.key());
         priv->device->write(": ");
@@ -97,8 +82,7 @@ bool HttpServerResponse::writeHead(int statusCode,
     return true;
 }
 
-bool HttpServerResponse::writeHead(int statusCode,
-                                   const QMap<QByteArray, QByteArray> &headers)
+bool HttpServerResponse::writeHead(int statusCode, const Headers &headers)
 {
     if (priv->formattingState != Priv::STATUS_LINE
             || !priv->device)
@@ -114,7 +98,7 @@ bool HttpServerResponse::writeHead(int statusCode,
     priv->device->write(Priv::reasonPhrase(statusCode));
     priv->device->write("\r\n");
 
-    for (QMap<QByteArray, QByteArray>::const_iterator i = headers.constBegin()
+    for (Headers::const_iterator i = headers.constBegin()
          ;i != headers.end();++i) {
         priv->device->write(i.key());
         priv->device->write(": ");
@@ -158,14 +142,12 @@ bool HttpServerResponse::write(const QByteArray &chunk)
         return false;
     case Priv::HEADERS:
     {
-        if (priv->headers.contains("Transfer-Encoding"))
-            priv->headers["Transfer-Encoding"].append(",chunked");
-        else
-            priv->headers["Transfer-Encoding"] = "chunked";
+        if (priv->options.testFlag(HttpServerResponse::KEEP_ALIVE))
+            priv->headers.replace("Connection", "keep-alive");
+        priv->headers.insert("Transfer-Encoding", "chunked");
 
-        for (QMap<QByteArray, QByteArray>::iterator i
-             = priv->headers.map.begin()
-             ;i != priv->headers.map.end();++i) {
+        for (Headers::iterator i = priv->headers.begin()
+             ;i != priv->headers.end();++i) {
             priv->device->write(i.key());
             priv->device->write(": ");
             priv->device->write(i.value());
@@ -186,8 +168,7 @@ bool HttpServerResponse::write(const QByteArray &chunk)
     return true;
 }
 
-bool HttpServerResponse::addTrailers(const QMap<QByteArray, QByteArray>
-                                     &headers)
+bool HttpServerResponse::addTrailers(const Headers &headers)
 {
     if (priv->options.testFlag(HttpServerResponse::HTTP_1_0))
         return false;
@@ -202,8 +183,7 @@ bool HttpServerResponse::addTrailers(const QMap<QByteArray, QByteArray>
         priv->formattingState = Priv::TRAILERS;
     case Priv::TRAILERS:
     {
-        for (QMap<QByteArray, QByteArray>::const_iterator i
-             = headers.constBegin()
+        for (Headers::const_iterator i = headers.constBegin()
              ;i != headers.end();++i) {
             priv->device->write(i.key());
             priv->device->write(": ");
@@ -249,20 +229,18 @@ bool HttpServerResponse::end(const QByteArray &chunk)
     case Priv::HEADERS:
     {
         if (chunk.size()) {
-            if (!priv->options.testFlag(HttpServerResponse::HTTP_1_0)) {
-                if (priv->headers.contains("Transfer-Encoding"))
-                    priv->headers["Transfer-Encoding"].append(",chunked");
-                else
-                    priv->headers["Transfer-Encoding"] = "chunked";
+            if (priv->options.testFlag(HttpServerResponse::HTTP_1_1)) {
+                if (priv->options.testFlag(HttpServerResponse::KEEP_ALIVE))
+                    priv->headers.replace("Connection", "keep-alive");
+                priv->headers.insert("Transfer-Encoding", "chunked");
             } else {
-                priv->headers["Content-Length"]
-                        = QByteArray::number(chunk.size());
+                priv->headers.replace("Content-Length",
+                                      QByteArray::number(chunk.size()));
             }
         }
 
-        for (QMap<QByteArray, QByteArray>::iterator i
-             = priv->headers.map.begin()
-             ;i != priv->headers.map.end();++i) {
+        for (Headers::iterator i = priv->headers.begin()
+             ;i != priv->headers.end();++i) {
             priv->device->write(i.key());
             priv->device->write(": ");
             priv->device->write(i.value());
@@ -292,8 +270,7 @@ bool HttpServerResponse::end(const QByteArray &chunk)
     case Priv::TRAILERS:
     {
         priv->device->write("\r\n");
-        if (priv->options.testFlag(HttpServerResponse::CLOSE_CONNECTION)
-                || priv->options.testFlag(HttpServerResponse::HTTP_1_0))
+        if (!priv->options.testFlag(HttpServerResponse::KEEP_ALIVE))
             priv->device->close();
 
         priv->formattingState = Priv::END;

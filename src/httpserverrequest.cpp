@@ -16,7 +16,6 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "httpserverrequest.h"
 #include "priv/httpserverrequest.h"
 
 struct HttpSettings
@@ -40,7 +39,7 @@ inline HttpSettings::HttpSettings()
             = Tufao::Priv::HttpServerRequest::on_message_complete;
 }
 
-static HttpSettings httpSettings;
+static const HttpSettings httpSettings;
 
 namespace Tufao {
 
@@ -70,14 +69,14 @@ QByteArray HttpServerRequest::url() const
     return priv->url;
 }
 
-QMap<QByteArray, QByteArray> HttpServerRequest::headers() const
+Headers HttpServerRequest::headers() const
 {
-    return priv->headers.map;
+    return priv->headers;
 }
 
-QMap<QByteArray, QByteArray> HttpServerRequest::trailers() const
+Headers HttpServerRequest::trailers() const
 {
-    return priv->trailers.map;
+    return priv->trailers;
 }
 
 QByteArray HttpServerRequest::httpVersion() const
@@ -92,14 +91,12 @@ QAbstractSocket *HttpServerRequest::socket() const
 
 void HttpServerRequest::onReadyRead()
 {
-    priv->buffer.append(priv->socket->readAll());
-    {
-        int nparsed = http_parser_execute(&priv->parser,
-                                          &httpSettings.settings,
-                                          priv->buffer.data(),
-                                          priv->buffer.size());
-        priv->buffer.remove(0, nparsed);
-    }
+    priv->buffer += priv->socket->readAll();
+    size_t nparsed = http_parser_execute(&priv->parser,
+                                         &httpSettings.settings,
+                                         priv->buffer.constData(),
+                                         priv->buffer.size());
+    priv->buffer.remove(0, nparsed);
 
     if (priv->parser.http_errno) {
         priv->socket->close();
@@ -115,13 +112,16 @@ void HttpServerRequest::onReadyRead()
     }
 }
 
-inline void HttpServerRequest::clear()
+inline void HttpServerRequest::clearBuffer()
 {
     priv->buffer.clear();
     priv->lastHeader.clear();
     priv->lastWasValue = true;
     priv->useTrailers = false;
+}
 
+inline void HttpServerRequest::clearRequest()
+{
     priv->method.clear();
     priv->url.clear();
     priv->httpVersion.clear();
@@ -136,7 +136,7 @@ int HttpServerRequest::on_message_begin(http_parser *parser)
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
     Q_ASSERT(request);
-    request->clear();
+    request->clearRequest();
     return 0;
 }
 
@@ -172,23 +172,26 @@ int HttpServerRequest::on_header_value(http_parser *parser, const char *at,
             (parser->data);
     Q_ASSERT(request);
     if (request->priv->lastWasValue) {
-        if (request->priv->useTrailers)
-            request->priv->trailers[request->priv->lastHeader]
-                    .append(at, length);
-        else
-            request->priv->headers[request->priv->lastHeader]
-                    .append(at, length);
+        if (request->priv->useTrailers) {
+            request->priv->trailers
+                    .replace(request->priv->lastHeader,
+                             request->priv->trailers.value(request->priv
+                                                           ->lastHeader)
+                             + QByteArray(at, length));
+        } else {
+            request->priv->headers
+                    .replace(request->priv->lastHeader,
+                             request->priv->headers.value(request->priv
+                                                          ->lastHeader)
+                             + QByteArray(at, length));
+        }
     } else {
         if (request->priv->useTrailers) {
-            if (request->priv->trailers.contains(request->priv->lastHeader))
-                request->priv->trailers[request->priv->lastHeader].append(',');
-            request->priv->trailers[request->priv->lastHeader]
-                    = QByteArray(at, length);
+            request->priv->trailers
+                    .insert(request->priv->lastHeader, QByteArray(at, length));
         } else {
-            if (request->priv->headers.contains(request->priv->lastHeader))
-                request->priv->headers[request->priv->lastHeader].append(',');
-            request->priv->headers[request->priv->lastHeader]
-                    = QByteArray(at, length);
+            request->priv->headers
+                    .insert(request->priv->lastHeader, QByteArray(at, length));
         }
         request->priv->lastWasValue = true;
     }
@@ -206,12 +209,44 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
     request->priv->lastWasValue = true;
     request->priv->useTrailers = true;
 
-    request->priv->method
-            = QByteArray(http_method_str(http_method(parser->method)));
-    if (parser->http_minor == 1)
-        request->priv->httpVersion = "HTTP/1.1";
-    else
-        request->priv->httpVersion = "HTTP/1.0";
+    {
+        static const char methods[][12] =
+        {
+            "DELETE",
+            "GET",
+            "HEAD",
+            "POST",
+            "PUT",
+            "CONNECT",
+            "OPTIONS",
+            "TRACE",
+            "COPY",
+            "LOCK",
+            "MKCOL",
+            "MOVE",
+            "PROPFIND",
+            "PROPPATCH",
+            "UNLOCK",
+            "REPORT",
+            "MKACTIVITY",
+            "CHECKOUT",
+            "MERGE",
+            "M-SEARCH",
+            "NOTIFY",
+            "SUBSCRIBE",
+            "UNSUBSCRIBE",
+            "PATCH"
+        };
+        request->priv->method.setRawData(methods[parser->method],
+                                         sizeof(methods[parser->method]));
+    }
+    if (parser->http_minor == 1) {
+        static const char HTTP_1_1[] = "HTTP/1.1";
+        request->priv->httpVersion.setRawData(HTTP_1_1, sizeof(HTTP_1_1));
+    } else {
+        static const char HTTP_1_0[] = "HTTP/1.0";
+        request->priv->httpVersion.setRawData(HTTP_1_0, sizeof(HTTP_1_0));
+    }
 
     HttpServerResponse::Options options;
 
@@ -220,8 +255,8 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
     else
         options |= HttpServerResponse::HTTP_1_0;
 
-    if (request->priv->headers.is("Connection", "close"))
-        options |= HttpServerResponse::CLOSE_CONNECTION;
+    if (http_should_keep_alive(&request->priv->parser))
+        options |= HttpServerResponse::KEEP_ALIVE;
 
     emit request->ready(options);
 
@@ -243,10 +278,10 @@ int HttpServerRequest::on_message_complete(http_parser *parser)
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
     Q_ASSERT(request);
+    request->clearBuffer();
     emit request->end();
     return 0;
 }
 
 } // namespace Priv
-
 } // namespace Tufao

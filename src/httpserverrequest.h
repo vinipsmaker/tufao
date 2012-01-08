@@ -22,9 +22,10 @@
 #include "httpserverresponse.h"
 
 class QAbstractSocket;
-template <class Key, class T> class QMap;
 
 namespace Tufao {
+
+struct Headers;
 
 namespace Priv {
 
@@ -103,12 +104,12 @@ Accept: text/plain\r\n
 
       \sa Tufao::HttpServerRequest::trailers()
       */
-    QMap<QByteArray, QByteArray> headers() const;
+    Headers headers() const;
 
     /*!
       The HTTP trailers (if present). Only populated after the 'end' signal.
       */
-    QMap<QByteArray, QByteArray> trailers() const;
+    Headers trailers() const;
 
     /*!
       The HTTP protocol version as a string.
@@ -187,7 +188,8 @@ private slots:
     void onReadyRead();
 
 private:
-    void clear();
+    void clearBuffer();
+    void clearRequest();
 
     Priv::HttpServerRequest *priv;
 

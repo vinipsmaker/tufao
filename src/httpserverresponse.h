@@ -23,9 +23,10 @@
 #include "tufao_global.h"
 
 class QIODevice;
-template <class Key, class T> class QMap;
 
 namespace Tufao {
+
+struct Headers;
 
 namespace Priv {
 
@@ -120,8 +121,7 @@ public:
     {
         HTTP_1_0           = 1,
         HTTP_1_1           = 1 << 1,
-        CLOSE_CONNECTION   = 1 << 2,
-        USE_CHUNKED_ENTITY = 1 << 3
+        KEEP_ALIVE         = 1 << 2
     };
     Q_DECLARE_FLAGS(Options, Option)
 
@@ -150,27 +150,9 @@ public:
     Options options() const;
 
     /*!
-      Sets a single header value for implicit headers. If this header already
-      exists in the to-be-sent headers, it's value will be replaced.
-
-      \param name The header key.
-      \param value The header value.
+      Return a reference to the headers which will be sent.
       */
-    void setHeader(const QByteArray &name, const QByteArray &value);
-
-    /*!
-      Reads out a header that's already been queued but not sent to the client.
-
-      \note The name is case insensitive. This can only be called before headers
-      get implicitly flushed (when you start to send the entity body).
-      */
-    QByteArray header(const QByteArray &name);
-
-    /*!
-      Removes a header that's queued for implicit sending.
-      */
-    void removeHeader(const QByteArray &name);
-
+    Headers &headers();
 signals:
     /*!
       This signal is emitted when all bytes from the HTTP response message are
@@ -198,7 +180,7 @@ public slots:
       \param headers The response headers.
       */
     bool writeHead(int statusCode, const QByteArray &reasonPhrase,
-                   const QMap<QByteArray, QByteArray> &headers);
+                   const Headers &headers);
 
     /*!
       This is an overloaded function.
@@ -206,7 +188,7 @@ public slots:
       \sa
       Tufao::HttpServerResponse::writeHead(int, const QByteArray&, const QMap<QByteArray,QByteArray>&)
       */
-    bool writeHead(int statusCode, const QMap<QByteArray, QByteArray> &headers);
+    bool writeHead(int statusCode, const Headers &headers);
 
     /*!
       This is an overloaded function.
@@ -258,7 +240,7 @@ public slots:
           possibility that the trailer fields might be silently discarded along
           the path to the client.
       */
-    bool addTrailers(const QMap<QByteArray, QByteArray> &headers);
+    bool addTrailers(const Headers &headers);
 
     /*!
       This method adds one HTTP trailing header (a header but at the end of the
