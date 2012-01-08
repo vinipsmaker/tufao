@@ -40,13 +40,7 @@ unix:!symbian:target.path = $$PREFIX/lib
 
 unix {
     headers.path = $$PREFIX/include/tufao
-    headers.files = src/httpserver.h\
-        src/tufao_global.h \
-        src/httpserverrequest.h \
-        src/httpserverresponse.h \
-        src/httpsserver.h \
-        src/url.h \
-        src/querystring.h
+    headers.files = src/*.h
 
     qmakefile.path = $$PREFIX/share/qt/mkspecs/features
     qmakefile.files = tufao.prf
@@ -86,4 +80,6 @@ HEADERS += src/httpserver.h\
     src/priv/reasonphrase.h \
     src/priv/http_parser_qt_helper.h \
     src/priv/http_parser.h \
-    src/priv/url.h
+    src/priv/url.h \
+    src/ibytearray.h \
+    src/headers.h
