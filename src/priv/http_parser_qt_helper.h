@@ -5,6 +5,7 @@
 
 // defines:
 #define HTTP_PARSER_STRICT 0
+#define HTTP_PARSER_DEBUG 0
 
 // types:
 #define int8_t qint8
