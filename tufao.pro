@@ -39,8 +39,9 @@ unix:!symbian:maemo5 {
 unix:!symbian:target.path = $$PREFIX/lib
 
 unix {
-    headers.path = $$PREFIX/include/tufao
-    headers.files = src/*.h
+    headers.path = $$PREFIX/include/Tufao
+    headers.files = src/*.h \
+        include/*
 
     qmakefile.path = $$PREFIX/share/qt/mkspecs/features
     qmakefile.files = tufao.prf
