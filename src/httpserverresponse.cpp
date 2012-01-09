@@ -22,8 +22,7 @@
 
 namespace Tufao {
 
-HttpServerResponse::HttpServerResponse(QIODevice *device,
-                                       Options options,
+HttpServerResponse::HttpServerResponse(QIODevice *device, Options options,
                                        QObject *parent) :
     QObject(parent),
     priv(new Priv::HttpServerResponse(device, options))
@@ -144,6 +143,8 @@ bool HttpServerResponse::write(const QByteArray &chunk)
     {
         if (priv->options.testFlag(HttpServerResponse::KEEP_ALIVE))
             priv->headers.replace("Connection", "keep-alive");
+        else
+            priv->headers.replace("Connection", "close");
         priv->headers.insert("Transfer-Encoding", "chunked");
 
         for (Headers::iterator i = priv->headers.begin()
@@ -228,15 +229,15 @@ bool HttpServerResponse::end(const QByteArray &chunk)
         return false;
     case Priv::HEADERS:
     {
-        if (chunk.size()) {
-            if (priv->options.testFlag(HttpServerResponse::HTTP_1_1)) {
-                if (priv->options.testFlag(HttpServerResponse::KEEP_ALIVE))
-                    priv->headers.replace("Connection", "keep-alive");
-                priv->headers.insert("Transfer-Encoding", "chunked");
-            } else {
-                priv->headers.replace("Content-Length",
-                                      QByteArray::number(chunk.size()));
-            }
+        if (priv->options.testFlag(HttpServerResponse::HTTP_1_1)) {
+            if (priv->options.testFlag(HttpServerResponse::KEEP_ALIVE))
+                priv->headers.replace("Connection", "keep-alive");
+            else
+                priv->headers.replace("Connection", "close");
+            priv->headers.insert("Transfer-Encoding", "chunked");
+        } else {
+            priv->headers.replace("Content-Length",
+                                  QByteArray::number(chunk.size()));
         }
 
         for (Headers::iterator i = priv->headers.begin()
@@ -248,23 +249,27 @@ bool HttpServerResponse::end(const QByteArray &chunk)
         }
         priv->device->write("\r\n");
 
-        if (chunk.size())
-            priv->formattingState = Priv::MESSAGE_BODY;
-        else
-            priv->formattingState = Priv::TRAILERS;
+        priv->formattingState = Priv::MESSAGE_BODY;
     }
     case Priv::MESSAGE_BODY:
     {
-        if (priv->formattingState == Priv::MESSAGE_BODY) {
-            if (!priv->options.testFlag(HttpServerResponse::HTTP_1_0)) {
+        if (chunk.size()) {
+            if (priv->options.testFlag(HttpServerResponse::HTTP_1_1)) {
                 priv->device->write(QByteArray::number(chunk.size(), 16));
                 priv->device->write("\r\n");
             }
             priv->device->write(chunk);
-            if (!priv->options.testFlag(HttpServerResponse::HTTP_1_0)) {
-                priv->device->write("\r\n0\r\n");
-            }
+            if (priv->options.testFlag(HttpServerResponse::HTTP_1_1))
+                priv->device->write("\r\n");
+        }
+        if (priv->options.testFlag(HttpServerResponse::HTTP_1_1)) {
+            priv->device->write("0\r\n");
             priv->formattingState = Priv::TRAILERS;
+        } else {
+            priv->device->close();
+            priv->formattingState = Priv::END;
+            emit finished();
+            break;
         }
     }
     case Priv::TRAILERS:
