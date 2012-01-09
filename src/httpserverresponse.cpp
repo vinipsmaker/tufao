@@ -48,6 +48,7 @@ Headers &HttpServerResponse::headers()
 bool HttpServerResponse::writeContinue()
 {
     if (priv->formattingState != Priv::STATUS_LINE
+            || priv->options.testFlag(HttpServerResponse::HTTP_1_0)
             || !priv->device)
         return false;
 

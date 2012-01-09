@@ -166,6 +166,20 @@ public slots:
     /*!
       Sends a <em>HTTP/1.1 100 Continue</em> message to the client, indicating
       that the request body should be sent.
+
+      You should write a <em>HTTP/1.1 100 Continue</em> response to requests
+      that include <em>100-continue</em> in the header <em>Expect</em> if you
+      are willing to accept the request body based on the headers sent.
+
+      If you don't want to accept the request body, you should respond it with
+      an Tufao::HttpServerResponse::EXPECTATION_FAILED response status.
+
+      The purpose of the <em>100 Continue</em> status is to decrease the
+      network traffic by avoiding the transfer of data that the server would
+      reject anyway.
+
+      \warning It's not possible to send a <em>HTTP/1.1 100 Continue</em> to
+      HTTP/1.0 clients.
       */
     bool writeContinue();
 
