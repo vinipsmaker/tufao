@@ -238,14 +238,14 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
             "PATCH"
         };
         request->priv->method.setRawData(methods[parser->method],
-                                         sizeof(methods[parser->method]));
+                                         sizeof(methods[parser->method]) - 1);
     }
     if (parser->http_minor == 1) {
         static const char HTTP_1_1[] = "HTTP/1.1";
-        request->priv->httpVersion.setRawData(HTTP_1_1, sizeof(HTTP_1_1));
+        request->priv->httpVersion.setRawData(HTTP_1_1, sizeof(HTTP_1_1) - 1);
     } else {
         static const char HTTP_1_0[] = "HTTP/1.0";
-        request->priv->httpVersion.setRawData(HTTP_1_0, sizeof(HTTP_1_0));
+        request->priv->httpVersion.setRawData(HTTP_1_0, sizeof(HTTP_1_0) - 1);
     }
 
     HttpServerResponse::Options options;
