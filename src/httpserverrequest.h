@@ -51,6 +51,12 @@ class TUFAO_EXPORT HttpServerRequest : public QObject
 {
     Q_OBJECT
 public:
+    enum HttpVersion
+    {
+        HTTP_1_0,
+        HTTP_1_1
+    };
+
     /*!
       Constructs a Tufao::HttpServerRequest object.
 
@@ -132,13 +138,9 @@ Accept: text/plain\r\n
     Headers trailers() const;
 
     /*!
-      The HTTP protocol version as a string.
-
-      It can assume the following values:
-        - "HTTP/1.0"
-        - "HTTP/1.1"
+      Returns the HTTP protocol version used in the request.
       */
-    QByteArray httpVersion() const;
+    HttpVersion httpVersion() const;
 
     /*!
       The QAbstractSocket object associated with the connection.

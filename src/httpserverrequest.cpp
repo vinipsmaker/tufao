@@ -79,7 +79,7 @@ Headers HttpServerRequest::trailers() const
     return priv->trailers;
 }
 
-QByteArray HttpServerRequest::httpVersion() const
+HttpServerRequest::HttpVersion HttpServerRequest::httpVersion() const
 {
     return priv->httpVersion;
 }
@@ -124,7 +124,6 @@ inline void HttpServerRequest::clearRequest()
 {
     priv->method.clear();
     priv->url.clear();
-    priv->httpVersion.clear();
     priv->headers.clear();
     priv->trailers.clear();
 }
@@ -241,11 +240,9 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
                                          sizeof(methods[parser->method]) - 1);
     }
     if (parser->http_minor == 1) {
-        static const char HTTP_1_1[] = "HTTP/1.1";
-        request->priv->httpVersion.setRawData(HTTP_1_1, sizeof(HTTP_1_1) - 1);
+        request->priv->httpVersion = Tufao::HttpServerRequest::HTTP_1_1;
     } else {
-        static const char HTTP_1_0[] = "HTTP/1.0";
-        request->priv->httpVersion.setRawData(HTTP_1_0, sizeof(HTTP_1_0) - 1);
+        request->priv->httpVersion = Tufao::HttpServerRequest::HTTP_1_0;
     }
 
     HttpServerResponse::Options options;

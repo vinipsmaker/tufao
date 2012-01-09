@@ -57,7 +57,7 @@ struct HttpServerRequest
 
     QByteArray method;
     QByteArray url;
-    QByteArray httpVersion;
+    Tufao::HttpServerRequest::HttpVersion httpVersion;
     Headers headers;
     Headers trailers;
 };
