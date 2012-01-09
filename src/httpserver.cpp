@@ -41,6 +41,16 @@ bool HttpServer::listen(const QHostAddress &address, quint16 port)
     return priv->tcpServer.listen(address, port);
 }
 
+bool HttpServer::isListening() const
+{
+    return priv->tcpServer.isListening();
+}
+
+quint16 HttpServer::serverPort() const
+{
+    return priv->tcpServer.serverPort();
+}
+
 void HttpServer::close()
 {
     priv->tcpServer.close();

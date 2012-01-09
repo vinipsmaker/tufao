@@ -60,6 +60,7 @@ public:
                 SIGNAL(requestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*),
                 this,
                 SLOT(handleRequest(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)));
+        httpServer->listen(QHostAddress::Any, 8080);
     }
 
 private slots:
@@ -105,9 +106,29 @@ public:
 
       If \p address is QHostAddress::Any, the server will listen on all network
       interfaces.
+
+      \return true on success
+
+      \sa
+      Tufao::HttpServer::isListening
+      Tufao::HttpServer::serverPort
       */
     bool listen(const QHostAddress &address = QHostAddress::Any,
                 quint16 port = 0);
+
+    /*!
+      Returns true if the server is listening for incoming connections.
+      */
+    bool isListening() const;
+
+    /*!
+      Returns the server's port if the server is listening; otherwise returns 0.
+
+      \sa
+      Tufao::HttpServer::listen
+      Tufao::HttpServer::isListening
+      */
+    quint16 serverPort() const;
 
 signals:
     /*!
