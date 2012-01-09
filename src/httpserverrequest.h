@@ -37,7 +37,15 @@ struct HttpServerRequest;
   \brief The Tufao::HttpServer represents a HTTP request received by
   Tufao::HttpServer.
 
-  \sa Tufao::HttpServer
+  \note
+  You can use it to create your own HTTP servers too, just handle the
+  connections steps and pass the connection objects to Tufao::HttpServerRequest
+  constructor.
+  This may be useful if you want to create a threaded web server or use non
+  conventional streams instead tcp sockets.
+
+  \sa
+  Tufao::HttpServer
   */
 class TUFAO_EXPORT HttpServerRequest : public QObject
 {
@@ -71,6 +79,21 @@ public:
         - "OPTIONS"
         - "CONNECT"
         - "PATCH"
+        - "COPY"
+        - "LOCK"
+        - "MKCOl"
+        - "MOVE"
+        - "PROPFIND"
+        - "PROPPATCH"
+        - "UNLOCK"
+        - "REPORT"
+        - "MKACTIVITY"
+        - "CHECKOUT"
+        - "MERGE"
+        - "MSEARCH"
+        - "NOTIFY"
+        - "SUBSCRIBE"
+        - "UNSUBSCRIBE"
       */
     QByteArray method() const;
 
@@ -81,33 +104,30 @@ public:
       If the request line is:
 
       \verbatim
-GET /status?name=ryan HTTP/1.1\r\n
+GET /login?username=tux HTTP/1.1\r\n
 Accept: text/plain\r\n
 \r\n
       \endverbatim
 
-      Then Tufao::HttpServerRequest::url() will be "/status?name=ryan"
+      Then Tufao::HttpServerRequest::url() will be "/login?username=tux"
 
-      \sa Tufao::Url
+      \sa
+      Tufao::Url
       */
     QByteArray url() const;
 
     /*!
-      The HTTP headers sent by the client before the header.
+      The HTTP headers sent by the client. These headers are fully populated
+      when the signal Tufao::HttpServerRequest:ready signal is emitted.
 
-      \note To save memory space, Tufao::HttpServerRequest will apply the
-      QByteArray::simplified member function to every header field and value.
-
-      \note If Tufao::HttpServerRequest receives several headers with same
-      header key/name, then it will group their header values within the same
-      header key and separate them by using commas.
-
-      \sa Tufao::HttpServerRequest::trailers()
+      \sa
+      Tufao::HttpServerRequest::trailers()
       */
     Headers headers() const;
 
     /*!
-      The HTTP trailers (if present). Only populated after the 'end' signal.
+      The HTTP trailers (if present). Only populated after the
+      Tufao::HttpServerRequest::end signal.
       */
     Headers trailers() const;
 
@@ -133,38 +153,25 @@ signals:
       This signal is emitted when most of the data about the request was
       gathered.
 
-      After this signal is emitted, you can safely interpret the request.
+      After this signal is emitted, you can safely interpret the request and the
+      only missing part may be (if any) the message body.
+
+      \sa
+      Tufao::HttpServerRequest::data
+      Tufao::HttpServerRequest::end
       */
     void ready(Tufao::HttpServerResponse::Options);
 
     /*!
       This signal is emitted each time a piece of the message body is received.
-
-      Tufao::HttpServerRequest handles for you numerous transformations that may
-      be applied by the http user agent to the entity body, so you can focus on
-      parse the raw body.
-
-      The list of transformations handled by Tufao:
-        - "Content-Encoding" >> TODO
-        - "Transfer-Encoding"
-
-      The list of transformations types handled by Tufao:
-        - chunked
-        - gzip >> TODO
-        - compress >> TODO
-        - deflate >> TODO
-        - identity (no transformation at all)
-
-      The list of transformations NOT handled by Tufao (you need manually parse
-      them):
-        - "Content-Encoding"
       */
     void data(QByteArray data);
 
     /*!
       This signal is emitted exactly once for each request.
 
-      After that, no more data signals will be emitted on the request.
+      After that, no more data signals will be emitted for this session. A new
+      session (if any) will be only initiated after you respond the request.
       */
     void end();
 

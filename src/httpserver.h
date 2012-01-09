@@ -78,7 +78,8 @@ private:
 };
   \endcode
 
-  \sa Tufao::HttpServerRequest
+  \sa
+  Tufao::HttpServerRequest
   Tufao::HttpServerResponse
   */
 class TUFAO_EXPORT HttpServer : public QObject
@@ -132,17 +133,22 @@ public:
 
 signals:
     /*!
-      This signal is emitted each time there is request. Note that there may be
-      multiple requests per connection (in the case of keep-alive connections).
+      This signal is emitted each time there is request.
 
-      You don't need to worry about delete \p request and \p response. \p
-      request and \p response will be queued for deletion when the connection
-      closes. Additionally, \p response will also be deleted when you are done
-      with it (eg., calling Tufao::HttpServerResponse::end).
+      \note
+      There may be multiple requests per connection (in the case of keep-alive
+      connections) and HttpServer reutilizes \p request objects, so you can't,
+      as an example, create a map using \p request as key to identify sessions.
 
-      \param request An instance of HttpServerRequest
+      \warning
+      You MUST NOT delete \p request and \p response. \p request and \p response
+      deleted when the connection closes. Additionally, \p response will also be
+      deleted when you are done with it (eg., calling
+      Tufao::HttpServerResponse::end).
 
-      \param response An instance of HttpServerResponse
+      \param request An instance of Tufao::HttpServerRequest
+
+      \param response An instance of Tufao::HttpServerResponse
       */
     void requestReady(Tufao::HttpServerRequest *request,
                       Tufao::HttpServerResponse *response);
@@ -185,11 +191,14 @@ protected:
       Reimplement this function to alter the server's behavior when a http
       upgrade is requested.
 
-      \note After this function returns, \p request object is deleted.
+      \note
+      After this function returns, the \p request object is deleted.
 
-      \note The connection object associated with \p request will be deleted
-      when disconnected. If you need to delete before sooner, just call
-      QIODevice::close or QObject::deleteLater.
+      \note
+      The connection object associated with \p request
+      (Tufao::HttpServerRequest::socket) will be deleted when disconnected. If
+      you need to delete it sooner, just call QIODevice::close or
+      QObject::deleteLater.
       */
     virtual void upgrade(HttpServerRequest *request, const QByteArray &head);
 

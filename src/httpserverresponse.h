@@ -38,7 +38,23 @@ struct HttpServerResponse;
   \brief The Tufao::HttpServerResponse is used to respond to a
   Tufao::HttpServerRequest.
 
-  \sa Tufao::HttpServer
+  A response is built of well defined parts and must be sent ordered. The order
+  to send these parts are:
+    - Status line: Tufao::HttpServerResponse::writeHead
+    - Headers: Set them with Tufao::HttpServerResponse::headers and they will be
+      automatically flushed when the first piece of body is written.
+    - Message body: Use Tufao::HttpServerResponse::write or
+      Tufao::HttpServerResponse::end
+    - Trailers (optional): Use Tufao::HttpServerResponse::addTrailers
+    - EOF
+
+  \note
+  In HTTP/1.0 connections, it's not possible to send the message body in chunks
+  and you must use Tufao::HttpServerResponse::end to send the full body at once.
+  Additionally, HTTP/1.0 connections don't support trailers too.
+
+  \sa
+  Tufao::HttpServer
   */
 class TUFAO_EXPORT HttpServerResponse : public QObject
 {
@@ -130,7 +146,7 @@ public:
 
       \p parent is passed to the QObject constructor.
 
-      \p options controls the response behaviour.
+      \param options It controls some aspects of the response.
 
       \param device The socket used by Tufao::HttpServerResponse to write a HTTP
       response message. If you pass NULL, the object will do nothing.
@@ -150,13 +166,20 @@ public:
     Options options() const;
 
     /*!
-      Return a reference to the headers which will be sent.
+      Returns a reference to the headers which will be sent when the first piece
+      of body is written.
+
+      \note
+      Change this object when the first piece of the message body was already
+      written won't take any effects.
+
+      Use this reference to send custom headers.
       */
     Headers &headers();
 signals:
     /*!
       This signal is emitted when all bytes from the HTTP response message are
-      written in the device/socket.
+      written in the device/socket (not confuse with delivered).
 
       Call Tufao::HttpServerResponse::end will cause this signal to be emitted.
       */
@@ -178,8 +201,9 @@ public slots:
       network traffic by avoiding the transfer of data that the server would
       reject anyway.
 
-      \warning It's not possible to send a <em>HTTP/1.1 100 Continue</em> to
-      HTTP/1.0 clients.
+      \warning
+      It's not possible to send a <em>HTTP/1.1 100 Continue</em> to HTTP/1.0
+      clients.
       */
     bool writeContinue();
 
@@ -216,7 +240,8 @@ public slots:
       This sends a chunk of the response body. This method may be called
       multiple times to provide successive parts of the body.
 
-      \note This is the raw HTTP body and has nothing to do with higher-level
+      \note
+      This is the raw HTTP body and has nothing to do with higher-level
       multi-part body encodings that may be used.
 
       The first time Tufao::HttpServerResponse::write is called, it will send
@@ -227,9 +252,10 @@ public slots:
 
       If you call this function with a empty byte array, it will do nothing.
 
-      \warning Note that HTTP/1.0 user agents don't support chunked entities. So
-      you need to send the full message at once. This member function will do
-      nothing if you are servicing a response to a HTTP/1.0 user agent. Use
+      \warning
+      Note that HTTP/1.0 user agents don't support chunked entities. So you need
+      to send the full message at once. This member function will do nothing if
+      you are servicing a response to a HTTP/1.0 user agent. Use
       Tufao::HttpServerResponse::end in place.
       */
     bool write(const QByteArray &chunk);
@@ -238,12 +264,14 @@ public slots:
       This method adds HTTP trailing headers (a header but at the end of the
       message) to the response.
 
-      \warning Trailers will only be emitted if chunked encoding is used for the
+      \warning
+      Trailers will only be emitted if chunked encoding is used for the
       response; if it is not (e.g., if the request was sent by a HTTP/1.0 user
       agent), they will be silently discarded.
 
-      \note A server MUST NOT use the trailer for any header fields unless at
-      least one of the following is true:
+      \note
+      A server MUST NOT use the trailer for any header fields unless at least
+      one of the following is true:
         - the request included a TE header field that indicates “trailers” is
           acceptable in the transfer-coding of the response;
         - the server is the origin server (your server is not a proxy or a
@@ -253,6 +281,9 @@ public slots:
           metadata. In other words, the origin server is willing to accept the
           possibility that the trailer fields might be silently discarded along
           the path to the client.
+
+      \sa
+      Tufao::HttpServerResponse::addTrailer
       */
     bool addTrailers(const Headers &headers);
 
@@ -260,7 +291,8 @@ public slots:
       This method adds one HTTP trailing header (a header but at the end of the
       message) to the response.
 
-      \sa Tufao::HttpServerResponse::addTrailers
+      \sa
+      Tufao::HttpServerResponse::addTrailers
       */
     bool addTrailer(const QByteArray &headerName,
                     const QByteArray &headerValue);
@@ -268,7 +300,7 @@ public slots:
     /*!
       This method signals to the server that all of the response headers and
       body has been sent; that server should consider this message complete. The
-      method, response.end(), MUST be called on each response.
+      method, response.end(), MUST be called on each response exactly one time.
 
       \param chunk If specified, it is equivalent to calling
       Tufao::HttpServerResponse::write followed by

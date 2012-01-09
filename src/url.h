@@ -38,11 +38,12 @@ struct Url;
   object will return empty strings for these fields, but if you try to use this
   class to parse an invalid url, you will get empty strings to all fields.
 
-  \note Currently URL usage become commonplace and it's easy to find abbreviated
-  URLs such as "www.example.com". These abbreviated URLs aren't valid and
-  Tufao::Url won't parse them, but this isn't really a problem if you are using
-  Tufao::Url just to parse urls received from Tufao::HttpServerRequest, because
-  user agents implementing the HTTP protocol always send valid URLs.
+  \note
+  Currently URL usage become commonplace and it's easy to find abbreviated URLs
+  such as "www.example.com". These abbreviated URLs aren't valid and Tufao::Url
+  won't parse them, but this isn't really a problem if you are using Tufao::Url
+  just to parse urls received from Tufao::HttpServerRequest, because user agents
+  implementing the HTTP protocol always send valid URLs.
   */
 class TUFAO_EXPORT Url
 {
@@ -118,6 +119,9 @@ public:
       Other examples:
         - "type=penguin&name=tux"
         - "type=penguin&name=tux&age=20"
+
+      \sa
+      Tufao::QueryString
       */
     QString query() const;
 
@@ -127,8 +131,9 @@ public:
       In the url "scheme://userinfo@hostname:port/path?query#fragment" the hash
       will be "fragment".
 
-      \note The frament id is used by the user agents in the html and not sent
-      to the browser, so this field may be always empty when reading from
+      \note
+      The frament id is used by the user agents in the html and not sent to the
+      browser, so this field may be always empty when reading from
       Tufao::HttpServerRequest.
 
       Other examples:
@@ -145,7 +150,8 @@ public:
       In the url "scheme://userinfo@hostname:port/path?query#fragment" the
       userinfo will be "userinfo".
 
-      \note It's usually unsafe to use password in url.
+      \note
+      It's usually unsafe to use password in url.
 
       Other examples:
         - "username:password"
@@ -182,8 +188,9 @@ public:
     /*!
       The username.
 
-      \warning This field is deprecated by the RFC and is here only to provide
-      compatibility with old applications. You problably want use
+      \warning
+      This field is deprecated by the RFC and is here only to provide
+      compatibility with old applications. You problably want to use
       Tufao::Url::userinfo.
 
       This username is extracted from the userinfo assuming that userinfo
@@ -206,7 +213,8 @@ public:
     /*!
       The password.
 
-      \warning This field is deprecated by the RFC and is here only to provide
+      \warning
+      This field is deprecated by the RFC and is here only to provide
       compatibility with old applications. It's usually unsafe to use passwords
       in urls and you problably don't want to use this technique.
 
