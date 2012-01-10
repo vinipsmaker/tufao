@@ -239,10 +239,37 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
         request->priv->method.setRawData(methods[parser->method],
                                          sizeof(methods[parser->method]) - 1);
     }
-    if (parser->http_minor == 1) {
-        request->priv->httpVersion = Tufao::HttpServerRequest::HTTP_1_1;
-    } else {
-        request->priv->httpVersion = Tufao::HttpServerRequest::HTTP_1_0;
+
+    {
+        static const char errorMessage[]
+                = "HTTP/1.1 505 HTTP Version Not Supported\r\n"
+                "Connection: close\r\n"
+                "\r\n"
+                "This server only offers support to HTTP/1.0 and HTTP/1.1\n";
+        switch (parser->http_major) {
+        case 1:
+            switch (parser->http_minor) {
+            case 0:
+                request->priv->httpVersion = Tufao::HttpServerRequest::HTTP_1_0;
+                break;
+            case 1:
+                request->priv->httpVersion = Tufao::HttpServerRequest::HTTP_1_1;
+                break;
+            default:
+                request->priv->socket->write(errorMessage,
+                                             sizeof(errorMessage) - 1);
+                request->priv->socket->close();
+                request->clearBuffer();
+                return;
+            }
+            break;
+        default:
+            request->priv->socket->write(errorMessage,
+                                         sizeof(errorMessage) - 1);
+            request->priv->socket->close();
+            request->clearBuffer();
+            return;
+        }
     }
 
     HttpServerResponse::Options options;
