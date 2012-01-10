@@ -40,9 +40,20 @@ $ qmake
 $ make
 
 Then you will have the folders:
-  * doc: where the documentation is
   * build: where temporary build objects are
   * lib: where the shared lib file is
+
+To generate the documentation, just run doxygen using Doxyfile as configuration
+file and the documentation will be generated in the folder doc. The
+documentation is available in the following formats:
+  * HTML: Always generated. It should be in the doc/html folder.
+  * latex: You can use this format to generate a pdf. Just run make inside the
+    doc/latex folder.
+  * Qt Compressed Help file: If you have qhelpgenerator binary tool in the
+    system PATH, then the file is generated when you run doxygen and should be
+    in doc/html/tufao.qch. If you have qhelpgenerator tool installed, but not
+    configured in the system PATH, but still want to generate the documentation
+    in this format, just run the tool using doc/html/index.qhp as input file.
 
 INSTALL
 =======

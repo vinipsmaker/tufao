@@ -45,14 +45,10 @@ unix {
 
     qmakefile.path = $$PREFIX/share/qt/mkspecs/features
     qmakefile.files = tufao.prf
-
-    documentation.path = $$PREFIX/share/doc/qt/qch
-    documentation.files = doc/html/tufao.qch
-    documentation.extra = doxygen
 }
 
 INSTALLS += target
-unix:INSTALLS += headers qmakefile documentation
+unix:INSTALLS += headers qmakefile
 
 # Project files
 SOURCES += src/httpserver.cpp \
@@ -65,7 +61,7 @@ SOURCES += src/httpserver.cpp \
     src/priv/reasonphrase.cpp \
     src/priv/http_parser.cpp
 
-HEADERS += src/httpserver.h\
+HEADERS += src/httpserver.h \
     src/tufao_global.h \
     src/httpserverrequest.h \
     src/httpserverresponse.h \
