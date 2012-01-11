@@ -1,6 +1,6 @@
 #include "mainhandler.h"
-#include <tufao/httpserverrequest.h>
-#include <tufao/headers.h>
+#include <Tufao/HttpServerRequest>
+#include <Tufao/Headers>
 
 MainHandler::MainHandler(QObject *parent) :
     QObject(parent)

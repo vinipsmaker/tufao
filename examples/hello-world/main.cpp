@@ -1,5 +1,5 @@
 #include <QCoreApplication>
-#include <tufao/httpserver.h>
+#include <Tufao/HttpServer>
 #include "mainhandler.h"
 
 int main(int argc, char *argv[])

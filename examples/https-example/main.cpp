@@ -1,5 +1,5 @@
 #include <QCoreApplication>
-#include <tufao/httpsserver.h>
+#include <Tufao/HttpsServer>
 #include <QFile>
 #include <QSslKey>
 #include <QSslCertificate>
