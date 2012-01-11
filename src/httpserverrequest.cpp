@@ -127,7 +127,7 @@ void HttpServerRequest::onReadyRead()
                    this, SLOT(onReadyRead()));
         disconnect(priv->socket, SIGNAL(disconnected()), this, SIGNAL(close()));
         emit upgrade(priv->buffer);
-        priv->buffer.clear();
+        clearBuffer();
     }
 }
 
@@ -296,17 +296,19 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
         }
     }
 
-    HttpServerResponse::Options options;
+    if (!parser->upgrade) {
+        HttpServerResponse::Options options;
 
-    if (parser->http_minor == 1)
-        options |= HttpServerResponse::HTTP_1_1;
-    else
-        options |= HttpServerResponse::HTTP_1_0;
+        if (parser->http_minor == 1)
+            options |= HttpServerResponse::HTTP_1_1;
+        else
+            options |= HttpServerResponse::HTTP_1_0;
 
-    if (http_should_keep_alive(&request->priv->parser))
-        options |= HttpServerResponse::KEEP_ALIVE;
+        if (http_should_keep_alive(&request->priv->parser))
+            options |= HttpServerResponse::KEEP_ALIVE;
 
-    emit request->ready(options);
+        emit request->ready(options);
+    }
 
     return 0;
 }
@@ -327,7 +329,8 @@ int HttpServerRequest::on_message_complete(http_parser *parser)
             (parser->data);
     Q_ASSERT(request);
     request->clearBuffer();
-    emit request->end();
+    if (!parser->upgrade)
+        emit request->end();
     return 0;
 }
 

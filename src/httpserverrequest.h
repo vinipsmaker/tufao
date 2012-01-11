@@ -205,6 +205,10 @@ signals:
     /*!
       This signal is emitted when a http upgrade is requested.
 
+      \note
+      If this signal is emitted, then the signals ready, end and close won't be
+      emitted.
+
       \param head The initial bytes from the new connection protocol.
       */
     void upgrade(QByteArray head);
