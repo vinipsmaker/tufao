@@ -150,6 +150,22 @@ Accept: text/plain\r\n
       */
     QAbstractSocket *socket() const;
 
+    /*!
+      Sets the timeout of new connections to \msecs miliseconds.
+
+      If you set the timeout to 0, then timeout feature will be disabled.
+
+      By default, there is no timeout.
+
+      You can call this function at any time.
+      */
+    void setTimeout(int msecs = 0);
+
+    /*!
+      Returns the current set timeout.
+      */
+    int timeout() const;
+
 signals:
     /*!
       This signal is emitted when most of the data about the request was
@@ -195,6 +211,7 @@ signals:
 
 private slots:
     void onReadyRead();
+    void onTimeout();
 
 private:
     void clearBuffer();

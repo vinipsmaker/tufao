@@ -131,6 +131,24 @@ public:
       */
     quint16 serverPort() const;
 
+    /*!
+      Sets the timeout of new connections to \msecs miliseconds.
+
+      If you set the timeout to 0, then timeout feature will be disabled. You
+      shouldn't disable this feature to protect against DoS attacks.
+
+      The default timeout is 2 minutes (120000 miliseconds).
+
+      \note
+      You should call this function before Tufao::HttpServer::listen.
+      */
+    void setTimeout(int msecs = 0);
+
+    /*!
+      Returns the current set timeout.
+      */
+    int timeout() const;
+
 signals:
     /*!
       This signal is emitted each time there is request.

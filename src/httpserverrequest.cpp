@@ -52,6 +52,10 @@ HttpServerRequest::HttpServerRequest(QAbstractSocket *socket, QObject *parent) :
 
     connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(socket, SIGNAL(disconnected()), this, SIGNAL(close()));
+
+    connect(&priv->timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
+    if (priv->timeout)
+        priv->timer.start(priv->timeout);
 }
 
 HttpServerRequest::~HttpServerRequest()
@@ -89,6 +93,21 @@ QAbstractSocket *HttpServerRequest::socket() const
     return priv->socket;
 }
 
+void HttpServerRequest::setTimeout(int msecs)
+{
+    priv->timeout = msecs;
+
+    if (priv->timeout)
+        priv->timer.start(priv->timeout);
+    else
+        priv->timer.stop();
+}
+
+int HttpServerRequest::timeout() const
+{
+    return priv->timeout;
+}
+
 void HttpServerRequest::onReadyRead()
 {
     priv->buffer += priv->socket->readAll();
@@ -110,6 +129,11 @@ void HttpServerRequest::onReadyRead()
         emit upgrade(priv->buffer);
         priv->buffer.clear();
     }
+}
+
+void HttpServerRequest::onTimeout()
+{
+    priv->socket->close();
 }
 
 inline void HttpServerRequest::clearBuffer()

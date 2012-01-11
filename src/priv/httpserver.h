@@ -26,8 +26,15 @@ namespace Priv {
 
 struct HttpServer
 {
+    HttpServer();
+
     TcpServerWrapper tcpServer;
+    int timeout;
 };
+
+inline HttpServer::HttpServer() :
+    timeout(120000)
+{}
 
 } // namespace Priv
 } // namespace Tufao

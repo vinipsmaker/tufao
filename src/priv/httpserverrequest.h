@@ -23,6 +23,7 @@
 #include "../httpserverrequest.h"
 #include <QAbstractSocket>
 #include "http_parser.h"
+#include <QTimer>
 
 namespace Tufao {
 
@@ -34,10 +35,12 @@ struct HttpServerRequest
                       QAbstractSocket *socket) :
         socket(socket),
         lastWasValue(true),
-        useTrailers(false)
+        useTrailers(false),
+        timeout(0)
     {
         http_parser_init(&parser, HTTP_REQUEST);
         parser.data = request;
+        timer.setSingleShot(true);
     }
 
     static int on_message_begin(http_parser *);
@@ -60,6 +63,9 @@ struct HttpServerRequest
     Tufao::HttpServerRequest::HttpVersion httpVersion;
     Headers headers;
     Headers trailers;
+
+    int timeout;
+    QTimer timer;
 };
 
 } // namespace Priv

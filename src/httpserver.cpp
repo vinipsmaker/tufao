@@ -52,6 +52,16 @@ quint16 HttpServer::serverPort() const
     return priv->tcpServer.serverPort();
 }
 
+void HttpServer::setTimeout(int msecs)
+{
+    priv->timeout = msecs;
+}
+
+int HttpServer::timeout() const
+{
+    return priv->timeout;
+}
+
 void HttpServer::close()
 {
     priv->tcpServer.close();
@@ -80,6 +90,9 @@ void HttpServer::handleConnection(QAbstractSocket *socket)
 {
     socket->setParent(this);
     HttpServerRequest *handle = new HttpServerRequest(socket, this);
+
+    if (priv->timeout)
+        handle->setTimeout(priv->timeout);
 
     connect(handle, SIGNAL(ready(Tufao::HttpServerResponse::Options)),
             this, SLOT(onRequestReady(Tufao::HttpServerResponse::Options)));
