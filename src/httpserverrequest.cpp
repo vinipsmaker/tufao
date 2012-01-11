@@ -258,17 +258,17 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
             default:
                 request->priv->socket->write(errorMessage,
                                              sizeof(errorMessage) - 1);
-                request->priv->socket->close();
                 request->clearBuffer();
-                return;
+                request->clearRequest();
+                return 1;
             }
             break;
         default:
             request->priv->socket->write(errorMessage,
                                          sizeof(errorMessage) - 1);
-            request->priv->socket->close();
             request->clearBuffer();
-            return;
+            request->clearRequest();
+            return 1;
         }
     }
 
