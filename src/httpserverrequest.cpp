@@ -284,7 +284,7 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
                                              sizeof(errorMessage) - 1);
                 request->clearBuffer();
                 request->clearRequest();
-                return 1;
+                return -1;
             }
             break;
         default:
@@ -292,7 +292,7 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
                                          sizeof(errorMessage) - 1);
             request->clearBuffer();
             request->clearRequest();
-            return 1;
+            return -1;
         }
     }
 
