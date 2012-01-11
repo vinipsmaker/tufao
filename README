@@ -55,6 +55,12 @@ documentation is available in the following formats:
     configured in the system PATH, but still want to generate the documentation
     in this format, just run the tool using doc/html/index.qhp as input file.
 
+Tufão also have a lot of code to test its correctness. These codes are seperated
+in one different qmake project for each Tufão class and are located in the
+folder tests. If you got Tufão from a git checkout (not a stable release), then
+you may be interessed in run these tests. To compile and run them, just run the
+execute-tests.sh script.
+
 INSTALL
 =======
 
