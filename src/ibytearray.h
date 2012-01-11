@@ -23,6 +23,13 @@
 
 namespace Tufao {
 
+/*!
+  This class provides a case insensitive QByteArray.
+
+  \note
+  All member functions of this class are inlined and should add the minimum (if
+  any) of overhead.
+  */
 class IByteArray : public QByteArray
 {
 public:
