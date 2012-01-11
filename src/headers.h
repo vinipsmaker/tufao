@@ -24,6 +24,15 @@
 
 namespace Tufao {
 
+/*!
+  This class provides a representation of HTTP headers.
+
+  HTTP headers are information stored in the form of an associative set, where
+  the key and the value are strings, but the key is case insensitive.
+
+  \sa
+  Tufao::IByteArray
+  */
 struct Headers: public QMultiMap<IByteArray, QByteArray> {};
 
 } // namespace Tufao
