@@ -183,6 +183,24 @@ protected:
     virtual void incomingConnection(int socketDescriptor);
 
     /*!
+      This virtual function is called by HttpServer when a client do a request
+      with the HTTP header "Expect: 100-continue".
+
+      The base implementation call Tufao::HttpServerRequest::writeContinue and
+      emit the Tufao::HttpServer::requestReady signal.
+
+      Reimplement this function to alter the server's behavior when a "Expect:
+      100-continue" request is received.
+
+      \note
+      Don't delete the request or the response object, they will be deleted when
+      the connection closes. If you need delete them before, just close the
+      connection or call the QObject::deleteLater.
+      */
+    virtual void checkContinue(HttpServerRequest *request,
+                               HttpServerResponse *response);
+
+    /*!
       This virtual function is called by HttpServer when a client requests a
       http upgrade.
 

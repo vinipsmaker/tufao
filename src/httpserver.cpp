@@ -20,6 +20,7 @@
 #include "priv/httpserver.h"
 #include "httpserverrequest.h"
 #include <QTcpSocket>
+#include "headers.h"
 
 namespace Tufao {
 
@@ -68,6 +69,13 @@ void HttpServer::incomingConnection(int socketDescriptor)
     handleConnection(socket);
 }
 
+void HttpServer::checkContinue(HttpServerRequest *request,
+                               HttpServerResponse *response)
+{
+    response->writeContinue();
+    emit requestReady(request, response);
+}
+
 void HttpServer::handleConnection(QAbstractSocket *socket)
 {
     socket->setParent(this);
@@ -104,7 +112,10 @@ void HttpServer::onRequestReady(Tufao::HttpServerResponse::Options options)
     connect(socket, SIGNAL(disconnected()), response, SLOT(deleteLater()));
     connect(response, SIGNAL(finished()), response, SLOT(deleteLater()));
 
-    emit requestReady(request, response);
+    if (request->headers().contains("Expect", "100-continue"))
+        checkContinue(request, response);
+    else
+        emit requestReady(request, response);
 }
 
 void HttpServer::onUpgrade(const QByteArray &head)
