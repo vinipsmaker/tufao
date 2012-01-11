@@ -94,6 +94,28 @@ bool HttpServerResponse::writeHead(int statusCode,
     return true;
 }
 
+bool HttpServerResponse::writeHead(int statusCode, const QByteArray &reasonPhrase)
+{
+    if (priv->formattingState != Priv::STATUS_LINE
+            || !priv->device)
+        return false;
+
+    if (priv->options.testFlag(HttpServerResponse::HTTP_1_0)) {
+        static const char chunk[] = "HTTP/1.0 ";
+        priv->device->write(chunk, sizeof(chunk) - 1);
+    } else {
+        static const char chunk[] = "HTTP/1.1 ";
+        priv->device->write(chunk, sizeof(chunk) - 1);
+    }
+
+    priv->device->write(QByteArray::number(statusCode));
+    priv->device->write(" ", 1);
+    priv->device->write(reasonPhrase);
+    priv->device->write(CRLF);
+    priv->formattingState = Priv::HEADERS;
+    return true;
+}
+
 bool HttpServerResponse::writeHead(int statusCode, const Headers &headers)
 {
     if (priv->formattingState != Priv::STATUS_LINE

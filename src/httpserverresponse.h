@@ -218,13 +218,21 @@ public slots:
       \param headers The response headers.
       */
     bool writeHead(int statusCode, const QByteArray &reasonPhrase,
-                   const Headers &headers = Headers());
+                   const Headers &headers);
 
     /*!
       This is an overloaded function.
 
       \sa
-      Tufao::HttpServerResponse::writeHead(int, const QByteArray&, const QMap<QByteArray,QByteArray>&)
+      Tufao::HttpServerResponse::writeHead(int, const QByteArray&, const Headers&)
+      */
+    bool writeHead(int statusCode, const QByteArray &reasonPhrase);
+
+    /*!
+      This is an overloaded function.
+
+      \sa
+      Tufao::HttpServerResponse::writeHead(int, const QByteArray&, const Headers&)
       */
     bool writeHead(int statusCode, const Headers &headers);
 
@@ -232,7 +240,7 @@ public slots:
       This is an overloaded function.
 
       \sa
-      Tufao::HttpServerResponse::writeHead(int, const QByteArray&, const QMap<QByteArray,QByteArray>&)
+      Tufao::HttpServerResponse::writeHead(int, const QByteArray&, const Headers&)
       */
     bool writeHead(int statusCode);
 
