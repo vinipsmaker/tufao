@@ -6,8 +6,9 @@ system (signals & slots). It features:
   * High performance standalone server
   * Cross-plataform
   * Support modern HTTP features (persistent streams, chunked entities, ...)
-  * Buffer overflows protections
   * HTTPS support
+  * Lots of tests
+  * Timeout support
 
 It uses a patched version of Ryan Dahl's HTTP parser to provide good
 performance. The patch provides better integration with Qt to provide better
@@ -101,6 +102,7 @@ Here is a small incomplete roadmap for Tufão:
   * Implement Node.js-like API
   * Fully documented
   * Support for GNU/Linux and Windows
+  * Tests
 
 0.2:
   * QtCreator plugin for fast project creation
@@ -110,7 +112,6 @@ Here is a small incomplete roadmap for Tufão:
 0.3:
   * Session/cookies support
   * Forms
-  * Tests
 
 0.4:
   * Plugin-based application Server
