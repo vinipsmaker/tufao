@@ -32,6 +32,26 @@ struct HttpsServer;
 
 } // namespace Priv
 
+/*!
+  Tufao::HttpsServer is subclass of Tufao::HttpServer that provides support for
+  socket streams over TLS connections.
+
+  This combination (HTTP + SSL/TLS) is know as HTTP Secure and provides
+  encrypted communication.
+
+  To use HTTPS in Tufão, just set the local certficate and private key before
+  call Tufao::HttpsServer::listen. The default port for this protocol is 443.
+
+  \note
+  You should also pay to a trusted certificate authority to sign your
+  certificate if you are willing to provide secure identification also.
+
+  \note
+  The use of HTTPS implies an extra overhead in the software, limiting the
+  number of requests that can be served per time and should be moderated. It's
+  common to use it only in pages that handles more sensitive information, such
+  as login pages and payment transactions.
+  */
 class TUFAO_EXPORT HttpsServer : public HttpServer
 {
     Q_OBJECT
@@ -43,7 +63,20 @@ public:
       */
     ~HttpsServer();
 
+    /*!
+      Sets the local certificate to \p certificate.
+
+      \note
+      This member function should be called before Tufao::HttpsServer::listen
+      */
     void setLocalCertificate(const QSslCertificate &certificate);
+
+    /*!
+      Sets the private key to \p key.
+
+      \note
+      This member function should be called before Tufao::HttpsServer::listen
+      */
     void setPrivateKey(const QSslKey &key);
 
 protected:
