@@ -218,7 +218,7 @@ public slots:
       \param headers The response headers.
       */
     bool writeHead(int statusCode, const QByteArray &reasonPhrase,
-                   const Headers &headers);
+                   const Headers &headers = Headers());
 
     /*!
       This is an overloaded function.
