@@ -1,5 +1,8 @@
 Makefile
-build/*
+build
+lib
 doc/*
-lib/*
+bin
+*.o
+moc_*
 *.pro.user
