@@ -1,4 +1,4 @@
-#include <tufao/querystring.h>
+#include <querystring.h>
 #include <QByteArray>
 
 /*!
