@@ -164,6 +164,10 @@ signals:
       deleted when you are done with it (eg., calling
       Tufao::HttpServerResponse::end).
 
+      \note
+      If this is a POST request for a big file, you should increase the timeout
+      for this individual request.
+
       \param request An instance of Tufao::HttpServerRequest
 
       \param response An instance of Tufao::HttpServerResponse
