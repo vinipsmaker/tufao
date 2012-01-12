@@ -169,7 +169,7 @@ int HttpServerRequest::on_url(http_parser *parser, const char *at,
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
     Q_ASSERT(request);
-    request->priv->url = QByteArray(at, length);
+    request->priv->url.append(at, length);
     return 0;
 }
 
