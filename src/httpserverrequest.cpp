@@ -233,35 +233,40 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
     request->priv->useTrailers = true;
 
     {
-        static const char methods[][12] =
+#define M(str) {(str), (sizeof(str) - 1)}
+        static const struct {
+            char str[12];
+            int size;
+        } methods[] =
         {
-            "DELETE",
-            "GET",
-            "HEAD",
-            "POST",
-            "PUT",
-            "CONNECT",
-            "OPTIONS",
-            "TRACE",
-            "COPY",
-            "LOCK",
-            "MKCOL",
-            "MOVE",
-            "PROPFIND",
-            "PROPPATCH",
-            "UNLOCK",
-            "REPORT",
-            "MKACTIVITY",
-            "CHECKOUT",
-            "MERGE",
-            "M-SEARCH",
-            "NOTIFY",
-            "SUBSCRIBE",
-            "UNSUBSCRIBE",
-            "PATCH"
+            M("DELETE"),
+            M("GET"),
+            M("HEAD"),
+            M("POST"),
+            M("PUT"),
+            M("CONNECT"),
+            M("OPTIONS"),
+            M("TRACE"),
+            M("COPY"),
+            M("LOCK"),
+            M("MKCOL"),
+            M("MOVE"),
+            M("PROPFIND"),
+            M("PROPPATCH"),
+            M("UNLOCK"),
+            M("REPORT"),
+            M("MKACTIVITY"),
+            M("CHECKOUT"),
+            M("MERGE"),
+            M("M-SEARCH"),
+            M("NOTIFY"),
+            M("SUBSCRIBE"),
+            M("UNSUBSCRIBE"),
+            M("PATCH")
         };
-        request->priv->method.setRawData(methods[parser->method],
-                                         sizeof(methods[parser->method]) - 1);
+#undef M
+        request->priv->method.setRawData(methods[parser->method].str,
+                                         methods[parser->method].size);
     }
 
     {
