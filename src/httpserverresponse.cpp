@@ -40,6 +40,11 @@ HttpServerResponse::~HttpServerResponse()
     delete priv;
 }
 
+HttpServerResponse::Options HttpServerResponse::options() const
+{
+    return priv->options;
+}
+
 Headers &HttpServerResponse::headers()
 {
     return priv->headers;
