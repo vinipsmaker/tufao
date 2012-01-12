@@ -333,9 +333,10 @@ int HttpServerRequest::on_message_complete(http_parser *parser)
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
     Q_ASSERT(request);
-    request->clearBuffer();
-    if (!parser->upgrade)
+    if (!parser->upgrade) {
+        request->clearBuffer();
         emit request->end();
+    }
     return 0;
 }
 
