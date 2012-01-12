@@ -5,13 +5,9 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    Tufao::HttpServer server;
-    server.listen(QHostAddress::Any, 8080);
 
     TestsGuide t;
-
-    QObject::connect(&server, SIGNAL(requestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)),
-                     &t, SLOT(onRequestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)));
+    Q_UNUSED(t)
 
     return a.exec();
 }

@@ -3,15 +3,10 @@
 
 #include <QObject>
 #include "abstracttest.h"
+#include <httpserver.h>
+#include "test8.h"
 
-namespace Tufao {
-
-class HttpServerRequest;
-class HttpServerResponse;
-
-} // namespace Tufao
-
-class TestsGuide : public QObject
+class TestsGuide : public Tufao::HttpServer
 {
     Q_OBJECT
 public:
@@ -22,9 +17,13 @@ private slots:
                         Tufao::HttpServerResponse *response);
     void onTestReady();
 
+protected:
+    void upgrade(Tufao::HttpServerRequest *request, const QByteArray &head);
+
 private:
     QList<AbstractTest *> tests;
     int completed;
+    Test8 *upgradeTest;
 };
 
 #endif // TESTSGUIDE_H

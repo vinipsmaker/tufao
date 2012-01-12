@@ -1,37 +1,44 @@
-#include "test1.h"
+#include "test7.h"
 #include <httpserverrequest.h>
 #include <headers.h>
+
+#ifndef TIMEOUT_CLIENT_TIME
+# error TIMEOUT_CLIENT_TIME not defined
+#endif
 
 /*
   Reference message:
 
   GET /a/b/c/x/y/z HTTP/1.1\r\n
   Host: localhost:8080\r\n
-  UserDefined: test1\r\n
+  UserDefined: test7\r\n
   \r\n
   */
 
-Test1::Test1(QObject *parent) :
-    AbstractTest(parent)
+Test7::Test7(QObject *parent) :
+    AbstractTest(parent),
+    timeout(false)
 {
 }
 
-void Test1::operator ()()
+void Test7::operator ()()
 {
-    qDebug("Running test1");
+    qDebug("Running test7");
     QList<QByteArray> data;
     data << "GE" << "T" << " " << "/a/b/c" << "/x/y/z" << " " << "HT" << "T"
          << "P/" << "1" << "." << "1" << "\r" << "\n"
          << "Ho" << "st" << ":" << " " << "localhos" << "t:8080" << "\r" << "\n"
-         << "User" << "Defined: " << "test" << "1" << "\r" << "\n" << "\r"
+         << "User" << "Defined: " << "test" << "7" << "\r" << "\n" << "\r"
          << "\n";
-    qDebug("Estimated time: %i seconds", (data.size() * WAIT_TIME)/1000);
+    qDebug("Estimated time: %i seconds", (data.size() * WAIT_TIME)/1000
+           + TIMEOUT_SERVER_TIME/1000);
     socket = new StringListSocket(data, this);
-    connect(socket, SIGNAL(testReady()), this, SLOT(onReady()));
-    connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
+    connect(socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    connect(&timer, SIGNAL(timeout()), this, SLOT(onTimer()));
+    timer.start(TIMEOUT_CLIENT_TIME);
 }
 
-void Test1::testRequest(Tufao::HttpServerRequest *request,
+void Test7::testRequest(Tufao::HttpServerRequest *request,
                         Tufao::HttpServerResponse *response)
 {
     Q_ASSERT(request->method() == "GET");
@@ -43,7 +50,9 @@ void Test1::testRequest(Tufao::HttpServerRequest *request,
         if (i.key() == Tufao::IByteArray("Host")) {
             Q_ASSERT(i.value() == "localhost:8080");
         } else if (i.key() == Tufao::IByteArray("UserDefined")) {
-            Q_ASSERT(i.value() == "test1");
+            Q_ASSERT(i.value() == "test7");
+        } else if (i.key() == Tufao::IByteArray("Connection")) {
+            Q_ASSERT(i.value() == "close");
         } else {
             qFatal("Unexpected header");
         }
@@ -53,12 +62,22 @@ void Test1::testRequest(Tufao::HttpServerRequest *request,
     Q_ASSERT(options.testFlag(Tufao::HttpServerResponse::KEEP_ALIVE));
     Q_ASSERT(!options.testFlag(Tufao::HttpServerResponse::HTTP_1_0));
     Q_ASSERT(options.testFlag(Tufao::HttpServerResponse::HTTP_1_1));
-    qDebug("test1 OK");
+
+    response->writeHead(Tufao::HttpServerResponse::OK);
+    // So the connection should just TIMEOUT
+    //response->end("42\n");
+}
+
+void Test7::onDisconnected()
+{
+    Q_ASSERT(timeout);
+    socket->deleteLater();
+    socket = NULL;
+    qDebug("test7 OK");
     emit ready();
 }
 
-void Test1::onReady()
+void Test7::onTimer()
 {
-    socket->close();
-    socket = NULL;
+    timeout = true;
 }

@@ -2,7 +2,7 @@
 #include <QHostAddress>
 
 #ifndef WAIT_TIME
-# define WAIT_TIME 1500
+# error WAIT_TIME not defined
 #endif
 
 StringListSocket::StringListSocket(const QList<QByteArray> &data, QObject *parent) :
