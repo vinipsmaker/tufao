@@ -16,6 +16,38 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*!
+  \mainpage
+
+  \section introduction Introduction
+
+  Tufão is a web framework for C++ that makes use of Qt's object communication
+  system (signals & slots). It features:
+    - high performance standalone server
+    - Cross-plataform
+    - Support modern HTTP features (persistent streams, chunked entities, ...)
+    - HTTPS support
+    - Lots of tests
+    - Timeout support
+
+  It uses a patched version of Ryan Dahl's HTTP parser to provide good
+  performance. The patch provides better integration with Qt to provide better
+  cross-plataform support and can be found in src/priv/http_parser.patch.
+
+  \section usage Get started
+
+  You should start by taking a look on Tufao::HttpServer documentation or one of
+  the examples.
+
+  \note
+  Remember to add <em>CONFIG += TUFAO</em> in your *.pro.
+  */
+
+/*!
+  This is the namespace where all Tufao facilities are grouped.
+  */
+namespace Tufao {}
+
 #ifndef TUFAO_GLOBAL_H
 #define TUFAO_GLOBAL_H
 
