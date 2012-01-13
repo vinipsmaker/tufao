@@ -33,8 +33,11 @@ struct HttpsServer;
 } // namespace Priv
 
 /*!
-  Tufao::HttpsServer is subclass of Tufao::HttpServer that provides support for
-  socket streams over TLS connections.
+  \brief
+  Tufao::HttpsServer is a subclass of Tufao::HttpServer that provides secure
+  communication with the client.
+
+  It does this using socket streams over TLS connections.
 
   This combination (HTTP + SSL/TLS) is know as HTTP Secure and provides
   encrypted communication.
@@ -51,6 +54,10 @@ struct HttpsServer;
   number of requests that can be served per time and should be moderated. It's
   common to use it only in pages that handles more sensitive information, such
   as login pages and payment transactions.
+
+  \sa
+  HttpsServer::setLocalCertificate
+  HttpsServer::setPrivateKey
   */
 class TUFAO_EXPORT HttpsServer : public HttpServer
 {

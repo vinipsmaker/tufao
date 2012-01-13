@@ -206,7 +206,7 @@ public:
 
       \sa
       Tufao::Url::userinfo
-      Tufao::url::password
+      Tufao::Url::password
       */
     QString username() const;
 

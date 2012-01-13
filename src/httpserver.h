@@ -132,7 +132,7 @@ public:
     quint16 serverPort() const;
 
     /*!
-      Sets the timeout of new connections to \msecs miliseconds.
+      Sets the timeout of new connections to \p msecs miliseconds.
 
       If you set the timeout to 0, then timeout feature will be disabled. You
       shouldn't disable this feature to protect against DoS attacks.
@@ -160,8 +160,8 @@ signals:
 
       \warning
       You MUST NOT delete \p request and \p response. \p request and \p response
-      deleted when the connection closes. Additionally, \p response will also be
-      deleted when you are done with it (eg., calling
+      are deleted when the connection closes. Additionally, \p response will
+      also be deleted when you are done with it (eg., calling
       Tufao::HttpServerResponse::end).
 
       \note

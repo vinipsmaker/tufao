@@ -107,7 +107,7 @@ public:
       The request URL.
 
       This contains only the URL that is present in the actual HTTP request.
-      If the request line is:
+      If the request is:
 
       \verbatim
 GET /login?username=tux HTTP/1.1\r\n
@@ -124,7 +124,7 @@ Accept: text/plain\r\n
 
     /*!
       The HTTP headers sent by the client. These headers are fully populated
-      when the signal Tufao::HttpServerRequest:ready signal is emitted.
+      when the signal Tufao::HttpServerRequest::ready signal is emitted.
 
       \sa
       Tufao::HttpServerRequest::trailers()
@@ -151,7 +151,7 @@ Accept: text/plain\r\n
     QAbstractSocket *socket() const;
 
     /*!
-      Sets the timeout of new connections to \msecs miliseconds.
+      Sets the timeout of new connections to \p msecs miliseconds.
 
       If you set the timeout to 0, then timeout feature will be disabled.
 
@@ -172,7 +172,7 @@ signals:
       gathered.
 
       After this signal is emitted, you can safely interpret the request and the
-      only missing part may be (if any) the message body.
+      only missing parts may be (if any) the message body and the trailers.
 
       \sa
       Tufao::HttpServerRequest::data
@@ -206,7 +206,8 @@ signals:
       This signal is emitted when a http upgrade is requested.
 
       \note
-      If this signal is emitted, then the signals ready, end and close won't be
+      If this signal is emitted, then the signals HttpServerRequest::ready,
+      HttpServerRequest::end and HttpServerRequest::close won't be
       emitted.
 
       \param head The initial bytes from the new connection protocol.

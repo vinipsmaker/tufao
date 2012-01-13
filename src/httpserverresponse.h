@@ -46,7 +46,7 @@ struct HttpServerResponse;
     - Message body: Use Tufao::HttpServerResponse::write or
       Tufao::HttpServerResponse::end
     - Trailers (optional): Use Tufao::HttpServerResponse::addTrailers
-    - EOF
+    - EOF: Use Tufao::HttpServerResponse::end
 
   \note
   In HTTP/1.0 connections, it's not possible to send the message body in chunks
@@ -169,11 +169,11 @@ public:
       Returns a reference to the headers which will be sent when the first piece
       of body is written.
 
+      Use this reference to send custom headers.
+
       \note
       Change this object when the first piece of the message body was already
       written won't take any effects.
-
-      Use this reference to send custom headers.
       */
     Headers &headers();
 signals:
@@ -253,10 +253,10 @@ public slots:
       multi-part body encodings that may be used.
 
       The first time Tufao::HttpServerResponse::write is called, it will send
-      the buffered header information and the first body chunk to the client.
-      The second time Tufao::HttpServerResponse::write is called, Tufao assumes
-      you're going to be streaming data, and sends that separately. That is, the
-      response is buffered up to the first chunk of body.
+      the buffered headers and the first body chunk to the client. The second
+      time Tufao::HttpServerResponse::write is called, it assumes you're going
+      to streaming data, and sends that separately. That is, the response is
+      buffered up to the first chunk of body.
 
       If you call this function with a empty byte array, it will do nothing.
 
@@ -299,6 +299,24 @@ public slots:
       This method adds one HTTP trailing header (a header but at the end of the
       message) to the response.
 
+      \warning
+      Trailers will only be emitted if chunked encoding is used for the
+      response; if it is not (e.g., if the request was sent by a HTTP/1.0 user
+      agent), they will be silently discarded.
+
+      \note
+      A server MUST NOT use the trailer for any header fields unless at least
+      one of the following is true:
+        - the request included a TE header field that indicates “trailers” is
+          acceptable in the transfer-coding of the response;
+        - the server is the origin server (your server is not a proxy or a
+          tunnel) for the response, the trailer fields consist entirely of
+          optional metadata, and the recipient could use the message (in a
+          manner acceptable to the origin server) without receiving this
+          metadata. In other words, the origin server is willing to accept the
+          possibility that the trailer fields might be silently discarded along
+          the path to the client.
+
       \sa
       Tufao::HttpServerResponse::addTrailers
       */
@@ -307,8 +325,8 @@ public slots:
 
     /*!
       This method signals to the server that all of the response headers and
-      body has been sent; that server should consider this message complete. The
-      method, response.end(), MUST be called on each response exactly one time.
+      body has been sent; that server should consider this message complete. It
+      MUST be called on each response exactly one time.
 
       \param chunk If specified, it is equivalent to calling
       Tufao::HttpServerResponse::write followed by
