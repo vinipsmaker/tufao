@@ -126,6 +126,7 @@ void HttpServerRequest::onReadyRead()
         disconnect(priv->socket, SIGNAL(readyRead()),
                    this, SLOT(onReadyRead()));
         disconnect(priv->socket, SIGNAL(disconnected()), this, SIGNAL(close()));
+        disconnect(&priv->timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
         emit upgrade(priv->buffer);
         clearBuffer();
     }
@@ -333,6 +334,8 @@ int HttpServerRequest::on_message_complete(http_parser *parser)
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
     Q_ASSERT(request);
+    if (request->priv->timeout)
+        request->priv->timer.start(request->priv->timeout);
     if (!parser->upgrade) {
         request->clearBuffer();
         emit request->end();
