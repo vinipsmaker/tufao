@@ -24,9 +24,9 @@ SOURCES += src/main.cpp \
     src/test3.cpp \
     src/test4.cpp \
     src/test6.cpp \
-    src/test5.cpp \
-    src/test7.cpp \
-    src/test8.cpp
+    src/test8.cpp \
+    src/test10.cpp \
+    src/test9.cpp
 
 HEADERS += src/stringlistsocket.h \
     src/test1.h \
@@ -36,9 +36,9 @@ HEADERS += src/stringlistsocket.h \
     src/test3.h \
     src/test4.h \
     src/test6.h \
-    src/test5.h \
-    src/test7.h \
-    src/test8.h
+    src/test8.h \
+    src/test10.h \
+    src/test9.h
 
 
 

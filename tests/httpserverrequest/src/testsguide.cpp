@@ -6,6 +6,8 @@
 #include "test5.h"
 #include "test6.h"
 #include "test7.h"
+#include "test9.h"
+#include "test10.h"
 #include <httpserverrequest.h>
 #include <headers.h>
 #include <QCoreApplication>
@@ -21,8 +23,8 @@ TestsGuide::TestsGuide(QObject *parent) :
     connect(this, SIGNAL(requestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)),
             this, SLOT(onRequestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)));
 
-    tests << new Test1 << new Test2 << new Test3 << new Test4 << new Test5
-          << new Test6 << new Test7 << upgradeTest;
+    tests << new Test1 << new Test2 << new Test3 << new Test4
+          << new Test6 << upgradeTest << new Test9 << new Test10;
 
     for (int i = 0;i != tests.size();++i) {
         connect(tests[i], SIGNAL(ready()), this, SLOT(onTestReady()));
@@ -41,12 +43,14 @@ void TestsGuide::onRequestReady(Tufao::HttpServerRequest *request,
         tests[2]->testRequest(request, response);
     } else if (request->headers().value("UserDefined") == "test4") {
         tests[3]->testRequest(request, response);
-    } else if (request->headers().value("UserDefined") == "test5") {
-        tests[4]->testRequest(request, response);
     } else if (request->headers().value("UserDefined") == "test6") {
-        tests[5]->testRequest(request, response);
-    } else if (request->headers().value("UserDefined") == "test7") {
+        tests[4]->testRequest(request, response);
+    } else if (request->headers().value("UserDefined") == "test9") {
         tests[6]->testRequest(request, response);
+    } else if (request->headers().value("UserDefined") == "test10") {
+        tests[7]->testRequest(request, response);
+    } else if (request->headers().value("UserDefined") == "test10") {
+        tests[7]->testRequest(request, response);
     } else {
         qFatal("Unexpected header");
     }

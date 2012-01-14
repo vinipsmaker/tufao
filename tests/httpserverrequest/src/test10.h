@@ -1,29 +1,23 @@
-#ifndef TEST7_H
-#define TEST7_H
+#ifndef TEST10_H
+#define TEST10_H
 
 #include "abstracttest.h"
 #include "stringlistsocket.h"
-#include <QTimer>
 
-class Test7 : public AbstractTest
+class Test10 : public AbstractTest
 {
     Q_OBJECT
 public:
-    explicit Test7(QObject *parent = 0);
+    explicit Test10(QObject *parent = 0);
 
     void operator ()();
 
     void testRequest(Tufao::HttpServerRequest *request,
                      Tufao::HttpServerResponse *response);
 
-private slots:
-    void onDisconnected();
-    void onTimer();
-
 private:
     StringListSocket *socket;
-    QTimer timer;
-    bool timeout;
+    bool firstRequest;
 };
 
-#endif // TEST7_H
+#endif // TEST10_H
