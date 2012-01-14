@@ -81,6 +81,10 @@ public:
     /*!
       Sets the private key to \p key.
 
+      \warning
+      Remember that encryption security relies on the fact that no one knows
+      your private key.
+
       \note
       This member function should be called before Tufao::HttpsServer::listen
       */
