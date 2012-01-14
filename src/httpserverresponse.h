@@ -35,7 +35,7 @@ struct HttpServerResponse;
 } // namespace Priv
 
 /*!
-  \brief The Tufao::HttpServerResponse is used to respond to a
+  The Tufao::HttpServerResponse is used to respond to a
   Tufao::HttpServerRequest.
 
   A response is built of well defined parts and must be sent ordered. The order
@@ -60,6 +60,15 @@ class TUFAO_EXPORT HttpServerResponse : public QObject
 {
     Q_OBJECT
 public:
+    /*!
+      The values in this enum represents a HTTP status code. These are sent in
+      the first line of a HTTP response message. You should consult external doc
+      (rfc 2616) to know when to use each value. The HTTP status code most used
+      is OK.
+
+      You can use the values in this enum in
+      Tufao::HttpServerResponse::writeHead(int).
+      */
     enum StatusCode
     {
         // 1xx Informational
@@ -133,10 +142,25 @@ public:
         NOT_EXTENDED                    = 510
     };
 
+    /*!
+      This enum represents some aspects of a HTTP response.
+      */
     enum Option
     {
+        /*!
+          A HTTP/1.0 response.
+          */
         HTTP_1_0           = 1,
+        /*!
+          A HTTP/1.1 response.
+          */
         HTTP_1_1           = 1 << 1,
+        /*!
+          The connection should use a persistent stream.
+
+          \note
+          Only supported in HTTP/1.1 connections.
+          */
         KEEP_ALIVE         = 1 << 2
     };
     Q_DECLARE_FLAGS(Options, Option)

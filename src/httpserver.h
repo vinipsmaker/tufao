@@ -36,8 +36,7 @@ struct HttpServer;
 } // namespace Priv
 
 /*!
-  \brief The Tufao::HttpServer class provides an implementation of the HTTP
-  protocol.
+  The Tufao::HttpServer class provides an implementation of the HTTP protocol.
 
   The HTTP is stateless request-response based protoccol. It let you create
   distributed dynamic collaborative applications.
@@ -99,8 +98,8 @@ public:
     ~HttpServer();
 
     /*!
-      \brief Tells the server to listen for incoming connections on address
-      \p address and port \p port.
+      Tells the server to listen for incoming connections on address \p address
+      and port \p port.
 
       If \p port is 0, a port is chosen automatically. The default registered
       port to HTTP server is 80.

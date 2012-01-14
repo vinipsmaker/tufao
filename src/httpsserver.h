@@ -33,7 +33,6 @@ struct HttpsServer;
 } // namespace Priv
 
 /*!
-  \brief
   Tufao::HttpsServer is a subclass of Tufao::HttpServer that provides secure
   communication with the client.
 

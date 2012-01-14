@@ -31,7 +31,6 @@ struct Url;
 } // namespace Priv
 
 /*!
-  \brief
   This class provides a convenient interface for parsing URLs.
 
   Some fields in URLs are optionals. If the optional fields are absent, the

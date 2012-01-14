@@ -34,8 +34,7 @@ struct HttpServerRequest;
 } // namespace Priv
 
 /*!
-  \brief The Tufao::HttpServer represents a HTTP request received by
-  Tufao::HttpServer.
+  The Tufao::HttpServer represents a HTTP request received by Tufao::HttpServer.
 
   \note
   You can use it to create your own HTTP servers too, just handle the
