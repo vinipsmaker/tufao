@@ -1,5 +1,5 @@
-Tufão - an asynchronous web framework for C++ built on top of Qt
-----------------------------------------------------------------
+= Tufão - an asynchronous web framework for C++ built on top of Qt =
+--------------------------------------------------------------------
 
 Tufão is a web framework for C++ that makes use of Qt's object communication
 system (signals & slots). It features:
@@ -18,8 +18,8 @@ You can generate documentation from the source code using Doxygen. The
 documentation will be put on the doc folder in the html and tex formats. There
 is also experimental support for Qt compressed help files.
 
-LICENSE
-=======
+== LICENSE ==
+-------------
 
 The library is licensed under the LGPLv3, the documentation is licensed under
 GNU Free Documentation License and the example codes are licensed under MIT
@@ -32,8 +32,8 @@ licensed under MIT.
 So, you can create commercial applications (the *only* restriction is that *if*
 you do any modifications to *Tufão*, these modifications must be redistributed).
 
-BUILD
-=====
+== BUILD ==
+-----------
 
 Make sure you have Qt installed, then run:
 
@@ -62,8 +62,8 @@ folder tests. If you got Tufão from a git checkout (not a stable release), then
 you may be interessed in run these tests. To compile and run them, just run the
 execute-tests.sh script.
 
-INSTALL
-=======
+== INSTALL ==
+-------------
 
 The default install prefix is /usr/local, if you don't intend to change it,
 just run;
@@ -72,18 +72,19 @@ just run;
 
 To install to a different prefix, run:
 
-$ ./configure-prefix ${DESTDIR}
-$ qmake
+$ qmake INSTALLDIR=${DESTDIR}
 $ make install
 
 The shared library file should be in lib directory.
 
-USAGE
-=====
+== USAGE ==
+-----------
 
 To use Tufão in your Qt projects, just edit your .pro file and add the line:
 
+<pre>
 CONFIG += TUFAO
+</pre>
 
 You can find some examples in the examples folder.
 
@@ -93,8 +94,8 @@ If you want use Tufão in other build system, just add the compiler option
 You should also see Tufão documentation integrated in QtAssistant (this feature
 is experimental and is recomended to use the documentation in html format).
 
-ROADMAP
-=======
+= ROADMAP =
+-----------
 
 Here is a small incomplete roadmap for Tufão:
 

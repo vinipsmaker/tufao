@@ -1,9 +1,0 @@
-#!/bin/bash
-
-if [ -z "$1" ]; then
-    echo 'Usage:'
-    echo './configure-prefix ${INSTALL_PREFIX}'
-    exit 0
-fi
-
-sed -i -r -e "s#^(PREFIX = ).*\$#\1$1#g" ./tufao.pro

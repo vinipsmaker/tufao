@@ -31,23 +31,30 @@ MOC_DIR = build
 DESTDIR = lib
 
 # Install info
-PREFIX = /usr/local
 unix:!symbian:maemo5 {
-    PREFIX = /opt/usr
+    INSTALLDIR = /opt/usr
+} else {
+    isEmpty(INSTALLDIR) {
+        win32 {
+            INSTALLDIR = $$PWD
+        } else {
+            INSTALLDIR = /usr/local
+        }
+    }
 }
 
-unix:!symbian:target.path = $$PREFIX/lib
+unix:!symbian:target.path = $$INSTALLDIR/lib
 
 unix {
-    headers.path = $$PREFIX/include/Tufao
+    headers.path = $$INSTALLDIR/include/Tufao
     headers.files = src/*.h \
         include/*
 
-    qmakefile.path = $$PREFIX/share/qt/mkspecs/features
+    qmakefile.path = $$INSTALLDIR/share/qt/mkspecs/features
     qmakefile.files = tufao.prf
 }
 
-INSTALLS += target
+INSTALLS = target
 unix:INSTALLS += headers qmakefile
 
 # Project files
