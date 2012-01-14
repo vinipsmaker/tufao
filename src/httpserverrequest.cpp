@@ -97,9 +97,10 @@ void HttpServerRequest::setTimeout(int msecs)
 {
     priv->timeout = msecs;
 
-    if (priv->timeout)
+    if (priv->timeout) {
         priv->timer.start(priv->timeout);
-    else
+        priv->timeoutMustClose = true;
+    } else
         priv->timer.stop();
 }
 
@@ -110,6 +111,7 @@ int HttpServerRequest::timeout() const
 
 void HttpServerRequest::onReadyRead()
 {
+    priv->timeoutMustClose = false;
     priv->buffer += priv->socket->readAll();
     size_t nparsed = http_parser_execute(&priv->parser,
                                          &httpSettings.settings,
@@ -134,7 +136,10 @@ void HttpServerRequest::onReadyRead()
 
 void HttpServerRequest::onTimeout()
 {
-    priv->socket->close();
+    if (priv->timeoutMustClose)
+        priv->socket->close();
+    else
+        priv->timeoutMustClose = true;
 }
 
 inline void HttpServerRequest::clearBuffer()
@@ -334,8 +339,7 @@ int HttpServerRequest::on_message_complete(http_parser *parser)
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
     Q_ASSERT(request);
-    if (request->priv->timeout)
-        request->priv->timer.start(request->priv->timeout);
+    request->priv->timeoutMustClose = false;
     if (!parser->upgrade) {
         request->clearBuffer();
         emit request->end();

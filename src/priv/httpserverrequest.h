@@ -26,7 +26,6 @@
 #include <QTimer>
 
 namespace Tufao {
-
 namespace Priv {
 
 struct HttpServerRequest
@@ -36,11 +35,11 @@ struct HttpServerRequest
         socket(socket),
         lastWasValue(true),
         useTrailers(false),
-        timeout(0)
+        timeout(0),
+        timeoutMustClose(true)
     {
         http_parser_init(&parser, HTTP_REQUEST);
         parser.data = request;
-        timer.setSingleShot(true);
     }
 
     static int on_message_begin(http_parser *);
@@ -66,6 +65,7 @@ struct HttpServerRequest
 
     int timeout;
     QTimer timer;
+    bool timeoutMustClose;
 };
 
 } // namespace Priv
