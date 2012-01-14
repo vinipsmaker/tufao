@@ -94,8 +94,8 @@ If you want use Tufão in other build system, just add the compiler option
 You should also see Tufão documentation integrated in QtAssistant (this feature
 is experimental and is recomended to use the documentation in html format).
 
-= ROADMAP =
------------
+== ROADMAP ==
+-------------
 
 Here is a small incomplete roadmap for Tufão:
 
