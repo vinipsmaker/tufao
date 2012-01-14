@@ -52,7 +52,7 @@ documentation is available in the following formats:
     doc/latex folder.
   * Qt Compressed Help file: If you have qhelpgenerator binary tool in the
     system PATH, then the file is generated when you run doxygen and should be
-    in doc/html/tufao.qch. If you have qhelpgenerator tool installed, but not
+    in doc/qch/tufao.qch. If you have qhelpgenerator tool installed, but not
     configured in the system PATH, but still want to generate the documentation
     in this format, just run the tool using doc/html/index.qhp as input file.
 
