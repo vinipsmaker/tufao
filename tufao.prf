@@ -1,2 +1,6 @@
 QT += network
-LIBS += -ltufao
+debug {
+    LIBS += -ltufao_d
+} else {
+    LIBS += -ltufao
+}
