@@ -1,4 +1,6 @@
 = 0.2 =
+  * Updated project file to be smarter
+  * Using module/component include style
   * Generating different targets for differents profiles (release/target)
   * New examples
    * Request-dumper

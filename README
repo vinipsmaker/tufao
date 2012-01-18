@@ -40,8 +40,12 @@ you do any modifications to *Tufão*, these modifications must be redistributed)
 
 Make sure you have Qt installed, then run:
 
-$ qmake
+$ qmake OPTIONS
 $ make
+
+OPTIONS can be null or have a combination of the following values:
+  * INSTALLDIR=${INSTALLDIR}
+  * CONFIG=debug
 
 Then you will have the folders:
   * build: where temporary build objects are
@@ -79,6 +83,22 @@ $ qmake INSTALLDIR=${DESTDIR}
 $ make install
 
 The shared library file should be in lib directory.
+
+=== EXECUTING A SYSTEM-WIDE FULL INSTALL ===
+
+If you want to install release and debug versions, run the following commands:
+
+$ qmake INSTALLDIR=/usr
+$ make
+# make install
+$ make distclean
+$ qmake INSTALLDIR=/usr CONFIG=debug
+$ make
+# make install
+
+NOTE:
+If you want to create a package and the variable $PKGROOT holds the package root
+dir, you should run the previous commands replacing "/usr" with "$PKGROOT/usr".
 
 == USAGE ==
 -----------
