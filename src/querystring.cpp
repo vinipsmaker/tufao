@@ -17,7 +17,7 @@
 */
 
 #include "querystring.h"
-#include <QByteArray>
+#include <QtCore/QByteArray>
 
 namespace Tufao {
 namespace QueryString {

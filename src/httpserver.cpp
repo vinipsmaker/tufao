@@ -19,7 +19,7 @@
 #include "httpserver.h"
 #include "priv/httpserver.h"
 #include "httpserverrequest.h"
-#include <QTcpSocket>
+#include <QtNetwork/QTcpSocket>
 #include "headers.h"
 
 namespace Tufao {

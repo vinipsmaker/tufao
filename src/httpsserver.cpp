@@ -18,7 +18,7 @@
 
 #include "httpsserver.h"
 #include "priv/httpsserver.h"
-#include <QSslSocket>
+#include <QtNetwork/QSslSocket>
 
 namespace Tufao {
 

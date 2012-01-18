@@ -20,7 +20,7 @@
 #define TUFAO_PRIV_HTTPSERVERRESPONSE_H
 
 #include "../httpserverresponse.h"
-#include <QIODevice>
+#include <QtCore/QIODevice>
 #include "../headers.h"
 
 namespace Tufao {

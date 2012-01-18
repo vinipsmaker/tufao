@@ -21,9 +21,9 @@
 
 #include "../headers.h"
 #include "../httpserverrequest.h"
-#include <QAbstractSocket>
+#include <QtNetwork/QAbstractSocket>
 #include "http_parser.h"
-#include <QTimer>
+#include <QtCore/QTimer>
 
 namespace Tufao {
 namespace Priv {

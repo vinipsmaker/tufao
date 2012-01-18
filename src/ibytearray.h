@@ -19,7 +19,7 @@
 #ifndef TUFAO_IBYTEARRAY_H
 #define TUFAO_IBYTEARRAY_H
 
-#include <QByteArray>
+#include <QtCore/QByteArray>
 
 namespace Tufao {
 

@@ -19,7 +19,7 @@
 #ifndef TCPSERVERWRAPPER_H
 #define TCPSERVERWRAPPER_H
 
-#include <QTcpServer>
+#include <QtNetwork/QTcpServer>
 #include "../tufao_global.h"
 
 namespace Tufao {

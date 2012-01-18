@@ -16,7 +16,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QRegExp>
+#include <QtCore/QRegExp>
 
 namespace Tufao {
 namespace Priv {

@@ -19,7 +19,7 @@
 #ifndef HTTPSERVERRESPONSE_H
 #define HTTPSERVERRESPONSE_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include "tufao_global.h"
 
 class QIODevice;

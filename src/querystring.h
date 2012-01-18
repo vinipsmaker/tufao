@@ -20,7 +20,7 @@
 #define TUFAO_QUERYSTRING_H
 
 #include "tufao_global.h"
-#include <QMap>
+#include <QtCore/QMap>
 
 class QByteArray;
 

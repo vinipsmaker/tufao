@@ -17,8 +17,8 @@
 */
 
 #include "reasonphrase.h"
-#include <QMap>
-#include <QByteArray>
+#include <QtCore/QMap>
+#include <QtCore/QByteArray>
 
 struct Phrases
 {

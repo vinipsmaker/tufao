@@ -19,7 +19,7 @@
 #ifndef TUFAO_HEADERS_H
 #define TUFAO_HEADERS_H
 
-#include <QMultiMap>
+#include <QtCore/QMultiMap>
 #include "ibytearray.h"
 
 namespace Tufao {

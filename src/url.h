@@ -20,7 +20,7 @@
 #define TUFAO_URL_H
 
 #include "tufao_global.h"
-#include <QString>
+#include <QtCore/QString>
 
 namespace Tufao {
 

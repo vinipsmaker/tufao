@@ -1,7 +1,7 @@
 #ifndef QTADAPTER_H
 #define QTADAPTER_H
 
-#include <QtGlobal>
+#include <QtCore/QtGlobal>
 
 // defines:
 #define HTTP_PARSER_STRICT 0
