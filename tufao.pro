@@ -35,6 +35,8 @@ MOC_DIR = build
 DESTDIR = lib
 
 # Install info
+QMAKE_MKSPECS=$$[QMAKE_MKSPECS]
+
 unix:!symbian:maemo5 {
     INSTALLDIR = /opt/usr
 } else {
@@ -54,7 +56,8 @@ unix {
     headers.files = src/*.h \
         include/*
 
-    qmakefile.path = $$INSTALLDIR/share/qt/mkspecs/features
+    qmakefile.path = $$replace(QMAKE_MKSPECS, $$[QT_INSTALL_PREFIX], \
+        $$INSTALLDIR)/features
     qmakefile.files = tufao.prf
 }
 
