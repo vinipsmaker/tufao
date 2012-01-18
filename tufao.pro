@@ -5,10 +5,10 @@
 #-------------------------------------------------
 
 # General info
-debug {
-    TARGET = tufao_d
-} else {
+release {
     TARGET = tufao
+} else {
+    TARGET = tufao_d
 }
 TEMPLATE = lib
 VERSION = 0.1.0
