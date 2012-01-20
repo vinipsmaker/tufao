@@ -8,7 +8,6 @@ OBJECTS_DIR = build
 MOC_DIR = build
 DESTDIR = bin
 
-CONFIG += DEBUG
 INCLUDEPATH += ../../src
 LIBS += -L../../lib -ltufao
 
