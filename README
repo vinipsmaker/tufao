@@ -46,10 +46,18 @@ $ make
 OPTIONS can be null or have a combination of the following values:
   * INSTALLDIR=${INSTALLDIR}
   * CONFIG=debug
+  * CONFIG=staticlib (force creation of static lib)
 
-Then you will have the folders:
+If you want to combine values for the same variable, just use a single string
+space separated, as in the following example:
+
+<pre>
+$ qmake 'CONFIG=debug staticlib'
+</pre>
+
+After build the project, the following directories will be created:
   * build: where temporary build objects are
-  * lib: where the shared lib file is
+  * lib: where the library file is
 
 To generate the documentation, just run doxygen using Doxyfile as configuration
 file and the documentation will be generated in the folder doc. The
@@ -72,8 +80,7 @@ execute-tests.sh script.
 == INSTALL ==
 -------------
 
-The default install prefix is /usr/local, if you don't intend to change it,
-just run;
+The default install prefix is /, if you don't intend to change it, just run:
 
 # make install
 
@@ -82,23 +89,22 @@ To install to a different prefix, run:
 $ qmake INSTALLDIR=${DESTDIR}
 $ make install
 
-The shared library file should be in lib directory.
-
 === EXECUTING A SYSTEM-WIDE FULL INSTALL ===
 
 If you want to install release and debug versions, run the following commands:
 
-$ qmake INSTALLDIR=/usr
+$ qmake
 $ make
 # make install
 $ make distclean
-$ qmake INSTALLDIR=/usr CONFIG=debug
+$ qmake CONFIG=debug
 $ make
 # make install
 
 NOTE:
 If you want to create a package and the variable $PKGROOT holds the package root
-dir, you should run the previous commands replacing "/usr" with "$PKGROOT/usr".
+dir, you should run the previous commands using the INSTALLDIR=$PKGROOT option
+when executing the qmake command.
 
 == USAGE ==
 -----------
@@ -122,23 +128,22 @@ is experimental and is recomended to use the documentation in html format).
 
 Here is a small incomplete roadmap for Tufão:
 
-0.1:
-  * Implement Node.js-like API
-  * Fully documented
-  * Support for GNU/Linux and Windows
-  * Tests
-
 0.2:
-  * QtCreator plugin for fast project creation
-  * Module to serve static files
-  * More code examples
+  * WebSocket support
 
 0.3:
   * Session/cookies support
   * Forms
 
 0.4:
-  * Plugin-based application Server
+  * Module to serve static files
 
-0.5:
-  * Multi-threaded server
+0.5
+  * QtCreator plugin for fast project creation
+
+0.6:
+  * Plugin-based application Server
+  * Multi-thread support
+
+0.7:
+  * Service discovery and description support

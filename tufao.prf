@@ -1,6 +1,7 @@
 QT += network
-debug {
-    LIBS += -ltufao_d
-} else {
+
+release {
     LIBS += -ltufao
+} else {
+    LIBS += -ltufao_d
 }
