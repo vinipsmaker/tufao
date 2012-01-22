@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icon.png</file>
+        <file>templates/data/default/main.cpp</file>
+        <file>templates/data/default/mainhandler.cpp</file>
+        <file>templates/data/default/mainhandler.h</file>
+        <file>templates/metadata/default/motd</file>
+        <file>templates/metadata/default/project.pro</file>
+    </qresource>
+</RCC>
