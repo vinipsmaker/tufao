@@ -176,6 +176,12 @@ signals:
       After this signal is emitted, you can safely interpret the request and the
       only missing parts may be (if any) the message body and the trailers.
 
+      \note
+      It's not safe delete this object after this signal is emitted unless you
+      use a queued connection. You should wait for the end or close signal
+      before delete this object (you can close the socket to accelerate this
+      process).
+
       \sa
       Tufao::HttpServerRequest::data
       Tufao::HttpServerRequest::end
@@ -184,6 +190,12 @@ signals:
 
     /*!
       This signal is emitted each time a piece of the message body is received.
+
+      \note
+      It's not safe delete this object after this signal is emitted unless you
+      use a queued connection. You should wait for the end or close signal
+      before delete this object (you can close the socket to accelerate this
+      process).
       */
     void data(QByteArray data);
 

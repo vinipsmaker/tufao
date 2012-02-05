@@ -28,6 +28,15 @@
 namespace Tufao {
 namespace Priv {
 
+enum Signal
+{
+    READY   = 1,
+    DATA    = 1 << 1,
+    END     = 1 << 2
+};
+Q_DECLARE_FLAGS(Signals, Signal)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Signals)
+
 struct HttpServerRequest
 {
     HttpServerRequest(Tufao::HttpServerRequest *request,
@@ -35,6 +44,7 @@ struct HttpServerRequest
         socket(socket),
         lastWasValue(true),
         useTrailers(false),
+        whatEmit(0),
         timeout(0),
         timeoutMustClose(true)
     {
@@ -56,12 +66,16 @@ struct HttpServerRequest
     QByteArray lastHeader;
     bool lastWasValue;
     bool useTrailers;
+    Signals whatEmit;
+    const char *body_at;
+    size_t body_length;
 
     QByteArray method;
     QByteArray url;
     Tufao::HttpServerRequest::HttpVersion httpVersion;
     Headers headers;
     Headers trailers;
+    Tufao::HttpServerResponse::Options responseOptions;
 
     int timeout;
     QTimer timer;

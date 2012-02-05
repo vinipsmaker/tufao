@@ -117,10 +117,27 @@ void HttpServerRequest::onReadyRead()
                                          &httpSettings.settings,
                                          priv->buffer.constData(),
                                          priv->buffer.size());
-    priv->buffer.remove(0, nparsed);
 
     if (priv->parser.http_errno) {
         priv->socket->close();
+        return;
+    }
+
+    if (priv->whatEmit.testFlag(Priv::READY)) {
+        priv->whatEmit &= ~Priv::Signals(Priv::READY);
+        emit ready(priv->responseOptions);
+    }
+
+    if (priv->whatEmit.testFlag(Priv::DATA)) {
+        priv->whatEmit &= ~Priv::Signals(Priv::DATA);
+        emit data(QByteArray(priv->body_at, priv->body_length));
+    }
+
+    priv->buffer.remove(0, nparsed);
+
+    if (priv->whatEmit.testFlag(Priv::END)) {
+        priv->whatEmit &= ~Priv::Signals(Priv::END);
+        emit end();
         return;
     }
 
@@ -129,8 +146,10 @@ void HttpServerRequest::onReadyRead()
                    this, SLOT(onReadyRead()));
         disconnect(priv->socket, SIGNAL(disconnected()), this, SIGNAL(close()));
         disconnect(&priv->timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
-        emit upgrade(priv->buffer);
+
+        QByteArray b(priv->buffer);
         clearBuffer();
+        emit upgrade(b);
     }
 }
 
@@ -308,17 +327,17 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
     }
 
     if (!parser->upgrade) {
-        HttpServerResponse::Options options;
+        request->priv->responseOptions = 0;
 
         if (parser->http_minor == 1)
-            options |= HttpServerResponse::HTTP_1_1;
+            request->priv->responseOptions |= HttpServerResponse::HTTP_1_1;
         else
-            options |= HttpServerResponse::HTTP_1_0;
+            request->priv->responseOptions |= HttpServerResponse::HTTP_1_0;
 
         if (http_should_keep_alive(&request->priv->parser))
-            options |= HttpServerResponse::KEEP_ALIVE;
+            request->priv->responseOptions |= HttpServerResponse::KEEP_ALIVE;
 
-        emit request->ready(options);
+        request->priv->whatEmit = READY;
     }
 
     return 0;
@@ -330,7 +349,9 @@ int HttpServerRequest::on_body(http_parser *parser, const char *at,
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
     Q_ASSERT(request);
-    emit request->data(QByteArray(at, length));
+    request->priv->body_at = at;
+    request->priv->body_length = length;
+    request->priv->whatEmit |= Priv::DATA;
     return 0;
 }
 
@@ -342,7 +363,7 @@ int HttpServerRequest::on_message_complete(http_parser *parser)
     request->priv->timeoutMustClose = false;
     if (!parser->upgrade) {
         request->clearBuffer();
-        emit request->end();
+        request->priv->whatEmit |= Priv::END;
     }
     return 0;
 }
