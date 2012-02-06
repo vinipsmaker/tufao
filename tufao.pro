@@ -48,7 +48,9 @@ SOURCES += src/httpserver.cpp \
     src/querystring.cpp \
     src/priv/tcpserverwrapper.cpp \
     src/priv/reasonphrase.cpp \
-    src/priv/http_parser.cpp
+    src/priv/http_parser.cpp \
+    src/websocket.cpp \
+    src/abstractmessagenode.cpp
 
 HEADERS += src/httpserver.h \
     src/tufao_global.h \
@@ -67,4 +69,7 @@ HEADERS += src/httpserver.h \
     src/priv/http_parser.h \
     src/priv/url.h \
     src/ibytearray.h \
-    src/headers.h
+    src/headers.h \
+    src/websocket.h \
+    src/priv/websocket.h \
+    src/abstractmessagenode.h
