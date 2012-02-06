@@ -9,15 +9,21 @@ release {
 TEMPLATE = lib
 VERSION = 0.1.0
 
+CONFIG += QT
 QT += network
 QT -= gui
 
 # Build info
 
 DEFINES += TUFAO_LIBRARY
-OBJECTS_DIR = build
-MOC_DIR = build
 DESTDIR = lib
+release {
+    OBJECTS_DIR = build/release
+    MOC_DIR = build/release
+} else {
+    OBJECTS_DIR = build/debug
+    MOC_DIR = build/debug
+}
 
 # Install info
 

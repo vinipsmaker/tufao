@@ -89,6 +89,10 @@ To install to a different prefix, run:
 $ qmake INSTALLDIR=${DESTDIR}
 $ make install
 
+NOTE:
+If you just install the release version, you won't be able to compile debug
+Tufão projects. I highly recomend you install both versions (see next section).
+
 === EXECUTING A SYSTEM-WIDE FULL INSTALL ===
 
 If you want to install release and debug versions, run the following commands:
@@ -96,7 +100,6 @@ If you want to install release and debug versions, run the following commands:
 $ qmake
 $ make
 # make install
-$ make distclean
 $ qmake CONFIG=debug
 $ make
 # make install
@@ -118,7 +121,7 @@ CONFIG += TUFAO
 You can find some examples in the examples folder.
 
 If you want use Tufão in other build system, just add the compiler option
--ltufao.
+-ltufao for release version and -ltufao_d for debug version.
 
 You should also see Tufão documentation integrated in QtAssistant (this feature
 is experimental and is recomended to use the documentation in html format).
