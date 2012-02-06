@@ -15,7 +15,7 @@ QT -= gui
 
 # Build info
 
-DEFINES += TUFAO_LIBRARY
+DEFINES += TUFAO_LIBRARY TUFAO_VERSION=0
 DESTDIR = lib
 release {
     OBJECTS_DIR = build/release
