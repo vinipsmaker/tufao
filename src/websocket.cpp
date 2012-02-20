@@ -259,7 +259,7 @@ inline void WebSocket::close(quint16 code)
     stream << code;
 
     Priv::Frame frame = controlFrame();
-    frame.bits.opcode = Priv::FrameType::CONNECTION_CLOSE;
+    frame.setOpcode(Priv::FrameType::CONNECTION_CLOSE);
 
     writePayload(frame, data);
 }
