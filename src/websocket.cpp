@@ -221,13 +221,13 @@ inline void WebSocket::writePayload(Priv::Frame frame, const QByteArray &data)
     else
         frame.setPayloadLength(127);
 
-    priv->socket->write(frame.bytes, sizeof(Priv::Frame::bytes));
+    priv->socket->write(frame.bytes, 2);
 
-    if (size >=126 && size <= 65535) {
+    if (size >= 126 && size <= 65535) {
         uchar chunk[2];
         qToBigEndian(quint16(size), chunk);
         priv->socket->write(reinterpret_cast<char*>(chunk), sizeof(chunk));
-    } else {
+    } else if (size > 65535) {
         uchar chunk[8];
         qToBigEndian(quint64(size), chunk);
         priv->socket->write(reinterpret_cast<char*>(chunk), sizeof(chunk));
