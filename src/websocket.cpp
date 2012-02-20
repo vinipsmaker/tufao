@@ -35,7 +35,7 @@ bool WebSocket::startClientHandshake(QAbstractSocket *socket,
         return false;
 
     priv->socket = socket;
-    priv->applyMask = true;
+    priv->sentMessagesAreMasked = true;
     priv->state = Priv::CONNECTING;
 
     connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
@@ -120,7 +120,7 @@ bool WebSocket::startServerHandshake(const HttpServerRequest *request,
         return false;
 
     priv->socket = socket;
-    priv->applyMask = false;
+    priv->sentMessagesAreMasked = false;
     priv->state = Priv::OPEN;
 
     WRITE_STRING(socket->write,
@@ -144,7 +144,9 @@ bool WebSocket::startServerHandshake(const HttpServerRequest *request,
     WRITE_STRING(socket->write, "\r\n\r\n");
 
     connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-    readData(head);
+
+    if (head.size())
+        readData(head);
 
     return true;
 }
@@ -155,8 +157,8 @@ bool WebSocket::sendMessage(const QByteArray &msg)
         return false;
 
     Priv::Frame frame = standardFrame();
-    frame.bits.fin = 1;
-    frame.bits.opcode = Priv::FrameType::BINARY;
+    frame.setFinTrue();
+    frame.setOpcode(Priv::FrameType::BINARY);
 
     writePayload(frame, msg);
 
@@ -169,8 +171,8 @@ bool WebSocket::sendMessage(const QString &utf8Msg)
         return false;
 
     Priv::Frame frame = standardFrame();
-    frame.bits.fin = 1;
-    frame.bits.opcode = Priv::FrameType::TEXT;
+    frame.setFinTrue();
+    frame.setOpcode(Priv::FrameType::TEXT);
 
     writePayload(frame, utf8Msg.toUtf8());
 
@@ -190,14 +192,13 @@ void WebSocket::close()
 inline Priv::Frame WebSocket::standardFrame() const
 {
     Priv::Frame frame;
-    frame.bits.rsv1 = 0;
-    frame.bits.rsv2 = 0;
-    frame.bits.rsv3 = 0;
+    frame.bytes[0] = 0;
+    frame.bytes[1] = 0;
 
-    if (priv->applyMask)
-        frame.bits.masked = 1;
+    if (priv->sentMessagesAreMasked)
+        frame.setMaskedTrue();
     else
-        frame.bits.masked = 0;
+        frame.setMaskedFalse();
 
     return frame;
 }
@@ -205,7 +206,7 @@ inline Priv::Frame WebSocket::standardFrame() const
 inline Priv::Frame WebSocket::controlFrame() const
 {
     Priv::Frame frame = standardFrame();
-    frame.bits.fin = 1;
+    frame.setFinTrue();
     return frame;
 }
 
@@ -214,11 +215,11 @@ inline void WebSocket::writePayload(Priv::Frame frame, const QByteArray &data)
     int size = data.size();
 
     if (size < 126)
-        frame.bits.payloadLength = size;
+        frame.setPayloadLength(size);
     else if (size <= 65535)
-        frame.bits.payloadLength = 126;
+        frame.setPayloadLength(126);
     else
-        frame.bits.payloadLength = 127;
+        frame.setPayloadLength(127);
 
     priv->socket->write(frame.bytes, sizeof(Priv::Frame::bytes));
 
@@ -232,7 +233,7 @@ inline void WebSocket::writePayload(Priv::Frame frame, const QByteArray &data)
         priv->socket->write(reinterpret_cast<char*>(chunk), sizeof(chunk));
     }
 
-    if (priv->applyMask) {
+    if (priv->sentMessagesAreMasked) {
         union
         {
             quint32 key;
@@ -266,20 +267,170 @@ inline void WebSocket::close(quint16 code)
 inline void WebSocket::readData(const QByteArray &data)
 {
     priv->buffer += data;
+    switch (priv->state) {
+    case Priv::CONNECTING:
+        // TODO: this is used soon after startClientHandshake
+        break;
+    case Priv::OPEN:
+        parseBuffer();
+        break;
+    case Priv::CLOSING:
+        // TODO
+        break;
+    case Priv::CLOSED:
+    default:
+        qWarning("WebSocket: data received while in closed state");
+    }
+}
 
-//    Priv::Frame frame;
-//    qstrncpy(frame.bytes, priv->buffer.constData(), sizeof(Priv::Frame));
-//    switch (frame.bits.opcode) {
-//    case Priv::FrameType::CONTINUATION:
-//    case Priv::FrameType::TEXT:
-//    case Priv::FrameType::BINARY:
-//    case Priv::FrameType::CONNECTION_CLOSE:
-//    case Priv::FrameType::PING:
-//    case Priv::FrameType::PONG:
-//    default:
-//        // TODO: Fail the WebSocket connection
-//        ;
-//    }
+inline void WebSocket::parseBuffer()
+{
+    while (true) {
+        switch (priv->parsingState) {
+        case Priv::PARSING_FRAME:
+            if (!parseFrame()) return;
+            break;
+        case Priv::PARSING_SIZE_16BIT:
+            if (!parseSize16()) return;
+            break;
+        case Priv::PARSING_SIZE_64BIT:
+            if (!parseSize64()) return;
+            break;
+        case Priv::PARSING_MASKING_KEY:
+            if (!parseMaskingKey()) return;
+            break;
+        case Priv::PARSING_PAYLOAD_DATA:
+            if (!parsePayloadData()) return;
+        }
+    }
+}
+
+inline bool WebSocket::parseFrame()
+{
+    if (priv->buffer.size() < int(sizeof(Priv::Frame)))
+        return false;
+
+    for (uint i = 0;i != 2;++i)
+        priv->frame.bytes[i] = priv->buffer[i];
+
+    priv->buffer.remove(0, 2);
+
+    if (priv->frame.payloadLength() == 126) {
+        priv->parsingState = Priv::PARSING_SIZE_16BIT;
+    } else if (priv->frame.payloadLength() == 127) {
+        priv->parsingState = Priv::PARSING_SIZE_64BIT;
+    } else {
+        priv->remainingPayloadSize = priv->frame.payloadLength();
+
+        if (!priv->sentMessagesAreMasked)
+            priv->parsingState = Priv::PARSING_MASKING_KEY;
+        else
+            priv->parsingState = Priv::PARSING_PAYLOAD_DATA;
+    }
+
+    return true;
+}
+
+inline bool WebSocket::parseSize16()
+{
+    if (priv->buffer.size() < int(sizeof(quint16)))
+        return false;
+
+    uchar size[2];
+
+    for (uint i = 0;i != uint(sizeof(quint16));++i)
+        size[i] = priv->buffer[i];
+
+    priv->buffer.remove(0, sizeof(quint16));
+
+    priv->remainingPayloadSize = qFromBigEndian<quint16>(size);
+
+    if (!priv->sentMessagesAreMasked)
+        priv->parsingState = Priv::PARSING_MASKING_KEY;
+    else
+        priv->parsingState = Priv::PARSING_PAYLOAD_DATA;
+
+    return true;
+}
+
+inline bool WebSocket::parseSize64()
+{
+    if (priv->buffer.size() < int(sizeof(quint64)))
+        return false;
+
+    uchar size[8];
+
+    for (uint i = 0;i != uint(sizeof(quint64));++i)
+        size[i] = priv->buffer[i];
+
+    priv->buffer.remove(0, sizeof(quint64));
+
+    priv->remainingPayloadSize = qFromBigEndian<quint64>(size);
+
+    if (!priv->sentMessagesAreMasked)
+        priv->parsingState = Priv::PARSING_MASKING_KEY;
+    else
+        priv->parsingState = Priv::PARSING_PAYLOAD_DATA;
+
+    return true;
+}
+
+inline bool WebSocket::parseMaskingKey()
+{
+    if (priv->buffer.size() < int(sizeof(quint32)))
+        return false;
+
+    priv->maskingIndex = 0;
+
+    for (int i = 0;i != 4;++i)
+        *(reinterpret_cast<char *>(priv->maskingKey + i)) = priv->buffer[i];
+
+    priv->buffer.remove(0, sizeof(quint32));
+
+    priv->parsingState = Priv::PARSING_PAYLOAD_DATA;
+
+    return true;
+}
+
+inline bool WebSocket::parsePayloadData()
+{
+    if (!priv->buffer.size())
+        return false;
+
+    QByteArray chunk = priv->buffer.left(priv->remainingPayloadSize);
+    priv->buffer.remove(0, chunk.size());
+    priv->remainingPayloadSize -= chunk.size();
+
+    if (priv->deliveryType == DELIVER_PARTIAL_FRAMES) {
+        decodeFragment(chunk);
+        emit newMessage(chunk);
+    } else
+        priv->fragment += chunk;
+
+    if (priv->remainingPayloadSize)
+        return false;
+
+    if (priv->frame.fin()
+            && priv->deliveryType == DELIVER_FULL_FRAMES) {
+        decodeFragment(priv->fragment);
+        emit newMessage(priv->fragment);
+        priv->fragment.clear();
+    }
+
+    priv->parsingState = Priv::PARSING_FRAME;
+
+    return true;
+}
+
+inline void WebSocket::decodeFragment(QByteArray &fragment)
+{
+    if (priv->sentMessagesAreMasked)
+        return;
+
+    for (int i = 0;i != fragment.size();++i) {
+        fragment[i] = fragment[i] ^ priv->maskingKey[priv->maskingIndex % 4];
+        priv->maskingIndex += 1;
+    }
 }
 
 } // namespace Tufao

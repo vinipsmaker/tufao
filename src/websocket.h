@@ -108,6 +108,14 @@ private:
     void close(quint16 code);
 
     void readData(const QByteArray &data);
+    void parseBuffer();
+    bool parseFrame();
+    bool parseSize16();
+    bool parseSize64();
+    bool parseMaskingKey();
+    bool parsePayloadData();
+
+    void decodeFragment(QByteArray &fragment);
 
     Priv::WebSocket *priv;
 };

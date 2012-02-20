@@ -7,57 +7,80 @@
 namespace Tufao {
 namespace Priv {
 
-// NOTE: All WebSocket integers are represented in network byte order.
-// The network byte order is equal to QSysInfo::BigEndian
-
 union Frame {
-    struct
-    {
-        // Indicates that this is the final fragment in a message. The first
-        // fragment MAY also be the final fragment.
-        unsigned fin: 1;
-
-        // MUST be 0 unless an extension is negotiated that defines meanings
-        // for non-zero values. If a nonzero value is received and none of
-        // the negotiated extensions defines the meaning of such a nonzero
-        // value, the receiving endpoint MUST _Fail the WebSocket
-        // Connection_.
-        unsigned rsv1: 1;
-        unsigned rsv2: 1;
-        unsigned rsv3: 1;
-
-        // Defines the interpretation of the "Payload data". If an unknown
-        // opcode is received, the receiving endpoint MUST _Fail the
-        // WebSocket Connection_.
-        unsigned opcode: 4;
-
-        // Defines whether the "Payload data" is masked. If set to 1, a
-        // masking key is present in masking-key, and this is used to unmask
-        // the "Payload data" as per Section 5.3. All frames sent from
-        // client to server have this bit set to 1.
-        unsigned masked: 1;
-
-        // The length of the "Payload data", in bytes: if 0-125, that is the
-        // payload length. If 126, the following 2 bytes interpreted as a
-        // 16-bit unsigned integer are the payload length. If 127, the
-        // following 8 bytes interpreted as a 64-bit unsigned integer (the
-        // most significant bit MUST be 0) are the payload length. Multibyte
-        // length quantities are expressed in network byte order. Note that
-        // in all cases, the minimal number of bytes MUST be used to encode
-        // the length, for example, the length of a 124-byte-long string
-        // can’t be encoded as the sequence 126, 0, 124. The payload length
-        // is the length of the "Extension data" + the length of the
-        // "Application data". The length of the "Extension data" may be
-        // zero, in which case the payload length is the length of the
-        // "Application data".
-        unsigned payloadLength: 7;
-    } bits;
     char bytes[2];
+
+    bool fin() const
+    {
+        return bytes[0] & 0x80;
+    }
+
+    void setFinTrue()
+    {
+        bytes[0] |= 0x80;
+    }
+
+    void setFinFalse()
+    {
+        bytes[0] &= 0x7F;
+    }
+
+    bool rsv1() const
+    {
+        return bytes[0] & 0x40;
+    }
+
+    bool rsv2() const
+    {
+        return bytes[0] & 0x20;
+    }
+
+    bool rsv3() const
+    {
+        return bytes[0] & 0x10;
+    }
+
+    bool opcode() const
+    {
+        return bytes[0] & 0xF;
+    }
+
+    void setOpcode(quint8 opcode)
+    {
+        bytes[0] &= 0xF0;
+        bytes[0] |= opcode & 0xF;
+    }
+
+    bool masked() const
+    {
+        return bytes[1] & 0x80;
+    }
+
+    void setMaskedTrue()
+    {
+        bytes[1] |= 0x80;
+    }
+
+    void setMaskedFalse()
+    {
+        bytes[1] &= 0x7F;
+    }
+
+    quint8 payloadLength() const
+    {
+        return bytes[1] & 0x7F;
+    }
+
+    void setPayloadLength(quint8 length)
+    {
+        bytes[1] &= 0x80;
+        bytes[1] |= length & 0x7F;
+    }
 };
 
 namespace FrameType
 {
-enum
+enum FrameType
 {
     // non-control frames ('\x00' to '\x07')
     CONTINUATION = '\x00',
@@ -69,6 +92,11 @@ enum
     PONG = '\x0A'
 };
 } // namespace FrameType
+
+inline bool isControlFrame(FrameType::FrameType opcode)
+{
+    return opcode >= '\x08' && opcode <= '\x0F';
+}
 
 namespace StatusCode {
 enum
@@ -94,20 +122,38 @@ enum State
     CLOSED
 };
 
+enum ParsingState
+{
+    PARSING_FRAME,
+    PARSING_SIZE_16BIT,
+    PARSING_SIZE_64BIT,
+    PARSING_MASKING_KEY,
+    PARSING_PAYLOAD_DATA
+};
+
 struct WebSocket
 {
     WebSocket(Tufao::WebSocket::DeliveryType deliveryType) :
         deliveryType(deliveryType),
-        state(CLOSED)
+        state(CLOSED),
+        parsingState(PARSING_FRAME)
     {}
 
     Tufao::WebSocket::DeliveryType deliveryType;
 
     QAbstractSocket *socket;
-    bool applyMask;
-    State state;
-
     QByteArray buffer;
+
+    State state;
+    bool sentMessagesAreMasked;
+
+    ParsingState parsingState;
+    quint64 remainingPayloadSize;
+    quint8 maskingKey[4];
+    quint8 maskingIndex;
+
+    Frame frame;
+    QByteArray fragment;
 };
 
 } // namespace Priv
