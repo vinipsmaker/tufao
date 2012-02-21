@@ -147,7 +147,7 @@ struct WebSocket
     QByteArray buffer;
 
     State state;
-    bool sentMessagesAreMasked;
+    bool isClientNode;
 
     ParsingState parsingState;
     quint64 remainingPayloadSize;

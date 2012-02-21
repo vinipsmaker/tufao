@@ -34,7 +34,7 @@ bool WebSocket::startClientHandshake(QAbstractSocket *socket,
         return false;
 
     priv->socket = socket;
-    priv->sentMessagesAreMasked = true;
+    priv->isClientNode = true;
     priv->state = Priv::CONNECTING;
 
     connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
@@ -119,7 +119,7 @@ bool WebSocket::startServerHandshake(const HttpServerRequest *request,
         return false;
 
     priv->socket = socket;
-    priv->sentMessagesAreMasked = false;
+    priv->isClientNode = false;
     priv->state = Priv::OPEN;
 
     WRITE_STRING(socket->write,
@@ -217,7 +217,7 @@ inline Priv::Frame WebSocket::standardFrame() const
     frame.bytes[0] = 0;
     frame.bytes[1] = 0;
 
-    if (priv->sentMessagesAreMasked)
+    if (priv->isClientNode)
         frame.setMaskedTrue();
     else
         frame.setMaskedFalse();
@@ -255,7 +255,7 @@ inline void WebSocket::writePayload(Priv::Frame frame, const QByteArray &data)
         priv->socket->write(reinterpret_cast<char*>(chunk), sizeof(chunk));
     }
 
-    if (priv->sentMessagesAreMasked) {
+    if (priv->isClientNode) {
         union
         {
             quint32 key;
@@ -344,7 +344,7 @@ inline bool WebSocket::parseFrame()
     } else {
         priv->remainingPayloadSize = priv->frame.payloadLength();
 
-        if (!priv->sentMessagesAreMasked)
+        if (!priv->isClientNode)
             priv->parsingState = Priv::PARSING_MASKING_KEY;
         else
             priv->parsingState = Priv::PARSING_PAYLOAD_DATA;
@@ -367,7 +367,7 @@ inline bool WebSocket::parseSize16()
 
     priv->remainingPayloadSize = qFromBigEndian<quint16>(size);
 
-    if (!priv->sentMessagesAreMasked)
+    if (!priv->isClientNode)
         priv->parsingState = Priv::PARSING_MASKING_KEY;
     else
         priv->parsingState = Priv::PARSING_PAYLOAD_DATA;
@@ -389,7 +389,7 @@ inline bool WebSocket::parseSize64()
 
     priv->remainingPayloadSize = qFromBigEndian<quint64>(size);
 
-    if (!priv->sentMessagesAreMasked)
+    if (!priv->isClientNode)
         priv->parsingState = Priv::PARSING_MASKING_KEY;
     else
         priv->parsingState = Priv::PARSING_PAYLOAD_DATA;
@@ -446,7 +446,7 @@ inline bool WebSocket::parsePayloadData()
 
 inline void WebSocket::decodeFragment(QByteArray &fragment)
 {
-    if (priv->sentMessagesAreMasked)
+    if (priv->isClientNode)
         return;
 
     for (int i = 0;i != fragment.size();++i) {
