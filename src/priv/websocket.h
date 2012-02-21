@@ -135,11 +135,13 @@ struct WebSocket
 {
     WebSocket(Tufao::WebSocket::DeliveryType deliveryType) :
         deliveryType(deliveryType),
+        messageType(Tufao::WebSocket::BINARY_MESSAGE),
         state(CLOSED),
         parsingState(PARSING_FRAME)
     {}
 
     Tufao::WebSocket::DeliveryType deliveryType;
+    Tufao::WebSocket::MessageType messageType;
 
     QAbstractSocket *socket;
     QByteArray buffer;

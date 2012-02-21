@@ -26,6 +26,12 @@ public:
         DELIVER_PARTIAL_FRAMES
     };
 
+    enum MessageType
+    {
+        TEXT_MESSAGE,
+        BINARY_MESSAGE
+    };
+
     explicit WebSocket(DeliveryType deliveryType = DELIVER_FULL_FRAMES,
                        QObject *parent = 0);
     ~WebSocket();
@@ -88,6 +94,27 @@ public:
                               const QByteArray &head,
                               const Headers &headers = Headers());
 
+    /*!
+      Set the type of messages sent through WebSocket::sendMessage method.
+
+      \note
+      Another way of choose the type of sent messages is through
+      WebSocket::sendBinaryMessage and WebSocket::sendUtf8Message methods.
+
+      \note
+      The default value is BINARY_MESSAGE
+      */
+    void setMessagesType(MessageType type);
+
+    /*!
+      Return the current type of messages what will be sent through
+      WebSocket::sendMessage method.
+
+      \sa
+      Tufao::WebSocket::setMessagesType
+      */
+    MessageType messagesType();
+
     void close();
 
 signals:
@@ -95,7 +122,8 @@ signals:
 
 public slots:
     bool sendMessage(const QByteArray &msg);
-    bool sendMessage(const QString &utf8Msg);
+    bool sendBinaryMessage(const QByteArray &msg);
+    bool sendUtf8Message(const QByteArray &msg);
 
 private slots:
     void onReadyRead();

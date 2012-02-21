@@ -150,7 +150,35 @@ bool WebSocket::startServerHandshake(const HttpServerRequest *request,
     return true;
 }
 
+void WebSocket::setMessagesType(WebSocket::MessageType type)
+{
+    priv->messageType = type;
+}
+
+WebSocket::MessageType WebSocket::messagesType()
+{
+    return priv->messageType;
+}
+
+void WebSocket::close()
+{
+    close(Priv::StatusCode::NORMAL);
+}
+
 bool WebSocket::sendMessage(const QByteArray &msg)
+{
+    switch (priv->messageType) {
+    case BINARY_MESSAGE:
+        return sendBinaryMessage(msg);
+    case TEXT_MESSAGE:
+        return sendUtf8Message(msg);
+    default:
+        qWarning("Tufao::WebSocket::sendMessage: Invalid message type to send");
+        return false;
+    }
+}
+
+bool WebSocket::sendBinaryMessage(const QByteArray &msg)
 {
     if (priv->state != Priv::OPEN)
         return false;
@@ -164,7 +192,7 @@ bool WebSocket::sendMessage(const QByteArray &msg)
     return true;
 }
 
-bool WebSocket::sendMessage(const QString &utf8Msg)
+bool WebSocket::sendUtf8Message(const QByteArray &msg)
 {
     if (priv->state != Priv::OPEN)
         return false;
@@ -173,7 +201,7 @@ bool WebSocket::sendMessage(const QString &utf8Msg)
     frame.setFinTrue();
     frame.setOpcode(Priv::FrameType::TEXT);
 
-    writePayload(frame, utf8Msg.toUtf8());
+    writePayload(frame, msg);
 
     return true;
 }
@@ -181,11 +209,6 @@ bool WebSocket::sendMessage(const QString &utf8Msg)
 void WebSocket::onReadyRead()
 {
     readData(priv->socket->readAll());
-}
-
-void WebSocket::close()
-{
-    close(Priv::StatusCode::NORMAL);
 }
 
 inline Priv::Frame WebSocket::standardFrame() const
