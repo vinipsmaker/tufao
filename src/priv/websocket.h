@@ -15,12 +15,12 @@ union Frame {
         return bytes[0] & 0x80;
     }
 
-    void setFinTrue()
+    void setFin()
     {
         bytes[0] |= 0x80;
     }
 
-    void setFinFalse()
+    void unsetFin()
     {
         bytes[0] &= 0x7F;
     }
@@ -56,12 +56,12 @@ union Frame {
         return bytes[1] & 0x80;
     }
 
-    void setMaskedTrue()
+    void setMasked()
     {
         bytes[1] |= 0x80;
     }
 
-    void setMaskedFalse()
+    void unsetMasked()
     {
         bytes[1] &= 0x7F;
     }

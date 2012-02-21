@@ -184,7 +184,7 @@ bool WebSocket::sendBinaryMessage(const QByteArray &msg)
         return false;
 
     Priv::Frame frame = standardFrame();
-    frame.setFinTrue();
+    frame.setFin();
     frame.setOpcode(Priv::FrameType::BINARY);
 
     writePayload(frame, msg);
@@ -198,7 +198,7 @@ bool WebSocket::sendUtf8Message(const QByteArray &msg)
         return false;
 
     Priv::Frame frame = standardFrame();
-    frame.setFinTrue();
+    frame.setFin();
     frame.setOpcode(Priv::FrameType::TEXT);
 
     writePayload(frame, msg);
@@ -218,9 +218,9 @@ inline Priv::Frame WebSocket::standardFrame() const
     frame.bytes[1] = 0;
 
     if (priv->isClientNode)
-        frame.setMaskedTrue();
+        frame.setMasked();
     else
-        frame.setMaskedFalse();
+        frame.unsetMasked();
 
     return frame;
 }
@@ -228,7 +228,7 @@ inline Priv::Frame WebSocket::standardFrame() const
 inline Priv::Frame WebSocket::controlFrame() const
 {
     Priv::Frame frame = standardFrame();
-    frame.setFinTrue();
+    frame.setFin();
     return frame;
 }
 
