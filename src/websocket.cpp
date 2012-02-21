@@ -4,7 +4,6 @@
 
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QtEndian>
-#include <QtCore/QDataStream>
 #include <QtNetwork/QHostAddress>
 
 // Writes a string without the '\0' char using function \p func
@@ -253,10 +252,10 @@ inline void WebSocket::writePayload(Priv::Frame frame, const QByteArray &data)
 
 inline void WebSocket::close(quint16 code)
 {
-    QByteArray data;
-    QDataStream stream(priv->socket);
-    stream.setByteOrder(QDataStream::BigEndian);
-    stream << code;
+    uchar chunk[2];
+    qToBigEndian(code, chunk);
+
+    QByteArray data(reinterpret_cast<char*>(chunk), 2);
 
     Priv::Frame frame = controlFrame();
     frame.setOpcode(Priv::FrameType::CONNECTION_CLOSE);
