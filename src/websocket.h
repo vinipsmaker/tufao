@@ -4,7 +4,7 @@
 #include "abstractmessagenode.h"
 #include "headers.h"
 
-class QAbstractSocket;
+class QHostAddress;
 
 namespace Tufao {
 namespace Priv {
@@ -40,8 +40,20 @@ public:
           comma-separated subprotocol the client wishes to speak, ordered by
           preference.
       */
-    bool startClientHandshake(QAbstractSocket *socket,
+    /*bool startClientHandshake(QAbstractSocket *socket,
                               const QByteArray &host,
+                              const QByteArray &resource,
+                              const Headers &headers = Headers());*/
+
+    /*!
+      */
+    bool startClientHandshake(const QHostAddress &address, quint16 port,
+                              const QByteArray &resource,
+                              const Headers &headers = Headers());
+
+    /*!
+      */
+    bool startClientHandshake(const QHostAddress &address,
                               const QByteArray &resource,
                               const Headers &headers = Headers());
 
@@ -50,9 +62,9 @@ public:
 
       It uses \p socket to fill the "Host" header.
       */
-    bool startClientHandshake(QAbstractSocket *socket,
+    /*bool startClientHandshake(QAbstractSocket *socket,
                               const QByteArray &resource,
-                              const Headers &headers = Headers());
+                              const Headers &headers = Headers());*/
 
     /*!
       \note
@@ -119,6 +131,7 @@ public slots:
     bool ping(const QByteArray &data);
 
 private slots:
+    void onConnected();
     void onReadyRead();
     void onDisconnected();
 

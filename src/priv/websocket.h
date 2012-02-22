@@ -167,6 +167,11 @@ struct WebSocket
     quint8 maskingKey[4];
     quint8 maskingIndex;
 
+    // Used by client nodes during the opening handshake
+    Headers headers;
+    QByteArray resource;
+    QByteArray expectedWebSocketAccept;
+
     // CURRENT frame:
     Frame frame;
     QByteArray payload;

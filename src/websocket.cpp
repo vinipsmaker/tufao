@@ -5,6 +5,7 @@
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QtEndian>
 #include <QtNetwork/QHostAddress>
+#include <QtNetwork/QTcpSocket>
 
 // Writes a string without the '\0' char using function \p func
 #define WRITE_STRING(func, chunk) (func)(chunk, sizeof(chunk) - 1)
@@ -25,68 +26,39 @@ WebSocket::~WebSocket()
     delete priv;
 }
 
-bool WebSocket::startClientHandshake(QAbstractSocket *socket,
-                                     const QByteArray &host,
+bool WebSocket::startClientHandshake(const QHostAddress &address, quint16 port,
                                      const QByteArray &resource,
                                      const Headers &headers)
 {
-    if (!socket->isOpen())
+    if (priv->state != Priv::CLOSED)
         return false;
 
-    priv->socket = socket;
     priv->isClientNode = true;
     priv->state = Priv::CONNECTING;
+    priv->socket = new QTcpSocket(this);
 
-    connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+    connect(this, SIGNAL(disconnected()), priv->socket, SLOT(deleteLater()));
 
-    WRITE_STRING(socket->write, "GET ");
-    socket->write(resource);
-    WRITE_STRING(socket->write, " HTTP/1.1\r\n");
+    priv->headers = headers;
+    priv->resource = resource;
 
-    for (Headers::const_iterator i = headers.begin();i != headers.end();++i) {
-        socket->write(i.key());
-        socket->write(": ", 2);
-        socket->write(i.value());
-        socket->write(CRLF);
+    if (!headers.contains("Host")) {
+        priv->headers.insert("Host",
+                             (address.toString() + ':'
+                              + QString::number(port)).toUtf8());
     }
-    WRITE_STRING(socket->write, "Host: ");
-    socket->write(host);
-    WRITE_STRING(socket->write, "\r\n"
 
-                 "Upgrade: websocket\r\n"
-                 "Connection: Upgrade\r\n"
-                 "Sec-WebSocket-Version: 13\r\n"
-
-                 "Sec-WebSocket-Key: ");
-    {
-        static const int SUBSTR_SIZE = int(sizeof(int));
-        union
-        {
-            int i;
-            char str[sizeof(int)];
-        } chunk;
-        QByteArray headerValue;
-        headerValue.reserve(16);
-
-        for (int i = 0;i < 16;i += SUBSTR_SIZE) {
-            chunk.i = qrand();
-            headerValue.append(chunk.str, qMin(SUBSTR_SIZE, 16 - i));
-        }
-
-        socket->write(headerValue.toBase64());
-    }
-    WRITE_STRING(socket->write, "\r\n\r\n");
+    connect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
+    connect(priv->socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
 
     return true;
 }
 
-bool WebSocket::startClientHandshake(QAbstractSocket *socket,
+bool WebSocket::startClientHandshake(const QHostAddress &address,
                                      const QByteArray &resource,
                                      const Headers &headers)
 {
-    return startClientHandshake(socket, (socket->peerAddress().toString() + ':'
-                                         + socket->peerPort()).toUtf8(),
-                                resource, headers);
+    return startClientHandshake(address, 80, resource, headers);
 }
 
 bool WebSocket::startServerHandshake(const HttpServerRequest *request,
@@ -217,6 +189,58 @@ bool WebSocket::ping(const QByteArray &data)
     writePayload(frame, data);
 
     return true;
+}
+
+void WebSocket::onConnected()
+{
+    WRITE_STRING(priv->socket->write, "GET ");
+    priv->socket->write(priv->resource);
+    WRITE_STRING(priv->socket->write, " HTTP/1.1\r\n");
+
+    for (Headers::const_iterator i = priv->headers.constBegin()
+         ;i != priv->headers.constEnd();++i) {
+        priv->socket->write(i.key());
+        priv->socket->write(": ", 2);
+        priv->socket->write(i.value());
+        priv->socket->write(CRLF);
+    }
+    WRITE_STRING(priv->socket->write,
+                 "Upgrade: websocket\r\n"
+                 "Connection: Upgrade\r\n"
+                 "Sec-WebSocket-Version: 13\r\n"
+
+                 "Sec-WebSocket-Key: ");
+    {
+        static const int SUBSTR_SIZE = int(sizeof(int));
+        union
+        {
+            int i;
+            char str[sizeof(int)];
+        } chunk;
+        QByteArray headerValue;
+        headerValue.reserve(16);
+
+        for (int i = 0;i < 16;i += SUBSTR_SIZE) {
+            chunk.i = qrand();
+            headerValue.append(chunk.str, qMin(SUBSTR_SIZE, 16 - i));
+        }
+
+        headerValue = headerValue.toBase64();
+
+        priv->expectedWebSocketAccept
+                = QCryptographicHash::hash(headerValue + "258EAFA5-E914-47DA"
+                                           "-95CA-C5AB0DC85B11",
+                                           QCryptographicHash::Sha1).toBase64();
+
+        priv->socket->write(headerValue);
+    }
+    WRITE_STRING(priv->socket->write, "\r\n\r\n");
+
+    disconnect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
+    connect(priv->socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+
+    priv->headers.clear();
+    priv->resource.clear();
 }
 
 void WebSocket::onReadyRead()
