@@ -305,6 +305,8 @@ inline void WebSocket::close(quint16 code)
     frame.setOpcode(Priv::FrameType::CONNECTION_CLOSE);
 
     writePayload(frame, data);
+
+    priv->state = Priv::CLOSING;
 }
 
 inline void WebSocket::readData(const QByteArray &data)
