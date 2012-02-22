@@ -526,12 +526,14 @@ inline void WebSocket::evaluateControlFrame()
             priv->socket->close();
             priv->state = Priv::CLOSING;
         }
+        break;
     }
     case Priv::FrameType::PING:
     {
         Priv::Frame frame = controlFrame();
         frame.setOpcode(Priv::FrameType::PONG);
         writePayload(frame, priv->payload);
+        break;
     }
     case Priv::FrameType::PONG:
         emit pong(priv->payload);
