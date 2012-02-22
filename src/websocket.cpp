@@ -388,8 +388,8 @@ inline bool WebSocket::parseFrame()
         return false;
     }
 
-    if (priv->frame.masked() && priv->isClientNode
-            || !priv->frame.masked() && !priv->isClientNode) {
+    if ((priv->frame.masked() && priv->isClientNode)
+            || (!priv->frame.masked() && !priv->isClientNode)) {
         close(Priv::StatusCode::PROTOCOL_ERROR);
         priv->socket->close();
         return false;
