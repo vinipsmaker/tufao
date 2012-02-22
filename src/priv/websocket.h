@@ -40,7 +40,7 @@ union Frame {
         return bytes[0] & 0x10;
     }
 
-    bool opcode() const
+    quint8 opcode() const
     {
         return bytes[0] & 0xF;
     }
@@ -76,13 +76,23 @@ union Frame {
         bytes[1] &= 0x80;
         bytes[1] |= length & 0x7F;
     }
+
+    bool isControlFrame()
+    {
+        return bytes[0] & 0x8;
+    }
+
+    bool isDataFrame()
+    {
+        return !isControlFrame();
+    }
 };
 
 namespace FrameType
 {
 enum FrameType
 {
-    // non-control frames ('\x00' to '\x07')
+    // data frames ('\x00' to '\x07')
     CONTINUATION = '\x00',
     TEXT = '\x01',
     BINARY = '\x02',
@@ -95,7 +105,12 @@ enum FrameType
 
 inline bool isControlFrame(FrameType::FrameType opcode)
 {
-    return opcode >= '\x08' && opcode <= '\x0F';
+    return opcode & 0x8;
+}
+
+inline bool isDataFrame(FrameType::FrameType opcode)
+{
+    return !isControlFrame(opcode);
 }
 
 namespace StatusCode {
@@ -133,14 +148,12 @@ enum ParsingState
 
 struct WebSocket
 {
-    WebSocket(Tufao::WebSocket::DeliveryType deliveryType) :
-        deliveryType(deliveryType),
+    WebSocket() :
         messageType(Tufao::WebSocket::BINARY_MESSAGE),
         state(CLOSED),
         parsingState(PARSING_FRAME)
     {}
 
-    Tufao::WebSocket::DeliveryType deliveryType;
     Tufao::WebSocket::MessageType messageType;
 
     QAbstractSocket *socket;
@@ -154,7 +167,12 @@ struct WebSocket
     quint8 maskingKey[4];
     quint8 maskingIndex;
 
+    // CURRENT frame:
     Frame frame;
+    QByteArray payload;
+
+    // Used in fragmented messages
+    quint8 fragmentOpcode;
     QByteArray fragment;
 };
 

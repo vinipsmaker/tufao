@@ -12,9 +12,11 @@ public:
     explicit AbstractMessageNode(QObject *parent = 0);
 
 signals:
+    void disconnected();
     void newMessage(QByteArray msg);
 
 public slots:
+    virtual void close() = 0;
     virtual bool sendMessage(const QByteArray &msg) = 0;
 };
 

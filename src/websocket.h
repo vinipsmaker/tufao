@@ -20,20 +20,13 @@ class WebSocket : public AbstractMessageNode
 {
     Q_OBJECT
 public:
-    enum DeliveryType
-    {
-        DELIVER_FULL_FRAMES,
-        DELIVER_PARTIAL_FRAMES
-    };
-
     enum MessageType
     {
         TEXT_MESSAGE,
         BINARY_MESSAGE
     };
 
-    explicit WebSocket(DeliveryType deliveryType = DELIVER_FULL_FRAMES,
-                       QObject *parent = 0);
+    explicit WebSocket(QObject *parent = 0);
     ~WebSocket();
 
     /*!
@@ -115,18 +108,19 @@ public:
       */
     MessageType messagesType();
 
-    void close();
-
 signals:
-    void closeRequest();
+    void pong(QByteArray data);
 
 public slots:
+    void close();
     bool sendMessage(const QByteArray &msg);
     bool sendBinaryMessage(const QByteArray &msg);
     bool sendUtf8Message(const QByteArray &msg);
+    bool ping(const QByteArray &data);
 
 private slots:
     void onReadyRead();
+    void onDisconnected();
 
 private:
     Priv::Frame standardFrame() const;
@@ -144,6 +138,7 @@ private:
     bool parsePayloadData();
 
     void decodeFragment(QByteArray &fragment);
+    void evaluateControlFrame();
 
     Priv::WebSocket *priv;
 };
