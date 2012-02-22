@@ -40,31 +40,18 @@ public:
           comma-separated subprotocol the client wishes to speak, ordered by
           preference.
       */
-    /*bool startClientHandshake(QAbstractSocket *socket,
-                              const QByteArray &host,
-                              const QByteArray &resource,
-                              const Headers &headers = Headers());*/
-
-    /*!
-      */
     bool startClientHandshake(const QHostAddress &address, quint16 port,
-                              const QByteArray &resource,
-                              const Headers &headers = Headers());
-
-    /*!
-      */
-    bool startClientHandshake(const QHostAddress &address,
                               const QByteArray &resource,
                               const Headers &headers = Headers());
 
     /*!
       This is an overloaded function.
 
-      It uses \p socket to fill the "Host" header.
+      It uses port 80 to establish the connection.
       */
-    /*bool startClientHandshake(QAbstractSocket *socket,
+    bool startClientHandshake(const QHostAddress &address,
                               const QByteArray &resource,
-                              const Headers &headers = Headers());*/
+                              const Headers &headers = Headers());
 
     /*!
       \note
