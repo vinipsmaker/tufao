@@ -359,9 +359,9 @@ inline bool WebSocket::parseFrame()
     priv->buffer.remove(0, 2);
 
     if (!priv->frame.fin() && priv->frame.isControlFrame()) {
-        // Control frames must not be fragmented.
-        // TODO: _Fail the WebSocket connection_
-        // close the connection and return
+        close(Priv::StatusCode::PROTOCOL_ERROR);
+        priv->socket->close();
+        return false;
     }
 
     if (priv->frame.payloadLength() == 126) {
@@ -537,7 +537,8 @@ inline void WebSocket::evaluateControlFrame()
         emit pong(priv->payload);
         break;
     default:
-        // TODO: _Fail the WebSocket connection_
+        close(Priv::StatusCode::UNKOWN_ERROR);
+        priv->socket->close();
         break;
     }
     priv->payload.clear();
