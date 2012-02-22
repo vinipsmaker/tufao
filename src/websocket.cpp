@@ -364,6 +364,13 @@ inline bool WebSocket::parseFrame()
         return false;
     }
 
+    if (priv->frame.masked() && priv->isClientNode
+            || !priv->frame.masked() && !priv->isClientNode) {
+        close(Priv::StatusCode::PROTOCOL_ERROR);
+        priv->socket->close();
+        return false;
+    }
+
     if (priv->frame.payloadLength() == 126) {
         priv->parsingState = Priv::PARSING_SIZE_16BIT;
     } else if (priv->frame.payloadLength() == 127) {
