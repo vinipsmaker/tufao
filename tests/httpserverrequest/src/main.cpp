@@ -1,5 +1,5 @@
 #include <QCoreApplication>
-#include <httpserver.h>
+#include <Tufao/HttpServer>
 #include "testsguide.h"
 
 int main(int argc, char *argv[])

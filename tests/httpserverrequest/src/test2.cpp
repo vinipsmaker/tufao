@@ -1,6 +1,6 @@
 #include "test2.h"
-#include <httpserverrequest.h>
-#include <headers.h>
+#include <Tufao/HttpServerRequest>
+#include <Tufao/Headers>
 
 #ifndef TIMEOUT_CLIENT_TIME
 # error TIMEOUT_CLIENT_TIME not defined

@@ -1,6 +1,6 @@
-#include <httpserverresponse.h>
+#include <Tufao/HttpServerResponse>
 #include <QBuffer>
-#include <headers.h>
+#include <Tufao/Headers>
 
 /*!
   Do a simple HTTP/1.1 stream test.

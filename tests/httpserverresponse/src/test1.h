@@ -1,5 +1,5 @@
-#include <httpserverresponse.h>
-#include <headers.h>
+#include <Tufao/HttpServerResponse>
+#include <Tufao/Headers>
 #include <QBuffer>
 
 /*!

@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include "abstracttest.h"
-#include <httpserver.h>
+#include <Tufao/HttpServer>
 #include "test8.h"
 
 class TestsGuide : public Tufao::HttpServer

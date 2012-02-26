@@ -1,6 +1,6 @@
 #include "test10.h"
-#include <httpserverrequest.h>
-#include <headers.h>
+#include <Tufao/HttpServerRequest>
+#include <Tufao/Headers>
 
 /*
   Reference message:

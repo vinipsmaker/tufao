@@ -1,4 +1,4 @@
-#include <httpserverresponse.h>
+#include <Tufao/HttpServerResponse>
 #include <QBuffer>
 
 /*!

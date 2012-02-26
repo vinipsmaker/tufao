@@ -6,8 +6,8 @@
 #include "test6.h"
 #include "test9.h"
 #include "test10.h"
-#include <httpserverrequest.h>
-#include <headers.h>
+#include <Tufao/HttpServerRequest>
+#include <Tufao/Headers>
 #include <QCoreApplication>
 #include <cstdlib>
 
