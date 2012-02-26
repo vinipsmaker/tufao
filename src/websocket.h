@@ -233,37 +233,36 @@ public:
       If the object fail to establish a connection, it will emit disconnected
       signal. If it procceds, it will emit the connected signal.
       */
-    bool startClientHandshake(const QHostAddress &address, quint16 port,
-                              const QByteArray &resource,
-                              const Headers &headers = Headers());
+    bool connectToHost(const QHostAddress &address, quint16 port,
+                       const QByteArray &resource,
+                       const Headers &headers = Headers());
 
     /*!
       This is an overloaded function.
 
       It uses port 80 to establish the connection.
       */
-    bool startClientHandshake(const QHostAddress &address,
-                              const QByteArray &resource,
-                              const Headers &headers = Headers());
+    bool connectToHost(const QHostAddress &address, const QByteArray &resource,
+                       const Headers &headers = Headers());
 
     /*!
-      The same as WebSocket::startClientHandshake, but uses a TLS connection.
+      The same as WebSocket::connectToHost, but uses a TLS connection.
 
       \sa
-      Tufao::WebSocket::startClientHandshake
+      Tufao::WebSocket::connectToHost
       */
-    bool startSecureClientHandshake(const QString &address, quint16 port,
-                                    const QByteArray &resource,
-                                    const Headers &headers = Headers());
+    bool connectToHostEncrypted(const QString &address, quint16 port,
+                                const QByteArray &resource,
+                                const Headers &headers = Headers());
 
     /*!
       This is an overloaded function.
 
       It uses port 443 to establish the connection.
       */
-    bool startSecureClientHandshake(const QString &address,
-                                    const QByteArray &resource,
-                                    const Headers &headers = Headers());
+    bool connectToHostEncrypted(const QString &address,
+                                const QByteArray &resource,
+                                const Headers &headers = Headers());
 
     /*!
       It establish a WebSocket connection initiated by \p request with \p head
@@ -388,9 +387,8 @@ private slots:
     void onDisconnected();
 
 private:
-    void startClientHandshake(QAbstractSocket *socket,
-                              const QByteArray &resource,
-                              const Headers &headers = Headers());
+    void connectToHost(QAbstractSocket *socket, const QByteArray &resource,
+                       const Headers &headers = Headers());
 
     bool isResponseOkay();
     void onClientHandshakeError();

@@ -44,9 +44,9 @@ WebSocket::~WebSocket()
     delete priv;
 }
 
-bool WebSocket::startClientHandshake(const QHostAddress &address, quint16 port,
-                                     const QByteArray &resource,
-                                     const Headers &headers)
+bool WebSocket::connectToHost(const QHostAddress &address, quint16 port,
+                              const QByteArray &resource,
+                              const Headers &headers)
 {
     if (priv->state != Priv::CLOSED)
         return false;
@@ -58,23 +58,22 @@ bool WebSocket::startClientHandshake(const QHostAddress &address, quint16 port,
     }
 
     QAbstractSocket *socket = new QTcpSocket(this);
-    startClientHandshake(socket, resource, headers);
+    connectToHost(socket, resource, headers);
     socket->connectToHost(address, port);
 
     return true;
 }
 
-bool WebSocket::startClientHandshake(const QHostAddress &address,
-                                     const QByteArray &resource,
-                                     const Headers &headers)
+bool WebSocket::connectToHost(const QHostAddress &address,
+                              const QByteArray &resource,
+                              const Headers &headers)
 {
-    return startClientHandshake(address, 80, resource, headers);
+    return connectToHost(address, 80, resource, headers);
 }
 
-bool WebSocket::startSecureClientHandshake(const QString &address,
-                                           quint16 port,
-                                           const QByteArray &resource,
-                                           const Headers &headers)
+bool WebSocket::connectToHostEncrypted(const QString &address, quint16 port,
+                                       const QByteArray &resource,
+                                       const Headers &headers)
 {
     if  (priv->state != Priv::CLOSED)
         return false;
@@ -86,17 +85,17 @@ bool WebSocket::startSecureClientHandshake(const QString &address,
     }
 
     QSslSocket *socket = new QSslSocket(this);
-    startClientHandshake(socket, resource, headers);
+    connectToHost(socket, resource, headers);
     socket->connectToHostEncrypted(address, port);
 
     return true;
 }
 
-bool WebSocket::startSecureClientHandshake(const QString &address,
-                                           const QByteArray &resource,
-                                           const Headers &headers)
+bool WebSocket::connectToHostEncrypted(const QString &address,
+                                       const QByteArray &resource,
+                                       const Headers &headers)
 {
-    return startSecureClientHandshake(address, 443, resource, headers);
+    return connectToHostEncrypted(address, 443, resource, headers);
 }
 
 bool WebSocket::startServerHandshake(const HttpServerRequest *request,
@@ -427,9 +426,9 @@ void WebSocket::onDisconnected()
     emit disconnected();
 }
 
-void WebSocket::startClientHandshake(QAbstractSocket *socket,
-                                     const QByteArray &resource,
-                                     const Headers &headers)
+void WebSocket::connectToHost(QAbstractSocket *socket,
+                              const QByteArray &resource,
+                              const Headers &headers)
 {
     priv->isClientNode = true;
     priv->state = Priv::CONNECTING;
