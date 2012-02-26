@@ -40,6 +40,9 @@ INSTALLS = target qmakefile headers
 
 # Project files
 
+OTHER_FILES += \
+    src/doc/main.h
+
 SOURCES += src/httpserver.cpp \
     src/httpserverrequest.cpp \
     src/httpserverresponse.cpp \
