@@ -34,7 +34,7 @@ union Frame;
 
 class HttpServerRequest;
 
-class WebSocket : public AbstractMessageSocket
+class TUFAO_EXPORT WebSocket : public AbstractMessageSocket
 {
     Q_OBJECT
 public:

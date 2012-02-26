@@ -20,10 +20,11 @@
 #define TUFAO_ABSTRACTMESSAGEDISPATCHER_H
 
 #include <QtCore/QObject>
+#include "tufao_global.h"
 
 namespace Tufao {
 
-class AbstractMessageSocket : public QObject
+class TUFAO_EXPORT AbstractMessageSocket : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool connected READ isConnected FINAL)
