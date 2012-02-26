@@ -24,6 +24,9 @@
 
 namespace Tufao {
 
+/*!
+  \since 0.2
+  */
 class TUFAO_EXPORT AbstractMessageSocket : public QObject
 {
     Q_OBJECT

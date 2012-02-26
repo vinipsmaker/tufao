@@ -203,6 +203,8 @@ signals:
       Tufao::HttpServerRequest::responseOptions
       Tufao::HttpServerRequest::data
       Tufao::HttpServerRequest::end
+
+      \since 0.2
       */
     void ready();
 
