@@ -193,7 +193,7 @@ QString WebSocket::errorString() const
         return "See QAbstractSocket::SocketAccessError";
     case OUT_OF_RESOURCES:
         return "See QAbstractSocket::SocketResourceError";
-    case TIMEOUT:
+    case SOCKET_TIMEOUT:
         return "See QAbstractSocket::SocketTimeoutError";
     case NETWORK_ERROR:
         return "See QAbstractSocket::NetworkError";
@@ -319,7 +319,7 @@ void WebSocket::onSocketError(QAbstractSocket::SocketError error)
         priv->lastError = ACCESS_ERROR;
         break;
     case QAbstractSocket::SocketTimeoutError:
-        priv->lastError = TIMEOUT;
+        priv->lastError = SOCKET_TIMEOUT;
         break;
     case QAbstractSocket::SocketResourceError:
         priv->lastError = OUT_OF_RESOURCES;

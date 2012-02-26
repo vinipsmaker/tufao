@@ -100,7 +100,7 @@ public:
           It can happen during the opening handshake (only when acting as
           client).
           */
-        TIMEOUT,
+        SOCKET_TIMEOUT,
         /*!
           See QAbstractSocket::NetworkError.
 
