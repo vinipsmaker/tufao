@@ -27,8 +27,7 @@ namespace Tufao {
 /*!
   This class provides a representation of HTTP headers.
 
-  HTTP headers are information stored in the form of an associative set, where
-  the key and the value are strings, but the key is case insensitive.
+  HTTP headers are string-based properties with case-insensitive keys.
 
   \sa
   Tufao::IByteArray
