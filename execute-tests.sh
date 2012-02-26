@@ -8,6 +8,6 @@ for i in $(ls tests); do
     qmake CONFIG+=debug
     make > /dev/null
     ./bin/test || exit 1
-    make distclean
+    make distclean > /dev/null
     cd - > /dev/null
 done
