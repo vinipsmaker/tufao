@@ -207,6 +207,8 @@ public:
       \note
       You still need to call HttpServerResponse::end when done with the
       connection and HttpServerResponse::writeHead before use this operator.
+
+      \since 0.2
       */
     HttpServerResponse &operator <<(const QByteArray &chunk);
 
