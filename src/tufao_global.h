@@ -1,5 +1,5 @@
 /*  This file is part of the Tufão project
-    Copyright (C) 2011 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+    Copyright (C) 2011-2012 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,14 @@
 #  define TUFAO_EXPORT Q_DECL_EXPORT
 #else
 #  define TUFAO_EXPORT Q_DECL_IMPORT
+#endif
+
+#ifndef TUFAO_VERSION_MAJOR
+#  define TUFAO_VERSION_MAJOR 0
+#endif
+
+#ifndef TUFAO_VERSION_MINOR
+#  define TUFAO_VERSION_MINOR 2
 #endif
 
 #endif // TUFAO_GLOBAL_H

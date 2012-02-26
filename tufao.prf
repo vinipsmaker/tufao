@@ -1,6 +1,6 @@
 QT += network
 
-DEFINES += TUFAO_VERSION=0
+DEFINES += TUFAO_VERSION_MAJOR=0
 
 release {
     LIBS += -ltufao
