@@ -57,6 +57,10 @@ public:
         - Sec-WebSocket-Protocol: If present, this value indicates one or more
           comma-separated subprotocol the client wishes to speak, ordered by
           preference.
+
+      \note
+      If the object fail to establish a connection, it will emit disconnected
+      signal. If it procceds, it will emit the connected() signal.
       */
     bool startClientHandshake(const QHostAddress &address, quint16 port,
                               const QByteArray &resource,
@@ -125,6 +129,8 @@ public:
       */
     MessageType messagesType();
 
+    static QList<QByteArray> supportedProtocols(const Headers &headers);
+
 signals:
     void pong(QByteArray data);
 
@@ -136,11 +142,14 @@ public slots:
     bool ping(const QByteArray &data);
 
 private slots:
+    void onOpenningError();
     void onConnected();
     void onReadyRead();
     void onDisconnected();
 
 private:
+    bool isResponseOkay();
+
     Priv::Frame standardFrame() const;
     Priv::Frame controlFrame() const;
 

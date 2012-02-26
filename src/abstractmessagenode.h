@@ -12,6 +12,7 @@ public:
     explicit AbstractMessageNode(QObject *parent = 0);
 
 signals:
+    void connected();
     void disconnected();
     void newMessage(QByteArray msg);
 

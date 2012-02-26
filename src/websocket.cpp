@@ -53,21 +53,24 @@ bool WebSocket::startClientHandshake(const QHostAddress &address, quint16 port,
 
     priv->isClientNode = true;
     priv->state = Priv::CONNECTING;
+    priv->clientNode = new Priv::WebSocketClientNode;
     priv->socket = new QTcpSocket(this);
 
-    connect(this, SIGNAL(disconnected()), priv->socket, SLOT(deleteLater()));
-
-    priv->headers = headers;
-    priv->resource = resource;
+    priv->clientNode->headers = headers;
+    priv->clientNode->resource = resource;
 
     if (!headers.contains("Host")) {
-        priv->headers.insert("Host",
-                             (address.toString() + ':'
-                              + QString::number(port)).toUtf8());
+        priv->clientNode->headers.insert("Host",
+                                         (address.toString() + ':'
+                                          + QString::number(port)).toUtf8());
     }
 
     connect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(priv->socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+    connect(priv->socket, SIGNAL(error(QAbstractSocket::SocketError)),
+            this, SLOT(onOpenningError()));
+
+    priv->socket->connectToHost(address, port);
 
     return true;
 }
@@ -135,6 +138,8 @@ bool WebSocket::startServerHandshake(const HttpServerRequest *request,
     connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 
+    emit connected();
+
     if (head.size())
         readData(head);
 
@@ -149,6 +154,23 @@ void WebSocket::setMessagesType(WebSocket::MessageType type)
 WebSocket::MessageType WebSocket::messagesType()
 {
     return priv->messageType;
+}
+
+QList<QByteArray> WebSocket::supportedProtocols(const Headers &headers)
+{
+    QList<QByteArray> values;
+
+    QList<QByteArray> fields = headers.values("Sec-WebSocket-Protocol");
+    for (QList<QByteArray>::const_iterator i = fields.constBegin()
+         ;i != fields.constEnd();++i) {
+        QList<QByteArray> header = i->split(',');
+        for (QList<QByteArray>::const_iterator i = header.constBegin()
+             ;i != header.constEnd();++i) {
+            values.push_back(i->trimmed());
+        }
+    }
+
+    return values;
 }
 
 void WebSocket::close()
@@ -209,14 +231,24 @@ bool WebSocket::ping(const QByteArray &data)
     return true;
 }
 
+void WebSocket::onOpenningError()
+{
+    priv->socket->deleteLater();
+    priv->socket = NULL;
+    delete priv->clientNode;
+    priv->clientNode = NULL;
+    priv->state = Priv::CLOSED;
+    emit disconnected();
+}
+
 void WebSocket::onConnected()
 {
     WRITE_STRING(priv->socket->write, "GET ");
-    priv->socket->write(priv->resource);
+    priv->socket->write(priv->clientNode->resource);
     WRITE_STRING(priv->socket->write, " HTTP/1.1\r\n");
 
-    for (Headers::const_iterator i = priv->headers.constBegin()
-         ;i != priv->headers.constEnd();++i) {
+    for (Headers::const_iterator i = priv->clientNode->headers.constBegin()
+         ;i != priv->clientNode->headers.constEnd();++i) {
         priv->socket->write(i.key());
         priv->socket->write(": ", 2);
         priv->socket->write(i.value());
@@ -245,7 +277,7 @@ void WebSocket::onConnected()
 
         headerValue = headerValue.toBase64();
 
-        priv->expectedWebSocketAccept
+        priv->clientNode->expectedWebSocketAccept
                 = QCryptographicHash::hash(headerValue + "258EAFA5-E914-47DA"
                                            "-95CA-C5AB0DC85B11",
                                            QCryptographicHash::Sha1).toBase64();
@@ -256,9 +288,10 @@ void WebSocket::onConnected()
 
     disconnect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(priv->socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    connect(this, SIGNAL(disconnected()), priv->socket, SLOT(deleteLater()));
 
-    priv->headers.clear();
-    priv->resource.clear();
+    priv->clientNode->headers.clear();
+    priv->clientNode->resource.clear();
 }
 
 void WebSocket::onReadyRead()
@@ -268,8 +301,41 @@ void WebSocket::onReadyRead()
 
 void WebSocket::onDisconnected()
 {
+    priv->socket = NULL;
     priv->state = Priv::CLOSED;
     emit disconnected();
+}
+
+inline bool WebSocket::isResponseOkay()
+{
+    if (!priv->clientNode->response.headers.contains("Upgrade", "websocket"))
+        return false;
+
+    if (!priv->clientNode->response.headers
+            .contains("Sec-WebSocket-Accept",
+                      priv->clientNode->expectedWebSocketAccept))
+        return false;
+
+    if (priv->clientNode->response.headers.contains("Sec-WebSocket-Extensions"))
+        return false;
+
+    {
+        QList<QByteArray> protocol = priv->clientNode->response.headers
+                .values("Sec-WebSocket-Protocol");
+
+        if (protocol.size() == 0)
+            return true;
+
+        if (protocol.size() > 1)
+            return false;
+
+        QList<QByteArray> supported
+                = supportedProtocols(priv->clientNode->headers);
+        if (!supported.contains(protocol[0]))
+            return false;
+    }
+
+    return true;
 }
 
 inline Priv::Frame WebSocket::standardFrame() const
@@ -356,8 +422,24 @@ inline void WebSocket::readData(const QByteArray &data)
     priv->buffer += data;
     switch (priv->state) {
     case Priv::CONNECTING:
-        // TODO: this is used soon after startClientHandshake
-        break;
+        if (priv->clientNode->response.execute(priv->buffer)) {
+            if (!isResponseOkay()) {
+                onOpenningError();
+                break;
+            }
+        } else {
+            if (priv->clientNode->response.error()
+                    || priv->clientNode->response.ready) {
+                onOpenningError();
+            }
+
+            break;
+        }
+
+        delete priv->clientNode;
+        priv->clientNode = NULL;
+        priv->state = Priv::OPEN;
+        emit connected();
     case Priv::OPEN:
     case Priv::CLOSING:
         parseBuffer();
@@ -572,8 +654,10 @@ inline void WebSocket::evaluateControlFrame()
             Priv::Frame frame = controlFrame();
             frame.setOpcode(Priv::FrameType::CONNECTION_CLOSE);
             writePayload(frame, priv->payload);
-            priv->socket->close();
+
             priv->state = Priv::CLOSING;
+            if (!priv->isClientNode)
+                priv->socket->close();
         }
         break;
     }
@@ -595,4 +679,128 @@ inline void WebSocket::evaluateControlFrame()
     priv->payload.clear();
 }
 
+namespace Priv {
+
+struct HttpClientSettings
+{
+    HttpClientSettings();
+
+    http_parser_settings settings;
+};
+
+inline HttpClientSettings::HttpClientSettings()
+{
+    settings.on_header_field = WebSocketHttpClient::on_header_field;
+    settings.on_header_value = WebSocketHttpClient::on_header_value;
+    settings.on_headers_complete = WebSocketHttpClient::on_headers_complete;
+    settings.on_message_complete = WebSocketHttpClient::on_message_complete;
+}
+
+static const HttpClientSettings httpClientSettings;
+
+inline bool WebSocketHttpClient::execute(QByteArray &chunk)
+{
+    size_t nparsed = http_parser_execute(&parser,
+                                         &httpClientSettings.settings,
+                                         chunk.constData(),
+                                         chunk.size());
+
+    chunk.remove(0, nparsed);
+
+    if (parser.http_errno)
+        return false;
+
+    if (statusCode() != 101)
+        return false;
+
+    if (parser.upgrade)
+        return true;
+
+    return false;
+}
+
+inline bool WebSocketHttpClient::error()
+{
+    return parser.http_errno;
+}
+
+inline int WebSocketHttpClient::statusCode()
+{
+    return parser.status_code;
+}
+
+int WebSocketHttpClient::on_header_field(http_parser *parser, const char *at,
+                                      size_t length)
+{
+    Tufao::Priv::WebSocketHttpClient *wsr
+            = static_cast<Tufao::Priv::WebSocketHttpClient *>(parser->data);
+    Q_ASSERT(wsr);
+
+    if (wsr->lastWasValue) {
+        wsr->lastHeader = QByteArray(at, length);
+        wsr->lastWasValue = false;
+    } else {
+        wsr->lastHeader.append(at, length);
+    }
+
+    return 0;
+}
+
+int WebSocketHttpClient::on_header_value(http_parser *parser, const char *at,
+                                      size_t length)
+{
+    Tufao::Priv::WebSocketHttpClient *wsr
+            = static_cast<Tufao::Priv::WebSocketHttpClient *>(parser->data);
+    Q_ASSERT(wsr);
+
+    if (wsr->lastWasValue) {
+        wsr->headers.replace(wsr->lastHeader,
+                             wsr->headers.value(wsr->lastHeader)
+                             + QByteArray(at, length));
+    } else {
+        wsr->headers.insert(wsr->lastHeader, QByteArray(at, length));
+        wsr->lastWasValue = true;
+    }
+
+    return 0;
+}
+
+int WebSocketHttpClient::on_headers_complete(http_parser *parser)
+{
+    Tufao::Priv::WebSocketHttpClient *wsr
+            = static_cast<Tufao::Priv::WebSocketHttpClient *>(parser->data);
+    Q_ASSERT(wsr);
+
+    wsr->lastHeader.clear();
+    wsr->lastWasValue = true;
+
+    switch (parser->http_major) {
+    case 1:
+        switch (parser->http_minor) {
+        case 0:
+        case 1:
+            break;
+        default:
+            return -1;
+        }
+        break;
+    default:
+        return -1;
+    }
+
+    return 0;
+}
+
+int WebSocketHttpClient::on_message_complete(http_parser *parser)
+{
+    Tufao::Priv::WebSocketHttpClient *wsr
+            = static_cast<Tufao::Priv::WebSocketHttpClient *>(parser->data);
+    Q_ASSERT(wsr);
+
+    wsr->ready = true;
+
+    return 0;
+}
+
+} // namespace Priv
 } // namespace Tufao

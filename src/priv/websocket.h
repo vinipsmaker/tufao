@@ -21,6 +21,7 @@
 
 #include <QtNetwork/QAbstractSocket>
 #include "../websocket.h"
+#include "http_parser.h"
 
 namespace Tufao {
 namespace Priv {
@@ -164,13 +165,73 @@ enum ParsingState
     PARSING_PAYLOAD_DATA
 };
 
+struct HttpClientSettings;
+
+class WebSocketHttpClient
+{
+public:
+    WebSocketHttpClient() :
+        ready(false),
+        lastWasValue(true)
+    {
+        http_parser_init(&parser, HTTP_RESPONSE);
+        parser.data = this;
+    }
+
+    /*!
+      Return true if the request is complete and got a Upgrade response.
+      */
+    bool execute(QByteArray &chunk);
+
+    bool error();
+
+    int statusCode();
+
+    Headers headers;
+
+    /*!
+      true if the request was completed.
+      */
+    bool ready;
+
+private:
+    static int on_header_field(http_parser *, const char *, size_t);
+    static int on_header_value(http_parser *, const char *, size_t);
+    static int on_headers_complete(http_parser *);
+    static int on_message_complete(http_parser *);
+
+    http_parser parser;
+    QByteArray lastHeader;
+    bool lastWasValue;
+
+    friend struct HttpClientSettings;
+};
+
+struct WebSocketClientNode
+{
+    WebSocketHttpClient response;
+
+    // request info
+    Headers headers;
+    QByteArray resource;
+
+    QByteArray expectedWebSocketAccept;
+};
+
 struct WebSocket
 {
     WebSocket() :
         messageType(Tufao::WebSocket::BINARY_MESSAGE),
         state(CLOSED),
-        parsingState(PARSING_FRAME)
+        parsingState(PARSING_FRAME),
+        clientNode(NULL)
     {}
+
+    ~WebSocket()
+    {
+        if (clientNode)
+            delete clientNode;
+    }
 
     Tufao::WebSocket::MessageType messageType;
 
@@ -185,10 +246,8 @@ struct WebSocket
     quint8 maskingKey[4];
     quint8 maskingIndex;
 
-    // Used by client nodes during the opening handshake
-    Headers headers;
-    QByteArray resource;
-    QByteArray expectedWebSocketAccept;
+    // Used by client nodes only during the opening handshake
+    WebSocketClientNode *clientNode;
 
     // CURRENT frame:
     Frame frame;
