@@ -168,34 +168,54 @@ Accept: text/plain\r\n
       */
     int timeout() const;
 
+    /*!
+      Returns the options obje that should be passed to the
+      Tufao::HttpServerResponse constructor.
+      */
+    Tufao::HttpServerResponse::Options responseOptions() const;
+
 signals:
     /*!
-      This signal is emitted when most of the data about the request was
-      gathered.
+      \deprecated
+
+      It'll be removed in 1.0 version.
+
+      Use ready().
+      */
+    void ready(Tufao::HttpServerResponse::Options);
+
+    /*!
+      This signal is emitted when most of the data about the request is
+      available.
 
       After this signal is emitted, you can safely interpret the request and the
       only missing parts may be (if any) the message body and the trailers.
 
       \note
       It's not safe delete this object after this signal is emitted unless you
-      use a queued connection. You should wait for the end or close signal
-      before delete this object (you can close the socket to accelerate this
-      process).
+      use a queued connection. If you want to delete this object after this
+      signal was emitted, you can: You should wait for the end or close signal
+        - Wait until a safe signal is emitted (end or close)
+        - Close the connection (only works if you are using Tufao::HttpServer)
+        - Call QObject::deleteLater()
 
       \sa
+      Tufao::HttpServerRequest::responseOptions
       Tufao::HttpServerRequest::data
       Tufao::HttpServerRequest::end
       */
-    void ready(Tufao::HttpServerResponse::Options);
+    void ready();
 
     /*!
       This signal is emitted each time a piece of the message body is received.
 
       \note
       It's not safe delete this object after this signal is emitted unless you
-      use a queued connection. You should wait for the end or close signal
-      before delete this object (you can close the socket to accelerate this
-      process).
+      use a queued connection. If you want to delete this object after this
+      signal was emitted, you can: You should wait for the end or close signal
+        - Wait until a safe signal is emitted (end or close)
+        - Close the connection (only works if you are using Tufao::HttpServer)
+        - Call QObject::deleteLater()
       */
     void data(QByteArray data);
 

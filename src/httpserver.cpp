@@ -94,8 +94,7 @@ void HttpServer::handleConnection(QAbstractSocket *socket)
     if (priv->timeout)
         handle->setTimeout(priv->timeout);
 
-    connect(handle, SIGNAL(ready(Tufao::HttpServerResponse::Options)),
-            this, SLOT(onRequestReady(Tufao::HttpServerResponse::Options)));
+    connect(handle, SIGNAL(ready()), this, SLOT(onRequestReady()));
     connect(handle, SIGNAL(upgrade(QByteArray)),
             this, SLOT(onUpgrade(QByteArray)));
     connect(socket, SIGNAL(disconnected()), handle, SLOT(deleteLater()));
@@ -112,15 +111,14 @@ void HttpServer::onNewConnection(int socketDescriptor)
     incomingConnection(socketDescriptor);
 }
 
-void HttpServer::onRequestReady(Tufao::HttpServerResponse::Options options)
+void HttpServer::onRequestReady()
 {
     HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
     Q_ASSERT(request);
 
     QAbstractSocket *socket = request->socket();
-    HttpServerResponse *response = new HttpServerResponse(socket,
-                                                          options,
-                                                          this);
+    HttpServerResponse *response
+            = new HttpServerResponse(socket, request->responseOptions(), this);
 
     connect(socket, SIGNAL(disconnected()), response, SLOT(deleteLater()));
     connect(response, SIGNAL(finished()), response, SLOT(deleteLater()));

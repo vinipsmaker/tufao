@@ -45,6 +45,7 @@ struct HttpServerRequest
         lastWasValue(true),
         useTrailers(false),
         whatEmit(0),
+        responseOptions(0),
         timeout(0),
         timeoutMustClose(true)
     {

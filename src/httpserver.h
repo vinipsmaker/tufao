@@ -20,7 +20,7 @@
 #define TUFAO_SERVER_H
 
 #include <QtNetwork/QTcpServer>
-#include "httpserverresponse.h"
+#include "tufao_global.h"
 
 class QAbstractSocket;
 
@@ -243,7 +243,7 @@ protected:
 
 private slots:
     void onNewConnection(int socketDescriptor);
-    void onRequestReady(Tufao::HttpServerResponse::Options options);
+    void onRequestReady();
     void onUpgrade(const QByteArray &head);
 
 private:

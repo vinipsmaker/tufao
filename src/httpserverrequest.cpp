@@ -109,6 +109,11 @@ int HttpServerRequest::timeout() const
     return priv->timeout;
 }
 
+HttpServerResponse::Options HttpServerRequest::responseOptions() const
+{
+    return priv->responseOptions;
+}
+
 void HttpServerRequest::onReadyRead()
 {
     priv->timeoutMustClose = false;
@@ -125,7 +130,9 @@ void HttpServerRequest::onReadyRead()
 
     if (priv->whatEmit.testFlag(Priv::READY)) {
         priv->whatEmit &= ~Priv::Signals(Priv::READY);
+        // TODO: remove on version 1.0
         emit ready(priv->responseOptions);
+        emit ready();
     }
 
     if (priv->whatEmit.testFlag(Priv::DATA)) {
@@ -326,19 +333,18 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
         }
     }
 
-    if (!parser->upgrade) {
-        request->priv->responseOptions = 0;
+    request->priv->responseOptions = 0;
 
-        if (parser->http_minor == 1)
-            request->priv->responseOptions |= HttpServerResponse::HTTP_1_1;
-        else
-            request->priv->responseOptions |= HttpServerResponse::HTTP_1_0;
+    if (parser->http_minor == 1)
+        request->priv->responseOptions |= HttpServerResponse::HTTP_1_1;
+    else
+        request->priv->responseOptions |= HttpServerResponse::HTTP_1_0;
 
-        if (http_should_keep_alive(&request->priv->parser))
-            request->priv->responseOptions |= HttpServerResponse::KEEP_ALIVE;
+    if (http_should_keep_alive(&request->priv->parser))
+        request->priv->responseOptions |= HttpServerResponse::KEEP_ALIVE;
 
+    if (!parser->upgrade)
         request->priv->whatEmit = READY;
-    }
 
     return 0;
 }
