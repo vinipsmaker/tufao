@@ -102,6 +102,21 @@ public:
                               const Headers &headers = Headers());
 
     /*!
+      */
+    bool startSecureClientHandshake(const QString &address, quint16 port,
+                                    const QByteArray &resource,
+                                    const Headers &headers = Headers());
+
+    /*!
+      This is an overloaded function.
+
+      It uses port 443 to establish the connection.
+      */
+    bool startSecureClientHandshake(const QString &address,
+                                    const QByteArray &resource,
+                                    const Headers &headers = Headers());
+
+    /*!
       \note
       You should call this function only after \p request emitts the
       Tufao::HttpServerRequest::upgrade signal.
@@ -184,6 +199,10 @@ private slots:
     void onDisconnected();
 
 private:
+    void startClientHandshake(QAbstractSocket *socket,
+                              const QByteArray &resource,
+                              const Headers &headers = Headers());
+
     bool isResponseOkay();
     void onClientHandshakeError();
 

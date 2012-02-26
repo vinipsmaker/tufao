@@ -23,7 +23,7 @@
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QtEndian>
 #include <QtNetwork/QHostAddress>
-#include <QtNetwork/QTcpSocket>
+#include <QtNetwork/QSslSocket>
 
 // Writes a string without the '\0' char using function \p func
 #define WRITE_STRING(func, chunk) (func)(chunk, sizeof(chunk) - 1)
@@ -51,27 +51,15 @@ bool WebSocket::startClientHandshake(const QHostAddress &address, quint16 port,
     if (priv->state != Priv::CLOSED)
         return false;
 
-    priv->isClientNode = true;
-    priv->state = Priv::CONNECTING;
-    priv->lastError = NO_ERROR;
-    priv->socket = new QTcpSocket(this);
-
-    priv->clientNode = new Priv::WebSocketClientNode;
-    priv->clientNode->headers = headers;
-    priv->clientNode->resource = resource;
-
     if (!headers.contains("Host")) {
         priv->clientNode->headers.insert("Host",
                                          (address.toString() + ':'
                                           + QString::number(port)).toUtf8());
     }
 
-    connect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
-    connect(priv->socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-    connect(priv->socket, SIGNAL(error(QAbstractSocket::SocketError)),
-            this, SLOT(onSocketError(QAbstractSocket::SocketError)));
-
-    priv->socket->connectToHost(address, port);
+    QAbstractSocket *socket = new QTcpSocket(this);
+    startClientHandshake(socket, resource, headers);
+    socket->connectToHost(address, port);
 
     return true;
 }
@@ -81,6 +69,34 @@ bool WebSocket::startClientHandshake(const QHostAddress &address,
                                      const Headers &headers)
 {
     return startClientHandshake(address, 80, resource, headers);
+}
+
+bool WebSocket::startSecureClientHandshake(const QString &address,
+                                           quint16 port,
+                                           const QByteArray &resource,
+                                           const Headers &headers)
+{
+    if  (priv->state != Priv::CLOSED)
+        return false;
+
+    if (!headers.contains("Host")) {
+        priv->clientNode->headers.insert("Host",
+                                         (address + ':'
+                                          + QString::number(port)).toUtf8());
+    }
+
+    QSslSocket *socket = new QSslSocket(this);
+    startClientHandshake(socket, resource, headers);
+    socket->connectToHostEncrypted(address, port);
+
+    return true;
+}
+
+bool WebSocket::startSecureClientHandshake(const QString &address,
+                                           const QByteArray &resource,
+                                           const Headers &headers)
+{
+    return startSecureClientHandshake(address, 443, resource, headers);
 }
 
 bool WebSocket::startServerHandshake(const HttpServerRequest *request,
@@ -409,6 +425,25 @@ void WebSocket::onDisconnected()
     priv->socket = NULL;
     priv->state = Priv::CLOSED;
     emit disconnected();
+}
+
+void WebSocket::startClientHandshake(QAbstractSocket *socket,
+                                     const QByteArray &resource,
+                                     const Headers &headers)
+{
+    priv->isClientNode = true;
+    priv->state = Priv::CONNECTING;
+    priv->lastError = NO_ERROR;
+    priv->socket = socket;
+
+    priv->clientNode = new Priv::WebSocketClientNode;
+    priv->clientNode->headers = headers;
+    priv->clientNode->resource = resource;
+
+    connect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
+    connect(priv->socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+    connect(priv->socket, SIGNAL(error(QAbstractSocket::SocketError)),
+            this, SLOT(onSocketError(QAbstractSocket::SocketError)));
 }
 
 inline bool WebSocket::isResponseOkay()
