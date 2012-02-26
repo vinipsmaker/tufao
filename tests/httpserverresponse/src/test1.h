@@ -22,16 +22,19 @@ inline void test1()
     Q_ASSERT(!r.end());
     Q_ASSERT(r.writeHead(HttpServerResponse::OK));
     Q_ASSERT(!r.writeHead(200));
-    Q_ASSERT(!r.write("This field shouldn't appear in the final response"));
+    Q_ASSERT(r.write("This string should be buffered and appear in the final"
+                     " response\n"));
     r.headers().insert("Content-Type", "text/plain");
     Q_ASSERT(r.end("42\n"));
     Q_ASSERT(!b.isOpen());
 
     {
         static QByteArray expected("HTTP/1.0 200 OK\r\n"
-                                   "Content-Length: 3\r\n"
+                                   "Content-Length: 67\r\n"
                                    "Content-Type: text/plain\r\n"
                                    "\r\n"
+                                   "This string should be buffered and appear"
+                                   " in the final response\n"
                                    "42\n");
         Q_ASSERT(b.buffer() == expected);
     }

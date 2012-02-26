@@ -200,6 +200,16 @@ public:
       written won't take any effects.
       */
     Headers &headers();
+
+    /*!
+      This overload allows you to use a HttpServerResponse object as a stream.
+
+      \note
+      You still need to call HttpServerResponse::end when done with the
+      connection and HttpServerResponse::writeHead before use this operator.
+      */
+    HttpServerResponse &operator <<(const QByteArray &chunk);
+
 signals:
     /*!
       This signal is emitted when all bytes from the HTTP response message are
@@ -284,11 +294,11 @@ public slots:
 
       If you call this function with a empty byte array, it will do nothing.
 
-      \warning
-      Note that HTTP/1.0 user agents don't support chunked entities. So you need
-      to send the full message at once. This member function will do nothing if
-      you are servicing a response to a HTTP/1.0 user agent. Use
-      Tufao::HttpServerResponse::end in place.
+      \note
+      HTTP/1.0 user agents don't support chunked entities. To overcome this
+      limitation, Tufao::HttpServerResponse will buffer the chunks and send the
+      full message at once. If you want a performance boost, treat HTTP/1.0
+      clients diferently.
       */
     bool write(const QByteArray &chunk);
 
@@ -361,6 +371,13 @@ public slots:
 private:
     Priv::HttpServerResponse *priv;
 };
+
+inline
+HttpServerResponse &HttpServerResponse::operator <<(const QByteArray &chunk)
+{
+    write(chunk);
+    return *this;
+}
 
 } // namespace Tufao
 

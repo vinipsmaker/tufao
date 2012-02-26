@@ -175,9 +175,19 @@ bool HttpServerResponse::writeHead(int statusCode)
 
 bool HttpServerResponse::write(const QByteArray &chunk)
 {
-    if (priv->options.testFlag(HttpServerResponse::HTTP_1_0)
-            || !chunk.size()) {
+    if (!chunk.size())
         return false;
+
+    if (priv->options.testFlag(HttpServerResponse::HTTP_1_0)) {
+        switch (priv->formattingState) {
+        case Priv::STATUS_LINE:
+        case Priv::END:
+            return false;
+        case Priv::HEADERS:
+        default:
+            priv->http10Buffer.push_back(chunk);
+            return true;
+        }
     }
 
     switch (priv->formattingState) {
@@ -316,7 +326,8 @@ bool HttpServerResponse::end(const QByteArray &chunk)
             static const char key[] = "Content-Length";
             priv->headers.replace(QByteArray::fromRawData(key,
                                                           sizeof(key) - 1),
-                                  QByteArray::number(chunk.size()));
+                                  QByteArray::number(priv->http10Buffer.size()
+                                                     + chunk.size()));
         }
 
         for (Headers::iterator i = priv->headers.begin()
@@ -336,10 +347,16 @@ bool HttpServerResponse::end(const QByteArray &chunk)
             if (priv->options.testFlag(HttpServerResponse::HTTP_1_1)) {
                 priv->device->write(QByteArray::number(chunk.size(), 16));
                 priv->device->write(CRLF);
+            } else if (priv->http10Buffer.size()) {
+                priv->device->write(priv->http10Buffer);
+                priv->http10Buffer.clear();
             }
             priv->device->write(chunk);
             if (priv->options.testFlag(HttpServerResponse::HTTP_1_1))
                 priv->device->write(CRLF);
+        } else if (priv->http10Buffer.size()) {
+            priv->device->write(priv->http10Buffer);
+            priv->http10Buffer.clear();
         }
         if (priv->options.testFlag(HttpServerResponse::HTTP_1_1)) {
             priv->device->write(LAST_CHUNK);

@@ -48,6 +48,8 @@ struct HttpServerResponse
     HttpResponseFormattingState formattingState;
     Tufao::HttpServerResponse::Options options;
     Headers headers;
+
+    QByteArray http10Buffer;
 };
 
 } // namespace Priv
