@@ -25,6 +25,22 @@
 namespace Tufao {
 
 /*!
+  The Tufao::AbstractMessageSocket class represents a socket that sends and
+  receives messages.
+
+  Classes implementing Tufao::AbstractMessageSocket can provide several high
+  level functionalities, such as:
+    - Messages separation and interleaving
+    - Messages compression
+    - Authentication
+    - Proxy or tunnel
+    - ...
+
+  It's main purpose is to allow easily change the message exchange mechanism in
+  algorithms that depends on message passing. You could use it, for example, to
+  allow a class that provide a RPC mechanism to work on different connections
+  types.
+
   \since 0.2
   */
 class TUFAO_EXPORT AbstractMessageSocket : public QObject
@@ -32,17 +48,49 @@ class TUFAO_EXPORT AbstractMessageSocket : public QObject
     Q_OBJECT
     Q_PROPERTY(bool connected READ isConnected FINAL)
 public:
+    /*!
+      Constructs a Tufao::AbstractMessageSocket object.
+
+      \p parent is passed to the QObject constructor.
+      */
     explicit AbstractMessageSocket(QObject *parent = 0);
 
+    /*!
+      Returns true if the connection is open.
+      */
     bool isConnected() const;
 
 signals:
+    /*!
+      This signal should be emitted when the connection is open.
+      */
     void connected();
+
+    /*!
+      This signal should be emitted when the connection is closed or when fails
+      to connect.
+      */
     void disconnected();
+
+    /*!
+      This signal should be emitted each time a new message is available.
+      */
     void newMessage(QByteArray msg);
 
 public slots:
+    /*!
+      This method should close the connection.
+      */
     virtual void close() = 0;
+
+    /*!
+      This method should send a new message if the connection is open.
+
+      The object should discard the message if the connection is closed, but it
+      may implement a different behavior (and return true).
+
+      \return true if successful
+      */
     virtual bool sendMessage(const QByteArray &msg) = 0;
 
 private slots:
