@@ -53,9 +53,10 @@ bool WebSocket::startClientHandshake(const QHostAddress &address, quint16 port,
 
     priv->isClientNode = true;
     priv->state = Priv::CONNECTING;
-    priv->clientNode = new Priv::WebSocketClientNode;
+    priv->lastError = NO_ERROR;
     priv->socket = new QTcpSocket(this);
 
+    priv->clientNode = new Priv::WebSocketClientNode;
     priv->clientNode->headers = headers;
     priv->clientNode->resource = resource;
 
@@ -68,7 +69,7 @@ bool WebSocket::startClientHandshake(const QHostAddress &address, quint16 port,
     connect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(priv->socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(priv->socket, SIGNAL(error(QAbstractSocket::SocketError)),
-            this, SLOT(onOpenningError()));
+            this, SLOT(onSocketError(QAbstractSocket::SocketError)));
 
     priv->socket->connectToHost(address, port);
 
@@ -114,6 +115,7 @@ bool WebSocket::startServerHandshake(const HttpServerRequest *request,
     priv->socket = socket;
     priv->isClientNode = false;
     priv->state = Priv::OPEN;
+    priv->lastError = NO_ERROR;
 
     WRITE_STRING(socket->write,
                  "HTTP/1.1 101 Switching Protocols\r\n"
@@ -154,6 +156,55 @@ void WebSocket::setMessagesType(WebSocket::MessageType type)
 WebSocket::MessageType WebSocket::messagesType()
 {
     return priv->messageType;
+}
+
+WebSocket::Error WebSocket::error()
+{
+    return priv->lastError;
+}
+
+QString WebSocket::errorString()
+{
+    switch (priv->lastError) {
+    case NO_ERROR:
+        return QString();
+    case CONNECTION_REFUSED:
+        return "See QAbstractSocket::ConnectionRefusedError";
+    case REMOTE_HOST_CLOSED:
+        return "See QAbstractSocket::RemoteHostClosedError";
+    case HOST_NOT_FOUND:
+        return "See QAbstractSocket::HostNotFoundError";
+    case ACCESS_ERROR:
+        return "See QAbstractSocket::SocketAccessError";
+    case OUT_OF_RESOURCES:
+        return "See QAbstractSocket::SocketResourceError";
+    case TIMEOUT:
+        return "See QAbstractSocket::SocketTimeoutError";
+    case NETWORK_ERROR:
+        return "See QAbstractSocket::NetworkError";
+    case UNSUPPORTED_SOCKET_OPERATION:
+        return "See QAbstractSocket::UnsupportedSocketOperationError";
+    case PROXY_AUTHENTICATION_REQUIRED:
+        return "See QAbstractSocket::ProxyAuthenticationRequiredError";
+    case SSL_HANDSHAKE_FAILED:
+        return "See QAbstractSocket::SslHandshakeFailedError";
+    case PROXY_CONNECTION_REFUSED:
+        return "See QAbstractSocket::ProxyConnectionRefusedError";
+    case PROXY_CONNECTION_CLOSED:
+        return "See QAbstractSocket::ProxyConnectionClosedError";
+    case PROXY_CONNECTION_TIMEOUT:
+        return "See QAbstractSocket::ProxyConnectionTimeoutError";
+    case PROXY_NOT_FOUND:
+        return "See QAbstractSocket::ProxyNotFoundError";
+    case PROXY_PROTOCOL_ERROR:
+        return "See QAbstractSocket::ProxyProtocolError";
+    case WEBSOCKET_HANDSHAKE_FAILED:
+        return "It failed to establish a WebSocket connection";
+    case WEBSOCKET_PROTOCOL_ERROR:
+        return "An invalid WebSocket frame was received";
+    default:
+        return "Unknown error";
+    }
 }
 
 QList<QByteArray> WebSocket::supportedProtocols(const Headers &headers)
@@ -231,13 +282,64 @@ bool WebSocket::ping(const QByteArray &data)
     return true;
 }
 
-void WebSocket::onOpenningError()
+void WebSocket::onSocketError(QAbstractSocket::SocketError error)
 {
     priv->socket->deleteLater();
     priv->socket = NULL;
     delete priv->clientNode;
     priv->clientNode = NULL;
     priv->state = Priv::CLOSED;
+
+    switch (error) {
+    case QAbstractSocket::ConnectionRefusedError:
+        priv->lastError = CONNECTION_REFUSED;
+        break;
+    case QAbstractSocket::RemoteHostClosedError:
+        priv->lastError = REMOTE_HOST_CLOSED;
+        break;
+    case QAbstractSocket::HostNotFoundError:
+        priv->lastError = HOST_NOT_FOUND;
+        break;
+    case QAbstractSocket::SocketAccessError:
+        priv->lastError = ACCESS_ERROR;
+        break;
+    case QAbstractSocket::SocketTimeoutError:
+        priv->lastError = TIMEOUT;
+        break;
+    case QAbstractSocket::SocketResourceError:
+        priv->lastError = OUT_OF_RESOURCES;
+        break;
+    case QAbstractSocket::NetworkError:
+        priv->lastError = NETWORK_ERROR;
+        break;
+    case QAbstractSocket::UnsupportedSocketOperationError:
+        priv->lastError = UNSUPPORTED_SOCKET_OPERATION;
+        break;
+    case QAbstractSocket::ProxyAuthenticationRequiredError:
+        priv->lastError = PROXY_AUTHENTICATION_REQUIRED;
+        break;
+    case QAbstractSocket::SslHandshakeFailedError:
+        priv->lastError = SSL_HANDSHAKE_FAILED;
+        break;
+    case QAbstractSocket::ProxyConnectionRefusedError:
+        priv->lastError = PROXY_CONNECTION_REFUSED;
+        break;
+    case QAbstractSocket::ProxyConnectionClosedError:
+        priv->lastError = PROXY_CONNECTION_CLOSED;
+        break;
+    case QAbstractSocket::ProxyConnectionTimeoutError:
+        priv->lastError = PROXY_CONNECTION_TIMEOUT;
+        break;
+    case QAbstractSocket::ProxyNotFoundError:
+        priv->lastError = PROXY_NOT_FOUND;
+        break;
+    case QAbstractSocket::ProxyProtocolError:
+        priv->lastError = PROXY_PROTOCOL_ERROR;
+        break;
+    default:
+        priv->lastError = UNKNOWN_ERROR;
+    }
+
     emit disconnected();
 }
 
@@ -287,6 +389,9 @@ void WebSocket::onConnected()
     WRITE_STRING(priv->socket->write, "\r\n\r\n");
 
     disconnect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
+    disconnect(priv->socket, SIGNAL(error(QAbstractSocket::SocketError)),
+               this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+
     connect(priv->socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     connect(this, SIGNAL(disconnected()), priv->socket, SLOT(deleteLater()));
 
@@ -336,6 +441,17 @@ inline bool WebSocket::isResponseOkay()
     }
 
     return true;
+}
+
+inline void WebSocket::onClientHandshakeError()
+{
+    priv->socket->deleteLater();
+    priv->socket = NULL;
+    delete priv->clientNode;
+    priv->clientNode = NULL;
+    priv->state = Priv::CLOSED;
+    priv->lastError = WEBSOCKET_HANDSHAKE_FAILED;
+    emit disconnected();
 }
 
 inline Priv::Frame WebSocket::standardFrame() const
@@ -424,13 +540,13 @@ inline void WebSocket::readData(const QByteArray &data)
     case Priv::CONNECTING:
         if (priv->clientNode->response.execute(priv->buffer)) {
             if (!isResponseOkay()) {
-                onOpenningError();
+                onClientHandshakeError();
                 break;
             }
         } else {
             if (priv->clientNode->response.error()
                     || priv->clientNode->response.ready) {
-                onOpenningError();
+                onClientHandshakeError();
             }
 
             break;
@@ -484,6 +600,7 @@ inline bool WebSocket::parseFrame()
 
     if (!priv->frame.fin() && priv->frame.isControlFrame()) {
         close(Priv::StatusCode::PROTOCOL_ERROR);
+        priv->lastError = WEBSOCKET_PROTOCOL_ERROR;
         priv->socket->close();
         return false;
     }
@@ -491,6 +608,7 @@ inline bool WebSocket::parseFrame()
     if ((priv->frame.masked() && priv->isClientNode)
             || (!priv->frame.masked() && !priv->isClientNode)) {
         close(Priv::StatusCode::PROTOCOL_ERROR);
+        priv->lastError = WEBSOCKET_PROTOCOL_ERROR;
         priv->socket->close();
         return false;
     }
@@ -672,6 +790,7 @@ inline void WebSocket::evaluateControlFrame()
         emit pong(priv->payload);
         break;
     default:
+        priv->lastError = WEBSOCKET_PROTOCOL_ERROR;
         close(Priv::StatusCode::UNKOWN_ERROR);
         priv->socket->close();
         break;

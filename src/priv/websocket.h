@@ -222,6 +222,7 @@ struct WebSocket
 {
     WebSocket() :
         messageType(Tufao::WebSocket::BINARY_MESSAGE),
+        lastError(Tufao::WebSocket::NO_ERROR),
         state(CLOSED),
         parsingState(PARSING_FRAME),
         clientNode(NULL)
@@ -234,6 +235,7 @@ struct WebSocket
     }
 
     Tufao::WebSocket::MessageType messageType;
+    Tufao::WebSocket::Error lastError;
 
     QAbstractSocket *socket;
     QByteArray buffer;

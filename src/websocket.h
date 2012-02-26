@@ -22,7 +22,7 @@
 #include "abstractmessagesocket.h"
 #include "headers.h"
 
-class QHostAddress;
+#include <QAbstractSocket>
 
 namespace Tufao {
 namespace Priv {
@@ -41,6 +41,29 @@ class TUFAO_EXPORT WebSocket : public AbstractMessageSocket
 {
     Q_OBJECT
 public:
+    enum Error
+    {
+        NO_ERROR = 0,
+        CONNECTION_REFUSED,
+        REMOTE_HOST_CLOSED,
+        HOST_NOT_FOUND,
+        ACCESS_ERROR,
+        OUT_OF_RESOURCES,
+        TIMEOUT,
+        NETWORK_ERROR,
+        UNSUPPORTED_SOCKET_OPERATION,
+        PROXY_AUTHENTICATION_REQUIRED,
+        SSL_HANDSHAKE_FAILED,
+        PROXY_CONNECTION_REFUSED,
+        PROXY_CONNECTION_CLOSED,
+        PROXY_CONNECTION_TIMEOUT,
+        PROXY_NOT_FOUND,
+        PROXY_PROTOCOL_ERROR,
+        WEBSOCKET_HANDSHAKE_FAILED,
+        WEBSOCKET_PROTOCOL_ERROR,
+        UNKNOWN_ERROR
+    };
+
     enum MessageType
     {
         TEXT_MESSAGE,
@@ -132,6 +155,16 @@ public:
       */
     MessageType messagesType();
 
+    /*!
+      Returns the type of error that last occurred.
+      */
+    Error error();
+
+    /*!
+      Returns a human-readable description of the last error that occurred.
+      */
+    QString errorString();
+
     static QList<QByteArray> supportedProtocols(const Headers &headers);
 
 signals:
@@ -145,13 +178,14 @@ public slots:
     bool ping(const QByteArray &data);
 
 private slots:
-    void onOpenningError();
+    void onSocketError(QAbstractSocket::SocketError error);
     void onConnected();
     void onReadyRead();
     void onDisconnected();
 
 private:
     bool isResponseOkay();
+    void onClientHandshakeError();
 
     Priv::Frame standardFrame() const;
     Priv::Frame controlFrame() const;
