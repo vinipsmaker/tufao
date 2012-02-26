@@ -171,6 +171,8 @@ Accept: text/plain\r\n
     /*!
       Returns the options obje that should be passed to the
       Tufao::HttpServerResponse constructor.
+
+      \since 0.2
       */
     Tufao::HttpServerResponse::Options responseOptions() const;
 
