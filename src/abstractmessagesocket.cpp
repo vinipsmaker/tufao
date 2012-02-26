@@ -21,8 +21,26 @@
 namespace Tufao {
 
 AbstractMessageSocket::AbstractMessageSocket(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    _connected(false)
 {
+    connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
+    connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+}
+
+bool AbstractMessageSocket::isConnected() const
+{
+    return _connected;
+}
+
+void AbstractMessageSocket::onConnected()
+{
+    _connected = true;
+}
+
+void AbstractMessageSocket::onDisconnected()
+{
+    _connected = false;
 }
 
 } // namespace Tufao

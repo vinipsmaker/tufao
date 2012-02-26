@@ -26,8 +26,11 @@ namespace Tufao {
 class AbstractMessageSocket : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool connected READ isConnected FINAL)
 public:
     explicit AbstractMessageSocket(QObject *parent = 0);
+
+    bool isConnected() const;
 
 signals:
     void connected();
@@ -37,6 +40,13 @@ signals:
 public slots:
     virtual void close() = 0;
     virtual bool sendMessage(const QByteArray &msg) = 0;
+
+private slots:
+    void onConnected();
+    void onDisconnected();
+
+private:
+    bool _connected;
 };
 
 } // namespace Tufao
