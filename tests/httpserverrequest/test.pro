@@ -1,8 +1,8 @@
 TARGET = test
 TEMPLATE = app
 
-QT       += network
-QT       -= gui
+CONFIG += TUFAO
+QT     -= gui
 
 OBJECTS_DIR = build
 MOC_DIR = build
@@ -11,8 +11,6 @@ DESTDIR = bin
 # TIMEOUT_CLIENT_TIME MUST be less than the Tufão timeout
 # TIMEOUT_SERVER_TIME MUSTN'T be less than the Tufão timeout
 DEFINES += WAIT_TIME=1500 TIMEOUT_CLIENT_TIME=100000 TIMEOUT_SERVER_TIME=130000
-INCLUDEPATH += ../../src
-LIBS += -L../../lib -ltufao
 
 SOURCES += src/main.cpp \
     src/stringlistsocket.cpp \
