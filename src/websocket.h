@@ -153,17 +153,17 @@ public:
       \sa
       Tufao::WebSocket::setMessagesType
       */
-    MessageType messagesType();
+    MessageType messagesType() const;
 
     /*!
       Returns the type of error that last occurred.
       */
-    Error error();
+    Error error() const;
 
     /*!
       Returns a human-readable description of the last error that occurred.
       */
-    QString errorString();
+    QString errorString() const;
 
     static QList<QByteArray> supportedProtocols(const Headers &headers);
 

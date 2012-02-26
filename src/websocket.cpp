@@ -153,17 +153,17 @@ void WebSocket::setMessagesType(WebSocket::MessageType type)
     priv->messageType = type;
 }
 
-WebSocket::MessageType WebSocket::messagesType()
+WebSocket::MessageType WebSocket::messagesType() const
 {
     return priv->messageType;
 }
 
-WebSocket::Error WebSocket::error()
+WebSocket::Error WebSocket::error() const
 {
     return priv->lastError;
 }
 
-QString WebSocket::errorString()
+QString WebSocket::errorString() const
 {
     switch (priv->lastError) {
     case NO_ERROR:
