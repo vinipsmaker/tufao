@@ -21,8 +21,9 @@
 
 #include "../headers.h"
 #include "../httpserverrequest.h"
-#include <QtNetwork/QAbstractSocket>
 #include "http_parser.h"
+
+#include <QtNetwork/QAbstractSocket>
 #include <QtCore/QTimer>
 
 namespace Tufao {
@@ -46,10 +47,10 @@ struct HttpServerRequest
         useTrailers(false),
         whatEmit(0),
         responseOptions(0),
-        timeout(0),
-        timeoutMustClose(true)
+        timeout(0)
     {
         http_parser_init(&parser, HTTP_REQUEST);
+        timer.setSingleShot(true);
         parser.data = request;
     }
 
@@ -80,7 +81,6 @@ struct HttpServerRequest
 
     int timeout;
     QTimer timer;
-    bool timeoutMustClose;
 };
 
 } // namespace Priv

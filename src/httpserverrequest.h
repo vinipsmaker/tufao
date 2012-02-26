@@ -152,8 +152,8 @@ Accept: text/plain\r\n
     /*!
       Sets the timeout of new connections to \p msecs miliseconds.
 
-      The connection will be closed when no bytes are received during a time
-      between the msecs and 2 * msecs.
+      The connection will be closed when no bytes are received during \p msecs
+      miliseconds.
 
       If you set the timeout to 0, then timeout feature will be disabled.
 

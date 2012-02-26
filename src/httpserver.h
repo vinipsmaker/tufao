@@ -134,7 +134,7 @@ public:
       Sets the timeout of new connections to \p msecs miliseconds.
 
       If you set the timeout to 0, then timeout feature will be disabled. You
-      shouldn't disable this feature to protect against DoS attacks.
+      should NOT disable this feature to help to protect against DoS attacks.
 
       The default timeout is 2 minutes (120000 miliseconds).
 
