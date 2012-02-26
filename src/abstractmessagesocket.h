@@ -5,11 +5,11 @@
 
 namespace Tufao {
 
-class AbstractMessageNode : public QObject
+class AbstractMessageSocket : public QObject
 {
     Q_OBJECT
 public:
-    explicit AbstractMessageNode(QObject *parent = 0);
+    explicit AbstractMessageSocket(QObject *parent = 0);
 
 signals:
     void connected();

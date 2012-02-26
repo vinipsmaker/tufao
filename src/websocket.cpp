@@ -34,7 +34,7 @@ static const char crlf[] = "\r\n";
 namespace Tufao {
 
 WebSocket::WebSocket(QObject *parent) :
-    AbstractMessageNode(parent),
+    AbstractMessageSocket(parent),
     priv(new Priv::WebSocket)
 {
 }

@@ -19,7 +19,7 @@
 #ifndef TUFAO_WEBSOCKET_H
 #define TUFAO_WEBSOCKET_H
 
-#include "abstractmessagenode.h"
+#include "abstractmessagesocket.h"
 #include "headers.h"
 
 class QHostAddress;
@@ -34,7 +34,7 @@ union Frame;
 
 class HttpServerRequest;
 
-class WebSocket : public AbstractMessageNode
+class WebSocket : public AbstractMessageSocket
 {
     Q_OBJECT
 public:
