@@ -9,6 +9,7 @@ system (signals & slots). It features:
    * Persistent streams
    * Chunked entities
    * 100-continue status
+   * WebSocket
   * HTTPS support
   * Lots of tests
   * Timeout support
@@ -24,13 +25,12 @@ is also experimental support for Qt compressed help files.
 == LICENSE ==
 -------------
 
-The library is licensed under the LGPLv3, the documentation is licensed under
-GNU Free Documentation License and the example codes are licensed under MIT
-license.
+The library and the documentation are licensed under the LGPLv3 and the example
+codes are licensed under MIT license.
 
 The library is dynamic linked against Qt and include code from Ryan Dahl's HTTP
 parser. Qt library is licensed under LGPL and Ryan Dahl's HTTP parser is
-licensed under MIT.
+licensed under MIT license.
 
 So, you can create commercial applications (the *only* restriction is that *if*
 you do any modifications to *Tufão*, these modifications must be redistributed).
@@ -123,30 +123,36 @@ You can find some examples in the examples folder.
 If you want use Tufão in other build system, just add the compiler option
 -ltufao for release version and -ltufao_d for debug version.
 
-You should also see Tufão documentation integrated in QtAssistant (this feature
-is experimental and is recomended to use the documentation in html format).
+You can also see Tufão documentation integrated in QtAssistant (this feature is
+experimental and is recomended to use the documentation in html format).
+
+== NEWS ==
+----------
+
+Version 0.2:
+  * Code is more stable
+  * Documentation improved
+  * HttpServerResponse is easier to use
+  * WebSocket support
+  * TUFAO_VERSION_MAJOR and TUFAO_VERSION_MINOR macros added
+  * QtCreator plugin
+  * New examples
 
 == ROADMAP ==
 -------------
 
-Here is a small incomplete roadmap for Tufão:
-
-0.2:
-  * WebSocket support
+Here is a small roadmap for Tufão:
 
 0.3:
+  * Module to serve static files
+
+0.4:
   * Session/cookies support
   * Forms
 
-0.4:
-  * Module to serve static files
-
-0.5
-  * QtCreator plugin for fast project creation
-
-0.6:
+0.5:
   * Plugin-based application Server
   * Multi-thread support
 
-0.7:
+0.6:
   * Service discovery and description support
