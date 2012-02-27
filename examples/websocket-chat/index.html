@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>WebSocket chat example</title>
+    <script type="text/javascript">
+      var socket = new WebSocket('ws://localhost:8080/chat');
+
+      socket.onmessage = function(msg) {
+      document.getElementById('chatarea').innerHTML += '<p>' + msg.data
+        + '</p>';
+      };
+
+      function onSubmit()
+      {
+      if (socket.readyState != WebSocket.OPEN) {
+      alert('Connection is down');
+      return false;
+      }
+      socket.send(document.getElementById('message').value);
+      return false;
+      }
+    </script>
+  </head>
+  <body>
+    <div id="chatarea">
+    </div>
+    <form action="#" onsubmit="return onSubmit()">
+      <input type="text" id="message" placeholder="Text">
+      <button type="submit">Send</button>
+    </form>
+  </body>
+</html>
