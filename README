@@ -55,6 +55,9 @@ space separated, as in the following example:
 $ qmake 'CONFIG=debug staticlib'
 </pre>
 
+NOTE:
+Qt 4.8 should be required, but I didn't test earlier versions.
+
 After build the project, the following directories will be created:
   * build: where temporary build objects are
   * lib: where the library file is
