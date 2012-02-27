@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = Tufão
-PROJECT_NUMBER         = 0.1
+PROJECT_NUMBER         = 0.2
 PROJECT_BRIEF          = "A web framework for Qt"
 PROJECT_LOGO           = 
 OUTPUT_DIRECTORY       = ./doc
