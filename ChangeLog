@@ -1,7 +1,0 @@
-= 0.2 =
-  * Created a QtCreator plugin
-  * Updated project file to be smarter
-  * Using module/component include style
-  * Generating different targets for differents profiles (release/debug)
-  * New examples
-   * Request-dumper
