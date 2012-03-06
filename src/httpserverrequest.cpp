@@ -138,7 +138,9 @@ void HttpServerRequest::onReadyRead()
 
     if (priv->whatEmit.testFlag(Priv::DATA)) {
         priv->whatEmit &= ~Priv::Signals(Priv::DATA);
-        emit data(QByteArray(priv->body_at, priv->body_length));
+        QByteArray body(priv->body);
+        priv->body.clear();
+        emit data(body);
     }
 
     priv->buffer.remove(0, nparsed);
@@ -353,8 +355,7 @@ int HttpServerRequest::on_body(http_parser *parser, const char *at,
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
     Q_ASSERT(request);
-    request->priv->body_at = at;
-    request->priv->body_length = length;
+    request->priv->body.append(at, length);
     request->priv->whatEmit |= Priv::DATA;
     return 0;
 }

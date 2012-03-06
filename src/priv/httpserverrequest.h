@@ -69,8 +69,7 @@ struct HttpServerRequest
     bool lastWasValue;
     bool useTrailers;
     Signals whatEmit;
-    const char *body_at;
-    size_t body_length;
+    QByteArray body;
 
     QByteArray method;
     QByteArray url;
