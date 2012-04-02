@@ -23,35 +23,39 @@
 #include "mainhandler.h"
 #include <Tufao/HttpServerRequest>
 #include <Tufao/Headers>
+#include <QtCore/QStringList>
 
 MainHandler::MainHandler(QObject *parent) :
-    QObject(parent)
+    Tufao::AbstractHttpServerRequestHandler(parent)
 {
 }
 
-void MainHandler::handleRequest(Tufao::HttpServerRequest *request,
-                                Tufao::HttpServerResponse *response)
+bool MainHandler::handleRequest(Tufao::HttpServerRequest *request,
+                                Tufao::HttpServerResponse *response,
+                                const QStringList &args)
 {
     response->writeHead(Tufao::HttpServerResponse::OK);
     response->headers().replace("Content-Type", "text/html; charset=utf-8");
-    response->write("<html><head><title>Request dumper</title></head><body>");
-    response->write("<p>Method: ");
-    response->write(request->method());
-    response->write("</p><p>Path: ");
-    response->write(request->url());
-    response->write("</p><p>Version: HTTP/1.");
-    response->write(QByteArray(1, request->httpVersion() + '0'));
-    response->write("</p><p>Headers:</p><ul>");
+
+    (*response) << "<html><head><title>Request dumper</title></head><body>"
+                   "<p>Method: " << request->method() << "</p><p>Path: "
+                << request->url() << "</p><p>Version: HTTP/1."
+                << QByteArray(1, request->httpVersion() + '0')
+                << "</p><p>Headers:</p><ul>";
+
     {
         Tufao::Headers headers = request->headers();
         for (Tufao::Headers::const_iterator i = headers.begin()
              ;i != headers.end();++i) {
-            response->write("<li>");
-            response->write(i.key());
-            response->write(": ");
-            response->write(i.value());
+            (*response) << "<li>" << i.key() << ": " << i.value();
         }
     }
-    response->write("</ul>");
-    response->end("</body></html>");
+    (*response) << "</ul><p>Args:</p><ul>";
+
+    for (int i = 0;i != args.size();++i) {
+        (*response) << "<li>" << args[i].toUtf8();
+    }
+
+    response->end("</ul></body></html>");
+    return true;
 }
