@@ -32,7 +32,7 @@ namespace Tufao {
   \sa
   Tufao::IByteArray
   */
-struct Headers: public QMultiMap<IByteArray, QByteArray> {};
+struct TUFAO_EXPORT Headers: public QMultiMap<IByteArray, QByteArray> {};
 
 } // namespace Tufao
 

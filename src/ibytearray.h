@@ -20,6 +20,7 @@
 #define TUFAO_IBYTEARRAY_H
 
 #include <QtCore/QByteArray>
+#include "tufao_global.h"
 
 namespace Tufao {
 
@@ -30,7 +31,7 @@ namespace Tufao {
   All member functions of this class are inlined and should add the minimum (if
   any) of overhead.
   */
-class IByteArray : public QByteArray
+class TUFAO_EXPORT IByteArray : public QByteArray
 {
 public:
     IByteArray();

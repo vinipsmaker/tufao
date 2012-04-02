@@ -30,6 +30,9 @@ struct Url;
 
 } // namespace Priv
 
+// TODO: Necessário métodos para gerar strings das urls (ler Host header, path,
+// porta e se é um socket ssl)
+
 /*!
   This class provides a convenient interface for parsing URLs.
 
