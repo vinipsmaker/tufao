@@ -53,7 +53,10 @@ SOURCES += src/httpserver.cpp \
     src/priv/reasonphrase.cpp \
     src/priv/http_parser.cpp \
     src/websocket.cpp \
-    src/abstractmessagesocket.cpp
+    src/abstractmessagesocket.cpp \
+    src/abstracthttpserverrequesthandler.cpp \
+    src/httpserverrequestrouter.cpp \
+    src/httppluginserver.cpp
 
 HEADERS += src/httpserver.h \
     src/tufao_global.h \
@@ -75,4 +78,10 @@ HEADERS += src/httpserver.h \
     src/headers.h \
     src/websocket.h \
     src/priv/websocket.h \
-    src/abstractmessagesocket.h
+    src/abstractmessagesocket.h \
+    src/abstracthttpserverrequesthandler.h \
+    src/httpserverrequestrouter.h \
+    src/httppluginserver.h \
+    src/abstracthttpserverrequesthandlerloader.h \
+    src/priv/httpserverrequestrouter.h \
+    src/priv/httppluginserver.h
