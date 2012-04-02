@@ -1,4 +1,4 @@
-<plugin name=\"Tufao\" version=\"0.0.1\" compatVersion=\"0.0.1\">
+<plugin name=\"Tufao\" version=\"0.0.2\" compatVersion=\"0.0.2\">
     <vendor>TufaoTeam</vendor>
     <copyright>(C) Vinícius dos Santos Oliveira</copyright>
     <license>                   GNU LESSER GENERAL PUBLIC LICENSE
@@ -169,7 +169,6 @@ Library.</license>
     <description>A helper plugin to work with Tufão framework.</description>
     <url>http://tufao.googlecode.com/</url>
     <dependencyList>
-        <dependency name=\"Core\" version=\"$$QTCREATOR_VERSION\"/>
         <dependency name=\"ProjectExplorer\" version=\"$$QTCREATOR_VERSION\"/>
     </dependencyList>
 </plugin>

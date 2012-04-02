@@ -1,0 +1,6 @@
+This is the project template that you should use if you intend to create an
+application to be loaded at runtime.
+
+This plugin should be loaded in your application server updating your
+application config file. To change the configuration file, use the tool shipped
+with Tufão.
