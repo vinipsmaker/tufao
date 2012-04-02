@@ -21,7 +21,13 @@
 
 #include "../headers.h"
 #include "../httpserverrequest.h"
+
 #include "http_parser.h"
+#undef int8_t
+#undef uint8_t
+#undef uint32_t
+#undef int64_t
+#undef uint64_t
 
 #include <QtNetwork/QAbstractSocket>
 #include <QtCore/QTimer>
