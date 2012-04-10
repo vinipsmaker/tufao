@@ -24,7 +24,7 @@ QVariant PluginDialog::data() const
     {
         QString pattern(ui->regexLineEdit->text());
         Qt::CaseSensitivity sensitivity;
-        QRegExp::PatternSyntax syntax;
+        QRegExp::PatternSyntax syntax(QRegExp::RegExp);
 
         if (ui->caseSensitivyCheckBox->isChecked())
             sensitivity = Qt::CaseSensitive;
