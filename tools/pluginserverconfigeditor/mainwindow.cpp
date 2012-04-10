@@ -72,6 +72,42 @@ void MainWindow::on_deletePushButton_clicked()
     }
 }
 
+void MainWindow::on_moveUpPushButton_clicked()
+{
+    const int row = ui->tableWidget->currentRow();
+    if (row == -1 || row == 0)
+        return;
+
+    QTableWidgetItem *items[3] = {ui->tableWidget->takeItem(row, 0),
+                                  ui->tableWidget->takeItem(row, 1),
+                                  ui->tableWidget->takeItem(row, 2)};
+
+    for (int i = 0;i != 3;++i) {
+        ui->tableWidget->setItem(row, i, ui->tableWidget->takeItem(row - 1, i));
+        ui->tableWidget->setItem(row - 1, i, items[i]);
+    }
+
+    ui->tableWidget->selectRow(row - 1);
+}
+
+void MainWindow::on_moveDownPushButton_clicked()
+{
+    const int row = ui->tableWidget->currentRow();
+    if (row == -1 || row + 1 == ui->tableWidget->rowCount())
+        return;
+
+    QTableWidgetItem *items[3] = {ui->tableWidget->takeItem(row, 0),
+                                  ui->tableWidget->takeItem(row, 1),
+                                  ui->tableWidget->takeItem(row, 2)};
+
+    for (int i = 0;i != 3;++i) {
+        ui->tableWidget->setItem(row, i, ui->tableWidget->takeItem(row + 1, i));
+        ui->tableWidget->setItem(row + 1, i, items[i]);
+    }
+
+    ui->tableWidget->selectRow(row + 1);
+}
+
 void MainWindow::on_tableWidget_cellActivated(int row, int)
 {
     QTableWidgetItem *item = ui->tableWidget->item(row, 0);
@@ -191,4 +227,16 @@ void MainWindow::load(const QString &filename)
 
     currentFilename = filename;
     saved = true;
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    QMessageBox::about(this, trUtf8("Tufão plugin server config editor"),
+                       trUtf8("This application creates and edits configuration"
+                              " files used by the Tufão Plugin Server class."));
+}
+
+void MainWindow::on_actionAbout_Qt_triggered()
+{
+    QMessageBox::aboutQt(this);
 }

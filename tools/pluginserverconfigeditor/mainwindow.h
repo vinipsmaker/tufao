@@ -21,12 +21,17 @@ protected:
 private slots:
     void on_addPushButton_clicked();
     void on_deletePushButton_clicked();
+    void on_moveUpPushButton_clicked();
+    void on_moveDownPushButton_clicked();
     void on_tableWidget_cellActivated(int row, int);
 
     void on_actionNew_triggered();
     void on_actionOpen_triggered();
     void on_actionSave_triggered();
     void on_actionSave_as_triggered();
+
+    void on_actionAbout_triggered();
+    void on_actionAbout_Qt_triggered();
 
 private:
     void save(const QString &filename);
