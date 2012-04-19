@@ -20,6 +20,7 @@
 #include "priv/url.h"
 
 #include "httpserverrequest.h"
+#include "headers.h"
 
 #include <QtNetwork/QSslSocket>
 #include <QtNetwork/QHostAddress>
@@ -124,7 +125,7 @@ QByteArray Url::url(HttpServerRequest *request)
 {
     QByteArray host(request->headers().value("Host"));
     if (host.isEmpty())
-        host = request->socket()->localAddress().toString();
+        host = request->socket()->localAddress().toString().toUtf8();
 
     if (qobject_cast<QSslSocket*>(request->socket()))
         return "https://" + host + request->url();
