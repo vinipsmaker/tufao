@@ -56,7 +56,9 @@ SOURCES += src/httpserver.cpp \
     src/abstractmessagesocket.cpp \
     src/abstracthttpserverrequesthandler.cpp \
     src/httpserverrequestrouter.cpp \
-    src/httppluginserver.cpp
+    src/httppluginserver.cpp \
+    src/headers.cpp \
+    src/priv/rfc1123.cpp
 
 HEADERS += src/httpserver.h \
     src/tufao_global.h \
@@ -84,4 +86,5 @@ HEADERS += src/httpserver.h \
     src/httppluginserver.h \
     src/abstracthttpserverrequesthandlerloader.h \
     src/priv/httpserverrequestrouter.h \
-    src/priv/httppluginserver.h
+    src/priv/httppluginserver.h \
+    src/priv/rfc1123.h

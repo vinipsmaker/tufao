@@ -1,5 +1,5 @@
 /*  This file is part of the Tufão project
-    Copyright (C) 2011 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+    Copyright (C) 2012 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -16,37 +16,20 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUFAO_HEADERS_H
-#define TUFAO_HEADERS_H
-
-#include <QtCore/QMultiMap>
-#include "ibytearray.h"
-
-class QDateTime;
+#include "rfc1123.h"
 
 namespace Tufao {
+namespace Priv {
 
-/*!
-  This class provides a representation of HTTP headers.
+const QRegExp Rfc1123::rfc1123("(?:\\w{3}\\s*,\\s*)?" // day
+                               "(\\d{1,2})\\s*" // day-1
+                               "(\\w{3})\\s*" // month-2
+                               "(\\d{2}(?:\\d{2})?)\\s*" // year-3
+                               "(\\d{2}):" // hour-4
+                               "(\\d{2})" // minutes-5
+                               "(?::(\\d{2}))?\\s*" // seconds-6
+                               "GMT"
+                               );
 
-  HTTP headers are string-based properties with case-insensitive keys.
-
-  \sa
-  Tufao::IByteArray
-  */
-struct TUFAO_EXPORT Headers: public QMultiMap<IByteArray, QByteArray>
-{
-    /*!
-      \since 0.3
-      */
-    static QByteArray fromDateTime(const QDateTime &dateTime);
-
-    /*!
-      \since 0.3
-      */
-    static QDateTime toDateTime(const QByteArray &headerValue);
-};
-
+} // namespace Priv
 } // namespace Tufao
-
-#endif // TUFAO_HEADERS_H

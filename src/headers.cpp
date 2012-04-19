@@ -1,5 +1,5 @@
 /*  This file is part of the Tufão project
-    Copyright (C) 2011 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+    Copyright (C) 2012 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -16,37 +16,35 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUFAO_HEADERS_H
-#define TUFAO_HEADERS_H
-
-#include <QtCore/QMultiMap>
-#include "ibytearray.h"
-
-class QDateTime;
+#include "headers.h"
+#include "priv/rfc1123.h"
 
 namespace Tufao {
 
-/*!
-  This class provides a representation of HTTP headers.
-
-  HTTP headers are string-based properties with case-insensitive keys.
-
-  \sa
-  Tufao::IByteArray
-  */
-struct TUFAO_EXPORT Headers: public QMultiMap<IByteArray, QByteArray>
+QByteArray Headers::fromDateTime(const QDateTime &dateTime)
 {
-    /*!
-      \since 0.3
-      */
-    static QByteArray fromDateTime(const QDateTime &dateTime);
+    return dateTime.toUTC().toString(
+                "ddd," // day
+                " d MMM yyyy" // date
+                " hh:mm:ss" // hour
+                " GMT" // zone
+                ).toUtf8();
+}
 
-    /*!
-      \since 0.3
-      */
-    static QDateTime toDateTime(const QByteArray &headerValue);
-};
+QDateTime Headers::toDateTime(const QByteArray &headerValue)
+{
+    {
+        Priv::Rfc1123 rfc1123(headerValue);
+        if (rfc1123)
+            return rfc1123();
+    }
+    // TODO:
+    // rfc 1036/850
+    // ANSI C's asctime
+//    {
+//    }
+//    {
+    //    }
+}
 
 } // namespace Tufao
-
-#endif // TUFAO_HEADERS_H
