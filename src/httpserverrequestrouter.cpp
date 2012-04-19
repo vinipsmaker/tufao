@@ -130,9 +130,8 @@ bool HttpServerRequestRouter::handleRequest(HttpServerRequest *request,
                                             HttpServerResponse *response,
                                             const QStringList &args)
 {
-    QByteArray percentDecoded(QByteArray::fromPercentEncoding(request->url()));
-    QString path(Url(QString::fromUtf8(percentDecoded.constData(),
-                                       percentDecoded.size())).path());
+    QString path(QByteArray::fromPercentEncoding(Url(request->url())
+                                                 .path().toUtf8()));
 
     if (priv->methods.contains(request->method())) {
         for (int i = 0;i != priv->methods[request->method()].size();++i) {
