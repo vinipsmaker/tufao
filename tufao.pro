@@ -54,6 +54,7 @@ SOURCES += src/httpserver.cpp \
     src/priv/http_parser.cpp \
     src/websocket.cpp \
     src/abstractmessagesocket.cpp \
+    src/httpfileserver.cpp \
     src/abstracthttpserverrequesthandler.cpp \
     src/httpserverrequestrouter.cpp \
     src/httppluginserver.cpp \
@@ -81,10 +82,12 @@ HEADERS += src/httpserver.h \
     src/websocket.h \
     src/priv/websocket.h \
     src/abstractmessagesocket.h \
+    src/httpfileserver.h \
     src/abstracthttpserverrequesthandler.h \
     src/httpserverrequestrouter.h \
     src/httppluginserver.h \
     src/abstracthttpserverrequesthandlerloader.h \
     src/priv/httpserverrequestrouter.h \
     src/priv/httppluginserver.h \
-    src/priv/rfc1123.h
+    src/priv/rfc1123.h \
+    src/priv/httpfileserver.h
