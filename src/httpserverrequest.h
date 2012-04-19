@@ -131,6 +131,18 @@ Accept: text/plain\r\n
     Headers headers() const;
 
     /*!
+      The HTTP headers sent by the client. These headers are fully populated
+      when the signal Tufao::HttpServerRequest::ready signal is emitted.
+
+      \sa
+      Tufao::HttpServerRequest::trailers()
+
+      \since
+      0.3
+      */
+    Headers &headers();
+
+    /*!
       The HTTP trailers (if present). Only populated after the
       Tufao::HttpServerRequest::end signal.
       */

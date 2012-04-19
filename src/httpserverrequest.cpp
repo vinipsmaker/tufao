@@ -78,6 +78,11 @@ Headers HttpServerRequest::headers() const
     return priv->headers;
 }
 
+Headers &HttpServerRequest::headers()
+{
+    return priv->headers;
+}
+
 Headers HttpServerRequest::trailers() const
 {
     return priv->trailers;
