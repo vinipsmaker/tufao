@@ -24,6 +24,8 @@
 
 namespace Tufao {
 
+class HttpServerRequest;
+
 namespace Priv {
 
 struct Url;
@@ -232,6 +234,11 @@ public:
       Tufao::Url::username
       */
     QString password() const;
+
+    /*!
+      \since 0.3
+      */
+    static QByteArray url(Tufao::HttpServerRequest *request);
 
 private:
     Priv::Url *priv;

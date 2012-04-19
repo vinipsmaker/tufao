@@ -19,6 +19,11 @@
 #include "url.h"
 #include "priv/url.h"
 
+#include "httpserverrequest.h"
+
+#include <QtNetwork/QSslSocket>
+#include <QtNetwork/QHostAddress>
+
 // Groups:
 // 1  = scheme
 // 2  = authority
@@ -113,6 +118,18 @@ QString Url::username() const
 QString Url::password() const
 {
     return priv->regex.cap(5);
+}
+
+QByteArray Url::url(HttpServerRequest *request)
+{
+    QByteArray host(request->headers().value("Host"));
+    if (host.isEmpty())
+        host = request->socket()->localAddress().toString();
+
+    if (qobject_cast<QSslSocket*>(request->socket()))
+        return "https://" + host + request->url();
+    else
+        return "http://" + host + request->url();
 }
 
 } // namespace Tufao
