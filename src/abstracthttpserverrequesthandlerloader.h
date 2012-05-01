@@ -26,9 +26,22 @@ namespace Tufao {
 
 class AbstractHttpServerRequestHandler;
 
+/*!
+  This class provides an factory interface to create
+  AbstractHttpServerRequestHandler objects.
+
+  \since
+  0.3
+  */
 class TUFAO_EXPORT AbstractHttpServerRequestHandlerLoader
 {
 public:
+    /*!
+      Creates one handler.
+
+      All handlers created by this method should return objects with similar
+      behaviour (e.g. returning objects from the same class).
+      */
     virtual AbstractHttpServerRequestHandler
     *createHandler(QObject *parent) = 0;
 };
