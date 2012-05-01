@@ -66,8 +66,6 @@ public:
     void setDir(const QString &dir);
     QString dir() const;
 
-    Headers &customHeaders();
-
     /*!
       Analyze the \p request and serve the file pointed by \p filename.
       */
