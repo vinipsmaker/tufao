@@ -34,12 +34,12 @@ static qint64 bufferSize = 64;
 inline static QList< QPair<qulonglong, qulonglong> >
 ranges(const Tufao::Headers &headers, qulonglong fileSize)
 {
-    if (!headers.contains("Ranges"))
+    if (!headers.contains("Range"))
         return QList< QPair<qulonglong, qulonglong> >();
 
     QList< QPair<qulonglong, qulonglong> > ranges;
 
-    QList<QByteArray> rangeHeaders(headers.values("Ranges"));
+    QList<QByteArray> rangeHeaders(headers.values("Range"));
     foreach (QByteArray rangesSpecifier, rangeHeaders) {
         static const QByteArray bytesUnit("bytes=");
         if (!rangesSpecifier.startsWith(bytesUnit))
@@ -166,7 +166,9 @@ void HttpFileServer::serveFile(const QString &fileName, HttpServerRequest *reque
             && request->headers().contains("Range")) {
         foreach (QByteArray value, request->headers().values("If-Range")) {
             // Ignore ETags
-            if (value[0] == '"' || (value[0] == 'W' && value[1] == '/')) {
+            int strSize = value.size();
+            if ((strSize > 0 && value[0] == '"')
+                    || (strSize > 1 && value[0] == 'W' && value[1] == '/')) {
                 continue;
             } else {
                 QDateTime date(Headers::toDateTime(value));
@@ -206,7 +208,7 @@ void HttpFileServer::serveFile(const QString &fileName, HttpServerRequest *reque
     // Not a byterange request
     if (!ranges.size()) {
         // Not a _satisfiable_ byterange request
-        if (request->headers().contains("Ranges")){
+        if (request->headers().contains("Range")) {
             static const QByteArray bytesUnit("bytes */");
 
             response->writeHead(HttpServerResponse
@@ -290,7 +292,16 @@ bool HttpFileServer::serveFile(const QString &fileName,
         return false;
 
     response->writeHead(statusCode);
-    response->end(file.readAll());
+
+    qint64 remaining = file.size();
+    while (remaining) {
+        QByteArray chunk(file.read(qMin(remaining, ::bufferSize)));
+        (*response) << chunk;
+        response->flush();
+        remaining -= chunk.size();
+    }
+    response->end();
+
     return true;
 }
 
