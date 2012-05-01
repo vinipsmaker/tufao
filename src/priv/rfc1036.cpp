@@ -16,42 +16,20 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "headers.h"
-#include "priv/rfc1123.h"
-#include "priv/rfc1036.h"
-#include "priv/asctime.h"
+#include "rfc1036.h"
 
 namespace Tufao {
+namespace Priv {
 
-QByteArray Headers::fromDateTime(const QDateTime &dateTime)
-{
-    return dateTime.toUTC().toString(
-                "ddd," // day
-                " d MMM yyyy" // date
-                " hh:mm:ss" // hour
-                " GMT" // zone
-                ).toUtf8();
-}
+const QRegExp Rfc1036::rfc1036("(?:\\w{3}\\s*,\\s*)" // day
+                               "(\\d{1,2})\\s+" // day-1
+                               "(\\w{3})\\s+" // month-2
+                               "(\\d{2})\\s+" // year-3
+                               "(\\d{2}):" // hour-4
+                               "(\\d{2}):" // minutes-5
+                               "(\\d{2})\\s+" // seconds-6
+                               "GMT"
+                               );
 
-QDateTime Headers::toDateTime(const QByteArray &headerValue)
-{
-    {
-        Priv::Rfc1123 rfc1123(headerValue);
-        if (rfc1123)
-            return rfc1123();
-    }
-    {
-        Priv::Rfc1036 rfc1036(headerValue);
-        if (rfc1036)
-            return rfc1036();
-    }
-    {
-        Priv::Asctime asctime(headerValue);
-        if (asctime)
-            return asctime();
-    }
-
-    return QDateTime();
-}
-
+} // namespace Priv
 } // namespace Tufao

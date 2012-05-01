@@ -59,7 +59,9 @@ SOURCES += src/httpserver.cpp \
     src/httpserverrequestrouter.cpp \
     src/httppluginserver.cpp \
     src/headers.cpp \
-    src/priv/rfc1123.cpp
+    src/priv/rfc1123.cpp \
+    src/priv/rfc1036.cpp \
+    src/priv/asctime.cpp
 
 HEADERS += src/httpserver.h \
     src/tufao_global.h \
@@ -90,4 +92,6 @@ HEADERS += src/httpserver.h \
     src/priv/httpserverrequestrouter.h \
     src/priv/httppluginserver.h \
     src/priv/rfc1123.h \
-    src/priv/httpfileserver.h
+    src/priv/httpfileserver.h \
+    src/priv/rfc1036.h \
+    src/priv/asctime.h
