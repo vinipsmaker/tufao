@@ -36,17 +36,17 @@ struct HttpServerRequestRouter;
   expressions to filter the url path component and, optionally, specify which
   method the object can handle.
 
-  This kind of mapping provides a predictable behaviour that makes simples to
-  understand the routing and allow the use of caching algorithms to improve the
-  performance.
+  The type of mapping rules used in this class provides a predictable behaviour
+  that is simple to understand and allow the use of caching algorithms to
+  improve the performance.
 
   Did you note that HttpServerRequestRouter is a subclass of
-  AbstractHttpServerRequestHandler? This design allows you create nested
-  routings. But the nicest thing (for you) may not be the nested routing
+  AbstractHttpServerRequestHandler? This design choice allows you to nest
+  routes. But the nicest thing (for you) may not be the nested routing
   possibility, but the interface that this class is implementing. This design
-  allow you to use the same request routing object to handle the request from
-  a HttpServer and a HttpsServer or even several of them listening on different
-  ports.
+  allows you to use the same request routing object to handle the requests
+  coming from a HttpServer and a HttpsServer objects (or how many of them you
+  need).
 
   When the router finds one matching request handler, it will call its
   handleRequest method passing the request and response objects and also the
@@ -58,6 +58,9 @@ struct HttpServerRequestRouter;
   the connection remains open. This mean that you should always create a handler
   that responds to any request with a <i>404 not found</i> as the last handler
   in the most top-level request router.
+
+  \since
+  0.3
   */
 class TUFAO_EXPORT HttpServerRequestRouter:
         public AbstractHttpServerRequestHandler
@@ -73,7 +76,7 @@ public:
       regular expression \p path to the given \p handler.
 
       \return
-      Returns itself, so you can create several mappins in the same line of
+      Returns itself, so you can create several mappings in the same line of
       code.
       */
     HttpServerRequestRouter &map(const QRegExp &path,
@@ -89,44 +92,52 @@ public:
       that didn't.
 
       \return
-      Returns itself, so you can create several mappins in the same line of
+      Returns itself, so you can create several mappings in the same line of
       code.
       */
     HttpServerRequestRouter &map(const QRegExp &path, const QByteArray &method,
                                  AbstractHttpServerRequestHandler *handler);
 
     /*!
+      Removes all mappings that correspond to \p path and \p handler rules and
+      aren't specific to a particular HTTP method.
       */
     HttpServerRequestRouter &unmap(const QRegExp &path,
                                    AbstractHttpServerRequestHandler *handler);
 
     /*!
+      Removes all mappings that correspond to \p path, \p method and \p handler
+      rules.
       */
     HttpServerRequestRouter &unmap(const QRegExp &path,
                                    const QByteArray &method,
                                    AbstractHttpServerRequestHandler *handler);
 
     /*!
+      Removes all mappings that correspond to \p path rule.
       */
     HttpServerRequestRouter &unmap(const QRegExp &path);
 
     /*!
+      Removes all mappings that correspond to \p path and \p method rules.
       */
     HttpServerRequestRouter &unmap(const QRegExp &path,
                                    const QByteArray &method);
 
     /*!
+      Removes all mappings that correspond to \p handler rule.
       */
     HttpServerRequestRouter &unmap(AbstractHttpServerRequestHandler *handler);
 
     /*!
+      Removes all mappings.
       */
     void clear();
 
 public slots:
     /*!
       It will route the request to the right handler. To route the request,
-      it'll percent decode the url and extract the path component in the result.
+      it'll percent decode the path component from the url.
 
       The \p args object is prepend in the list of captured texts by the regular
       expression and then passed to the handler. My advice is to don't overuse
