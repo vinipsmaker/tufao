@@ -67,8 +67,14 @@ class TUFAO_EXPORT HttpServerRequestRouter:
 {
     Q_OBJECT
 public:
+    /*!
+      Constructs a HttpServerRequestRouter object.
+      */
     explicit HttpServerRequestRouter(QObject *parent = 0);
 
+    /*!
+      Destroys the object.
+      */
     ~HttpServerRequestRouter();
 
     /*!
