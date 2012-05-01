@@ -20,6 +20,7 @@
 #define TUFAO_HEADERS_H
 
 #include <QtCore/QMultiMap>
+#include <QtCore/QDateTime>
 #include "ibytearray.h"
 
 class QDateTime;
@@ -37,14 +38,29 @@ namespace Tufao {
 struct TUFAO_EXPORT Headers: public QMultiMap<IByteArray, QByteArray>
 {
     /*!
+      Returns a RFC 1123 date time formatted string if \p dateTime.
+
+      It's the standard date time format in HTTP.
+
       \since 0.3
       */
     static QByteArray fromDateTime(const QDateTime &dateTime);
 
     /*!
+      Try to decode \p headerValue using the most common http date time formats.
+
+      These formats are:
+        - RFC 1123
+        - RFC 1036
+        - ANSI C's asctime()
+
+      \returns the converted QDateTime object or \p defaultValue if the
+      conversion fails.
+
       \since 0.3
       */
-    static QDateTime toDateTime(const QByteArray &headerValue);
+    static QDateTime toDateTime(const QByteArray &headerValue,
+                                const QDateTime &defaultValue = QDateTime());
 };
 
 } // namespace Tufao

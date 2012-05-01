@@ -33,7 +33,8 @@ QByteArray Headers::fromDateTime(const QDateTime &dateTime)
                 ).toUtf8();
 }
 
-QDateTime Headers::toDateTime(const QByteArray &headerValue)
+QDateTime Headers::toDateTime(const QByteArray &headerValue,
+                              const QDateTime &defaultValue)
 {
     {
         Priv::Rfc1123 rfc1123(headerValue);
@@ -51,7 +52,7 @@ QDateTime Headers::toDateTime(const QByteArray &headerValue)
             return asctime();
     }
 
-    return QDateTime();
+    return defaultValue;
 }
 
 } // namespace Tufao
