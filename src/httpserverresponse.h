@@ -212,6 +212,18 @@ public:
       */
     HttpServerResponse &operator <<(const QByteArray &chunk);
 
+    /*!
+      This method calls QAbstractSocket::flush for the object passed in the
+      constructor.
+
+      It'll do nothing and return false if the object passed in the constructor
+      isn't an actual QAbstractSocket instance.
+
+      \since
+      0.3
+      */
+    bool flush();
+
 signals:
     /*!
       This signal is emitted when all bytes from the HTTP response message are

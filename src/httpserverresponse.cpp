@@ -20,6 +20,8 @@
 #include "priv/httpserverresponse.h"
 #include "priv/reasonphrase.h"
 
+#include <QtNetwork/QAbstractSocket>
+
 static const char crlf[] = "\r\n";
 #define CRLF crlf, sizeof(crlf) - 1
 
@@ -48,6 +50,15 @@ HttpServerResponse::Options HttpServerResponse::options() const
 Headers &HttpServerResponse::headers()
 {
     return priv->headers;
+}
+
+bool HttpServerResponse::flush()
+{
+    QAbstractSocket *socket = qobject_cast<QAbstractSocket *>(priv->device);
+    if (!socket)
+        return false;
+
+    return socket->flush();
 }
 
 bool HttpServerResponse::writeContinue()
