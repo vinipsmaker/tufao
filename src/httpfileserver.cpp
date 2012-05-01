@@ -93,7 +93,7 @@ ranges(const Tufao::Headers &headers, qulonglong fileSize)
 
 namespace Tufao {
 
-HttpFileServer::HttpFileServer(const QString dir, QObject *parent) :
+HttpFileServer::HttpFileServer(const QString &dir, QObject *parent) :
     AbstractHttpServerRequestHandler(parent),
     priv(new Priv::HttpFileServer(dir))
 {

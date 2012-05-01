@@ -63,7 +63,18 @@ class TUFAO_EXPORT HttpFileServer: public AbstractHttpServerRequestHandler
 {
     Q_OBJECT
 public:
-    explicit HttpFileServer(const QString dir, QObject *parent = 0);
+    /*!
+      Constructs a HttpFileServer object.
+
+      \p parent is passed to the QObject constructor.
+
+      \p dir is used as root dir to serve files.
+      */
+    explicit HttpFileServer(const QString &dir, QObject *parent = 0);
+
+    /*!
+      Destroys the object.
+      */
     ~HttpFileServer();
 
     /*!
