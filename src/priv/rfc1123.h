@@ -56,7 +56,34 @@ inline QDateTime Rfc1123::operator ()()
     if (!regexp.captureCount())
         return QDateTime();
 
-    int year, month = regexp.cap(2).toInt(), day = regexp.cap(1).toInt();
+    int year, month = 1, day = regexp.cap(1).toInt();
+    {
+        QString monthStr(regexp.cap(2));
+        if (monthStr == "Jan")
+            month = 1;
+        else if (monthStr == "Feb")
+            month = 2;
+        else if (monthStr == "Mar")
+            month = 3;
+        else if (monthStr == "Apr")
+            month = 4;
+        else if (monthStr == "May")
+            month = 5;
+        else if (monthStr == "Jun")
+            month = 6;
+        else if (monthStr == "Jul")
+            month = 7;
+        else if (monthStr == "Aug")
+            month = 8;
+        else if (monthStr == "Sep")
+            month = 9;
+        else if (monthStr == "Oct")
+            month = 10;
+        else if (monthStr == "Nov")
+            month = 11;
+        else if (monthStr == "Dec")
+            month = 12;
+    }
     {
         QString yearStr(regexp.cap(3));
         if (yearStr.size() == 2)
