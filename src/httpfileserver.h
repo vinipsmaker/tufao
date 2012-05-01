@@ -55,6 +55,9 @@ struct HttpFileServer;
 
   Still, this class provides a robust HTTP file server, supporting conditional
   and byte-ranges requests.
+
+  \since
+  0.3
   */
 class TUFAO_EXPORT HttpFileServer: public AbstractHttpServerRequestHandler
 {
@@ -63,7 +66,17 @@ public:
     explicit HttpFileServer(const QString dir, QObject *parent = 0);
     ~HttpFileServer();
 
+    /*!
+      Set the root dir.
+
+      The root dir is the dir containing the files to be served by the
+      HttpFileServer object.
+      */
     void setDir(const QString &dir);
+
+    /*!
+      Return the root dir containing the files to be served.
+      */
     QString dir() const;
 
     /*!
@@ -80,7 +93,24 @@ public:
     static bool serveFile(const QString &fileName, HttpServerResponse *response,
                           int statusCode);
 
+    /*!
+      Return the buffer size used.
+
+      When serving files, HttpFileServer allocates some bytes of the file to
+      memory before sending it to the network. The maximum length of the file in
+      memory is the buffer size. This method returns what number is this.
+
+      \note
+      The buffer size is global to all HttpFileServer objects.
+
+      \sa
+      setBufferSize
+      */
     static qint64 bufferSize();
+
+    /*!
+      Set the buffer size.
+      */
     static void setBufferSize(qint64 size);
 
 public slots:
