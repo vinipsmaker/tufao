@@ -1,12 +1,12 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
-#include <Tufao/AbstractHttpServerRequestHandlerLoader>
+#include <Tufao/AbstractHttpServerRequestHandlerFactory>
 
-class Plugin: public QObject, Tufao::AbstractHttpServerRequestHandlerLoader
+class Plugin: public QObject, Tufao::AbstractHttpServerRequestHandlerFactory
 {
     Q_OBJECT
-    Q_INTERFACES(Tufao::AbstractHttpServerRequestHandlerLoader)
+    Q_INTERFACES(Tufao::AbstractHttpServerRequestHandlerFactory)
 public:
     explicit Plugin(QObject *parent = 0);
 

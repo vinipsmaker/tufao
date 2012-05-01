@@ -16,8 +16,8 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUFAO_ABSTRACTHTTPSERVERREQUESTHANDLERLOADER_H
-#define TUFAO_ABSTRACTHTTPSERVERREQUESTHANDLERLOADER_H
+#ifndef TUFAO_ABSTRACTHTTPSERVERREQUESTHANDLERFACTORY_H
+#define TUFAO_ABSTRACTHTTPSERVERREQUESTHANDLERFACTORY_H
 
 #include <QtCore/QObject>
 #include "tufao_global.h"
@@ -33,7 +33,7 @@ class AbstractHttpServerRequestHandler;
   \since
   0.3
   */
-class TUFAO_EXPORT AbstractHttpServerRequestHandlerLoader
+class TUFAO_EXPORT AbstractHttpServerRequestHandlerFactory
 {
 public:
     /*!
@@ -48,7 +48,7 @@ public:
 
 } // namespace Tufao
 
-Q_DECLARE_INTERFACE(Tufao::AbstractHttpServerRequestHandlerLoader,
-                    "Tufao::AbstractHttpServerRequestHandlerLoader/0.1")
+Q_DECLARE_INTERFACE(Tufao::AbstractHttpServerRequestHandlerFactory,
+                    "Tufao::AbstractHttpServerRequestHandlerFactory/0.1")
 
-#endif // TUFAO_ABSTRACTHTTPSERVERREQUESTHANDLERLOADER_H
+#endif // TUFAO_ABSTRACTHTTPSERVERREQUESTHANDLERFACTORY_H

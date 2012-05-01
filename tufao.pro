@@ -88,10 +88,10 @@ HEADERS += src/httpserver.h \
     src/abstracthttpserverrequesthandler.h \
     src/httpserverrequestrouter.h \
     src/httppluginserver.h \
-    src/abstracthttpserverrequesthandlerloader.h \
     src/priv/httpserverrequestrouter.h \
     src/priv/httppluginserver.h \
     src/priv/rfc1123.h \
     src/priv/httpfileserver.h \
     src/priv/rfc1036.h \
-    src/priv/asctime.h
+    src/priv/asctime.h \
+    src/abstracthttpserverrequesthandlerfactory.h

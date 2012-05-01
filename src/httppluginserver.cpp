@@ -18,7 +18,7 @@
 
 #include "httppluginserver.h"
 #include "priv/httppluginserver.h"
-#include "abstracthttpserverrequesthandlerloader.h"
+#include "abstracthttpserverrequesthandlerfactory.h"
 #include "httpserverresponse.h"
 
 #include <QtCore/QSettings>
@@ -88,11 +88,11 @@ void HttpPluginServer::reloadConfig()
             continue;
         }
 
-        AbstractHttpServerRequestHandlerLoader *loader =
-                qobject_cast<AbstractHttpServerRequestHandlerLoader *>
+        AbstractHttpServerRequestHandlerFactory *factory =
+                qobject_cast<AbstractHttpServerRequestHandlerFactory *>
                 (plugin->instance());
 
-        if (!loader) {
+        if (!factory) {
             qWarning("Plugin doesn't implement"
                      " AbstractHttpServerRequestHandlerLoader interface");
             plugin->unload();
@@ -100,7 +100,7 @@ void HttpPluginServer::reloadConfig()
             continue;
         }
 
-        AbstractHttpServerRequestHandler *handler = loader->createHandler(this);
+        AbstractHttpServerRequestHandler *handler = factory->createHandler(this);
         if (!handler) {
             qWarning("Plugin returned a null handler");
             plugin->unload();
