@@ -236,6 +236,8 @@ public:
     QString password() const;
 
     /*!
+      Returns the url likely used by the client to perform the \p request.
+
       \since 0.3
       */
     static QByteArray url(Tufao::HttpServerRequest *request);
