@@ -19,6 +19,8 @@
 #include "httppluginserver.h"
 #include "priv/httppluginserver.h"
 #include "abstracthttpserverrequesthandlerloader.h"
+#include "httpserverresponse.h"
+
 #include <QtCore/QSettings>
 
 namespace Tufao {
@@ -54,7 +56,15 @@ bool HttpPluginServer::handleRequest(HttpServerRequest *request,
                                      HttpServerResponse *response,
                                      const QStringList &args)
 {
-    return priv->router.handleRequest(request, response, args);
+    try {
+        return priv->router.handleRequest(request, response, args);
+    } catch (...) {
+        qWarning("One plugin is throwing an unhandled exception");
+        response->writeHead(HttpServerResponse::INTERNAL_SERVER_ERROR);
+        response->end();
+        return true;
+    }
+
 }
 
 void HttpPluginServer::reloadConfig()
