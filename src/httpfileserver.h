@@ -34,10 +34,12 @@ struct HttpFileServer;
 } // namespace Priv
 
 /*!
-  You can use this class to server static files under Tufão.
+  You can use this class to serve static files under Tufão. It provides a robust
+  HTTP file server, supporting conditional and byte-range requests.
 
-  There are two main approaches:
+  The two main approaches are:
     - Construct an object and use the AbstractHttpServerRequestHandler API
+      implemented by HttpFileServer
     - Use the static methods to serve a file (or set the entity in the response
       body)
 
@@ -52,9 +54,8 @@ struct HttpFileServer;
     - Cache-Control response header: Useful for set cache max age
     - Content-Disposition response header
     - Content-MD5 response header
-
-  Still, this class provides a robust HTTP file server, supporting conditional
-  and byte-ranges requests.
+    - Content-Type response header. This header is used to inform the mime type
+      of the file to the client.
 
   \since
   0.3
@@ -98,8 +99,8 @@ public:
 
     /*!
       This member function doesn't serve any file, just set the response body to
-      the file pointed by \p filename. It's useful in some scenarios, like
-      404-pages.
+      the contents in the file pointed by \p filename. It's useful in some
+      scenarios, like serving 404-pages.
       */
     static bool serveFile(const QString &fileName, HttpServerResponse *response,
                           int statusCode);
@@ -107,9 +108,9 @@ public:
     /*!
       Return the buffer size used.
 
-      When serving files, HttpFileServer allocates some bytes of the file to
-      memory before sending it to the network. The maximum length of the file in
-      memory is the buffer size. This method returns what number is this.
+      When serving files, HttpFileServer allocates some bytes of the file in the
+      memory before sending it to the network. The maximum space allocated is
+      the buffer size. This method returns what number is this.
 
       \note
       The buffer size is global to all HttpFileServer objects.
@@ -126,12 +127,12 @@ public:
 
 public slots:
     /*!
-      It handles the request search and serving the desired file, if the file is
-      found.
+      It searchs for the file requested in the root dir and respond to the
+      request, if the file is found.
 
       \note
       This method won't let requests access files outside the root dir folder
-      and should be prefered over self-made implementations.
+      and should be prefered over self-made implementations, as its safer.
       */
     bool handleRequest(Tufao::HttpServerRequest *request,
                        Tufao::HttpServerResponse *response,
