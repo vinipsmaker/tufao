@@ -30,6 +30,13 @@ class AbstractHttpServerRequestHandler;
   This class provides an factory interface to create
   AbstractHttpServerRequestHandler objects.
 
+  If you want to implement plugins to interact with HttpPluginServer, then you
+  need to make your plugins implement this interface.
+
+  \include plugin.h
+
+  \include plugin.cpp
+
   \since
   0.3
   */
