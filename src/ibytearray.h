@@ -135,7 +135,8 @@ inline bool IByteArray::operator <=(const QByteArray &ba) const
 
 inline IByteArray &IByteArray::operator =(const QByteArray &ba)
 {
-    return *this = ba;
+    static_cast<QByteArray&>(*this) = ba;
+    return *this;
 }
 
 inline bool IByteArray::operator ==(const QByteArray &ba) const
