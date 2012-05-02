@@ -35,7 +35,7 @@ namespace Tufao {
   \sa
   Tufao::IByteArray
   */
-struct TUFAO_EXPORT Headers: public QMultiMap<IByteArray, QByteArray>
+struct Headers: public QMultiMap<IByteArray, QByteArray>
 {
     /*!
       Returns a RFC 1123 date time formatted string if \p dateTime.
@@ -44,7 +44,7 @@ struct TUFAO_EXPORT Headers: public QMultiMap<IByteArray, QByteArray>
 
       \since 0.3
       */
-    static QByteArray fromDateTime(const QDateTime &dateTime);
+    TUFAO_EXPORT static QByteArray fromDateTime(const QDateTime &dateTime);
 
     /*!
       Try to decode \p headerValue using the most common http date time formats.
@@ -59,8 +59,9 @@ struct TUFAO_EXPORT Headers: public QMultiMap<IByteArray, QByteArray>
 
       \since 0.3
       */
-    static QDateTime toDateTime(const QByteArray &headerValue,
-                                const QDateTime &defaultValue = QDateTime());
+    TUFAO_EXPORT static QDateTime toDateTime(const QByteArray &headerValue,
+                                             const QDateTime &defaultValue
+                                             = QDateTime());
 };
 
 } // namespace Tufao

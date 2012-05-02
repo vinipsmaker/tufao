@@ -21,10 +21,14 @@
 #ifndef http_parser_h
 #define http_parser_h
 
+#include "http_parser_qt_helper.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 #define HTTP_PARSER_VERSION_MAJOR 1
 #define HTTP_PARSER_VERSION_MINOR 0
-
-#include "http_parser_qt_helper.h"
 
 /* Compile with -DHTTP_PARSER_STRICT=0 to make less checks, but run
  * faster
@@ -116,7 +120,7 @@ enum flags
 
 
 /* Map for errno-related constants
- * 
+ *
  * The provided argument should be a macro that takes 2 arguments.
  */
 #define HTTP_ERRNO_MAP(XX)                                           \
@@ -251,5 +255,9 @@ const char *http_errno_name(enum http_errno err);
 
 /* Return a string description of the given error */
 const char *http_errno_description(enum http_errno err);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif
