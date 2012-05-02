@@ -17,18 +17,17 @@
 */
 
 #include <QtCore/QRegExp>
+#include "../url.h"
 
 namespace Tufao {
-namespace Priv {
 
-struct Url
+struct Url::Priv
 {
-    Url(const QRegExp &regex) :
+    Priv(const QRegExp &regex) :
         regex(regex)
     {}
 
     QRegExp regex;
 };
 
-} // namespace Priv
 } // namespace Tufao

@@ -20,6 +20,8 @@
 #include <QtCore/QMap>
 #include <QtCore/QByteArray>
 
+namespace Tufao {
+
 struct Phrases
 {
     Phrases();
@@ -106,9 +108,6 @@ inline Phrases::Phrases()
 
 static Phrases phrases;
 
-namespace Tufao {
-namespace Priv {
-
 QByteArray reasonPhrase(int statusCode)
 {
     if (!phrases.map.contains(statusCode))
@@ -117,5 +116,4 @@ QByteArray reasonPhrase(int statusCode)
     return phrases.map[statusCode];
 }
 
-} // namespace Priv
 } // namespace Tufao

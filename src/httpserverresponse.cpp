@@ -16,7 +16,6 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "httpserverresponse.h"
 #include "priv/httpserverresponse.h"
 #include "priv/reasonphrase.h"
 
@@ -33,7 +32,7 @@ namespace Tufao {
 HttpServerResponse::HttpServerResponse(QIODevice *device, Options options,
                                        QObject *parent) :
     QObject(parent),
-    priv(new Priv::HttpServerResponse(device, options))
+    priv(new Priv(device, options))
 {
 }
 
@@ -148,7 +147,7 @@ bool HttpServerResponse::writeHead(int statusCode, const Headers &headers)
 
     priv->device->write(QByteArray::number(statusCode));
     priv->device->write(" ", 1);
-    priv->device->write(Priv::reasonPhrase(statusCode));
+    priv->device->write(reasonPhrase(statusCode));
     priv->device->write(CRLF);
 
     for (Headers::const_iterator i = headers.constBegin()
@@ -178,7 +177,7 @@ bool HttpServerResponse::writeHead(int statusCode)
 
     priv->device->write(QByteArray::number(statusCode));
     priv->device->write(" ", 1);
-    priv->device->write(Priv::reasonPhrase(statusCode));
+    priv->device->write(reasonPhrase(statusCode));
     priv->device->write(CRLF);
     priv->formattingState = Priv::HEADERS;
     return true;

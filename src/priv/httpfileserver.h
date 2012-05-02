@@ -16,14 +16,14 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "../httpfileserver.h"
 #include <QtCore/QDir>
 
 namespace Tufao {
-namespace Priv {
 
-struct HttpFileServer
+struct HttpFileServer::Priv
 {
-    HttpFileServer(const QString &rootDir) :
+    Priv(const QString &rootDir) :
         rootDir(rootDir)
     {
         if (rootDir.endsWith(QDir::separator()))
@@ -33,5 +33,4 @@ struct HttpFileServer
     QString rootDir;
 };
 
-} // namespace Priv
 } // namespace Tufao

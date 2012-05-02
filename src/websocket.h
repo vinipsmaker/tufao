@@ -25,12 +25,6 @@
 #include <QAbstractSocket>
 
 namespace Tufao {
-namespace Priv {
-
-struct WebSocket;
-union Frame;
-
-} // namespace Priv
 
 class HttpServerRequest;
 
@@ -393,10 +387,6 @@ private:
     bool isResponseOkay();
     void onClientHandshakeError();
 
-    Priv::Frame standardFrame() const;
-    Priv::Frame controlFrame() const;
-
-    void writePayload(Priv::Frame frame, const QByteArray &data);
     void close(quint16 code);
 
     void readData(const QByteArray &data);
@@ -410,7 +400,8 @@ private:
     void decodeFragment(QByteArray &fragment);
     void evaluateControlFrame();
 
-    Priv::WebSocket *priv;
+    struct Priv;
+    Priv *priv;
 };
 
 } // namespace Tufao

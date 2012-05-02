@@ -37,17 +37,17 @@ QDateTime Headers::toDateTime(const QByteArray &headerValue,
                               const QDateTime &defaultValue)
 {
     {
-        Priv::Rfc1123 rfc1123(headerValue);
+        Rfc1123 rfc1123(headerValue);
         if (rfc1123)
             return rfc1123();
     }
     {
-        Priv::Rfc1036 rfc1036(headerValue);
+        Rfc1036 rfc1036(headerValue);
         if (rfc1036)
             return rfc1036();
     }
     {
-        Priv::Asctime asctime(headerValue);
+        Asctime asctime(headerValue);
         if (asctime)
             return asctime();
     }

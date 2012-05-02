@@ -18,34 +18,14 @@
 
 #include "priv/httpserverrequest.h"
 
-struct HttpSettings
-{
-    HttpSettings();
-
-    http_parser_settings settings;
-};
-
-inline HttpSettings::HttpSettings()
-{
-    settings.on_message_begin
-            = Tufao::Priv::HttpServerRequest::on_message_begin;
-    settings.on_url = Tufao::Priv::HttpServerRequest::on_url;
-    settings.on_header_field = Tufao::Priv::HttpServerRequest::on_header_field;
-    settings.on_header_value = Tufao::Priv::HttpServerRequest::on_header_value;
-    settings.on_headers_complete
-            = Tufao::Priv::HttpServerRequest::on_headers_complete;
-    settings.on_body = Tufao::Priv::HttpServerRequest::on_body;
-    settings.on_message_complete
-            = Tufao::Priv::HttpServerRequest::on_message_complete;
-}
-
-static const HttpSettings httpSettings;
-
 namespace Tufao {
+
+const http_parser_settings HttpServerRequest::Priv::httpSettingsInstance
+= HttpServerRequest::Priv::httpSettings();
 
 HttpServerRequest::HttpServerRequest(QAbstractSocket *socket, QObject *parent) :
     QObject(parent),
-    priv(new Priv::HttpServerRequest(this, socket))
+    priv(new Priv(this, socket))
 {
     if (!socket)
         return;
@@ -125,7 +105,7 @@ void HttpServerRequest::onReadyRead()
 
     priv->buffer += priv->socket->readAll();
     size_t nparsed = http_parser_execute(&priv->parser,
-                                         &httpSettings.settings,
+                                         &Priv::httpSettingsInstance,
                                          priv->buffer.constData(),
                                          priv->buffer.size());
 
@@ -189,9 +169,25 @@ inline void HttpServerRequest::clearRequest()
     priv->trailers.clear();
 }
 
-namespace Priv {
+http_parser_settings HttpServerRequest::Priv::httpSettings()
+{
+    http_parser_settings settings;
 
-int HttpServerRequest::on_message_begin(http_parser *parser)
+    settings.on_message_begin
+            = Tufao::HttpServerRequest::Priv::on_message_begin;
+    settings.on_url = Tufao::HttpServerRequest::Priv::on_url;
+    settings.on_header_field = Tufao::HttpServerRequest::Priv::on_header_field;
+    settings.on_header_value = Tufao::HttpServerRequest::Priv::on_header_value;
+    settings.on_headers_complete
+            = Tufao::HttpServerRequest::Priv::on_headers_complete;
+    settings.on_body = Tufao::HttpServerRequest::Priv::on_body;
+    settings.on_message_complete
+            = Tufao::HttpServerRequest::Priv::on_message_complete;
+
+    return settings;
+}
+
+int HttpServerRequest::Priv::on_message_begin(http_parser *parser)
 {
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
@@ -200,8 +196,8 @@ int HttpServerRequest::on_message_begin(http_parser *parser)
     return 0;
 }
 
-int HttpServerRequest::on_url(http_parser *parser, const char *at,
-                              size_t length)
+int HttpServerRequest::Priv::on_url(http_parser *parser, const char *at,
+                                    size_t length)
 {
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
@@ -210,8 +206,8 @@ int HttpServerRequest::on_url(http_parser *parser, const char *at,
     return 0;
 }
 
-int HttpServerRequest::on_header_field(http_parser *parser, const char *at,
-                                       size_t length)
+int HttpServerRequest::Priv::on_header_field(http_parser *parser, const char *at,
+                                             size_t length)
 {
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
@@ -225,8 +221,8 @@ int HttpServerRequest::on_header_field(http_parser *parser, const char *at,
     return 0;
 }
 
-int HttpServerRequest::on_header_value(http_parser *parser, const char *at,
-                                       size_t length)
+int HttpServerRequest::Priv::on_header_value(http_parser *parser, const char *at,
+                                             size_t length)
 {
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
@@ -258,9 +254,8 @@ int HttpServerRequest::on_header_value(http_parser *parser, const char *at,
     return 0;
 }
 
-int HttpServerRequest::on_headers_complete(http_parser *parser)
+int HttpServerRequest::Priv::on_headers_complete(http_parser *parser)
 {
-    using Tufao::HttpServerResponse;
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
     Q_ASSERT(request);
@@ -354,8 +349,8 @@ int HttpServerRequest::on_headers_complete(http_parser *parser)
     return 0;
 }
 
-int HttpServerRequest::on_body(http_parser *parser, const char *at,
-                               size_t length)
+int HttpServerRequest::Priv::on_body(http_parser *parser, const char *at,
+                                     size_t length)
 {
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
@@ -365,7 +360,7 @@ int HttpServerRequest::on_body(http_parser *parser, const char *at,
     return 0;
 }
 
-int HttpServerRequest::on_message_complete(http_parser *parser)
+int HttpServerRequest::Priv::on_message_complete(http_parser *parser)
 {
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
@@ -377,5 +372,4 @@ int HttpServerRequest::on_message_complete(http_parser *parser)
     return 0;
 }
 
-} // namespace Priv
 } // namespace Tufao

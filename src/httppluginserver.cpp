@@ -16,7 +16,6 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "httppluginserver.h"
 #include "priv/httppluginserver.h"
 #include "abstracthttpserverrequesthandlerfactory.h"
 #include "httpserverresponse.h"
@@ -27,7 +26,7 @@ namespace Tufao {
 
 HttpPluginServer::HttpPluginServer(const QString &configFile, QObject *parent):
     AbstractHttpServerRequestHandler(parent),
-    priv(new Priv::HttpPluginServer)
+    priv(new Priv)
 {
     if (!configFile.isEmpty()) {
         priv->configFile = configFile;

@@ -16,7 +16,6 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "httpserverrequestrouter.h"
 #include "priv/httpserverrequestrouter.h"
 #include "httpserverrequest.h"
 #include "url.h"
@@ -30,7 +29,7 @@ typedef AbstractHttpServerRequestHandler Handler;
 
 HttpServerRequestRouter::HttpServerRequestRouter(QObject *parent) :
     AbstractHttpServerRequestHandler(parent),
-    priv(new Priv::HttpServerRequestRouter)
+    priv(new Priv)
 {
 }
 

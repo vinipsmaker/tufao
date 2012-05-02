@@ -46,11 +46,4 @@
 /*!
   This is the namespace where all Tufão facilities are grouped.
   */
-namespace Tufao {
-
-/*!
-  This namespace contains private symbols.
-  */
-namespace Priv {}
-
-} // namespace Tufao
+namespace Tufao {}

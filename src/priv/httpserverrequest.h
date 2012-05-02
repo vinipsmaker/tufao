@@ -33,20 +33,18 @@
 #include <QtCore/QTimer>
 
 namespace Tufao {
-namespace Priv {
 
-enum Signal
+struct HttpServerRequest::Priv
 {
-    READY   = 1,
-    DATA    = 1 << 1,
-    END     = 1 << 2
-};
-Q_DECLARE_FLAGS(Signals, Signal)
-Q_DECLARE_OPERATORS_FOR_FLAGS(Signals)
+    enum Signal
+    {
+        READY   = 1,
+        DATA    = 1 << 1,
+        END     = 1 << 2
+    };
+    Q_DECLARE_FLAGS(Signals, Signal)
 
-struct HttpServerRequest
-{
-    HttpServerRequest(Tufao::HttpServerRequest *request,
+    Priv(Tufao::HttpServerRequest *request,
                       QAbstractSocket *socket) :
         socket(socket),
         lastWasValue(true),
@@ -60,6 +58,7 @@ struct HttpServerRequest
         parser.data = request;
     }
 
+    static http_parser_settings httpSettings();
     static int on_message_begin(http_parser *);
     static int on_url(http_parser *, const char *, size_t);
     static int on_header_field(http_parser *, const char *, size_t);
@@ -86,9 +85,10 @@ struct HttpServerRequest
 
     int timeout;
     QTimer timer;
+
+    static const http_parser_settings httpSettingsInstance;
 };
 
-} // namespace Priv
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_HTTPSERVERREQUEST_H

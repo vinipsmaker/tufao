@@ -16,7 +16,6 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "httpfileserver.h"
 #include "priv/httpfileserver.h"
 
 #include <QtCore/QFileInfo>
@@ -95,7 +94,7 @@ namespace Tufao {
 
 HttpFileServer::HttpFileServer(const QString &dir, QObject *parent) :
     AbstractHttpServerRequestHandler(parent),
-    priv(new Priv::HttpFileServer(dir))
+    priv(new Priv(dir))
 {
 }
 

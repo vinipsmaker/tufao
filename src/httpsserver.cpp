@@ -16,7 +16,6 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "httpsserver.h"
 #include "priv/httpsserver.h"
 #include <QtNetwork/QSslSocket>
 
@@ -24,7 +23,7 @@ namespace Tufao {
 
 HttpsServer::HttpsServer(QObject *parent) :
     HttpServer(parent),
-    priv(new Priv::HttpsServer)
+    priv(new Priv)
 {
 }
 

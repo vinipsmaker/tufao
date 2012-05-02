@@ -27,12 +27,6 @@ class QFileInfo;
 
 namespace Tufao {
 
-namespace Priv {
-
-struct HttpFileServer;
-
-} // namespace Priv
-
 /*!
   You can use this class to serve static files under Tufão. It provides a robust
   HTTP file server, supporting conditional and byte-range requests.
@@ -139,7 +133,8 @@ public slots:
                        const QStringList & = QStringList());
 
 private:
-    Priv::HttpFileServer *priv;
+    struct Priv;
+    Priv *priv;
 };
 
 } // namespace Tufao

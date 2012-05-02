@@ -27,12 +27,6 @@ namespace Tufao {
 
 struct Headers;
 
-namespace Priv {
-
-struct HttpServerRequest;
-
-} // namespace Priv
-
 /*!
   The Tufao::HttpServer represents a HTTP request received by Tufao::HttpServer.
 
@@ -272,9 +266,10 @@ private:
     void clearBuffer();
     void clearRequest();
 
-    Priv::HttpServerRequest *priv;
+    struct Priv;
+    Priv *priv;
 
-    friend struct Tufao::Priv::HttpServerRequest;
+    friend struct Tufao::HttpServerRequest::Priv;
 };
 
 } // namespace Tufao

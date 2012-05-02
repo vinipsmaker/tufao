@@ -23,12 +23,6 @@
 
 namespace Tufao {
 
-namespace Priv {
-
-struct HttpServerRequestRouter;
-
-} // namespace Priv
-
 /*!
   This class provides a robust and high performance HTTP request router. It
   allows register AbstractHttpServerRequestHandler objects to handle requests
@@ -157,7 +151,8 @@ public slots:
                        const QStringList &args = QStringList());
 
 private:
-    Priv::HttpServerRequestRouter *priv;
+    struct Priv;
+    Priv *priv;
 };
 
 } // namespace Tufao

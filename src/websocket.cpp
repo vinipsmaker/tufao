@@ -21,7 +21,6 @@
 #include "headers.h"
 
 #include <QtCore/QCryptographicHash>
-#include <QtCore/QtEndian>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QSslSocket>
 
@@ -35,7 +34,7 @@ namespace Tufao {
 
 WebSocket::WebSocket(QObject *parent) :
     AbstractMessageSocket(parent),
-    priv(new Priv::WebSocket)
+    priv(new Priv)
 {
 }
 
@@ -241,7 +240,7 @@ QList<QByteArray> WebSocket::supportedProtocols(const Headers &headers)
 
 void WebSocket::close()
 {
-    close(Priv::StatusCode::NORMAL);
+    close(StatusCode::NORMAL);
 }
 
 bool WebSocket::sendMessage(const QByteArray &msg)
@@ -262,11 +261,11 @@ bool WebSocket::sendBinaryMessage(const QByteArray &msg)
     if (priv->state != Priv::OPEN)
         return false;
 
-    Priv::Frame frame = standardFrame();
+    Priv::Frame frame = Priv::Frame::standardFrame(priv->isClientNode);
     frame.setFin();
-    frame.setOpcode(Priv::FrameType::BINARY);
+    frame.setOpcode(FrameType::BINARY);
 
-    writePayload(frame, msg);
+    frame.writePayload(priv->socket, priv->isClientNode, msg);
 
     return true;
 }
@@ -276,11 +275,11 @@ bool WebSocket::sendUtf8Message(const QByteArray &msg)
     if (priv->state != Priv::OPEN)
         return false;
 
-    Priv::Frame frame = standardFrame();
+    Priv::Frame frame = Priv::Frame::standardFrame(priv->isClientNode);
     frame.setFin();
-    frame.setOpcode(Priv::FrameType::TEXT);
+    frame.setOpcode(FrameType::TEXT);
 
-    writePayload(frame, msg);
+    frame.writePayload(priv->socket, priv->isClientNode, msg);
 
     return true;
 }
@@ -290,9 +289,9 @@ bool WebSocket::ping(const QByteArray &data)
     if (priv->state != Priv::OPEN)
         return false;
 
-    Priv::Frame frame = controlFrame();
-    frame.setOpcode(Priv::FrameType::PING);
-    writePayload(frame, data);
+    Priv::Frame frame = Priv::Frame::controlFrame(priv->isClientNode);
+    frame.setOpcode(FrameType::PING);
+    frame.writePayload(priv->socket, priv->isClientNode, data);
 
     return true;
 }
@@ -435,7 +434,7 @@ void WebSocket::connectToHost(QAbstractSocket *socket,
     priv->lastError = NO_ERROR;
     priv->socket = socket;
 
-    priv->clientNode = new Priv::WebSocketClientNode;
+    priv->clientNode = new WebSocketClientNode;
     priv->clientNode->headers = headers;
     priv->clientNode->resource = resource;
 
@@ -488,66 +487,6 @@ inline void WebSocket::onClientHandshakeError()
     emit disconnected();
 }
 
-inline Priv::Frame WebSocket::standardFrame() const
-{
-    Priv::Frame frame;
-    frame.bytes[0] = 0;
-    frame.bytes[1] = 0;
-
-    if (priv->isClientNode)
-        frame.setMasked();
-
-    return frame;
-}
-
-inline Priv::Frame WebSocket::controlFrame() const
-{
-    Priv::Frame frame = standardFrame();
-    frame.setFin();
-    return frame;
-}
-
-inline void WebSocket::writePayload(Priv::Frame frame, const QByteArray &data)
-{
-    int size = data.size();
-
-    if (size < 126)
-        frame.setPayloadLength(size);
-    else if (size <= 65535)
-        frame.setPayloadLength(126);
-    else
-        frame.setPayloadLength(127);
-
-    priv->socket->write(frame.bytes, 2);
-
-    if (size >= 126 && size <= 65535) {
-        uchar chunk[2];
-        qToBigEndian(quint16(size), chunk);
-        priv->socket->write(reinterpret_cast<char*>(chunk), sizeof(chunk));
-    } else if (size > 65535) {
-        uchar chunk[8];
-        qToBigEndian(quint64(size), chunk);
-        priv->socket->write(reinterpret_cast<char*>(chunk), sizeof(chunk));
-    }
-
-    if (priv->isClientNode) {
-        union
-        {
-            quint32 key;
-            uchar pieces[4];
-        } mask;
-        mask.key = qrand();
-        qToBigEndian(mask.key, mask.pieces);
-
-        for (int i = 0;i != size;++i) {
-            uchar byte = mask.pieces[i % 4] ^ data[i];
-            priv->socket->write(reinterpret_cast<char*>(&byte), 1);
-        }
-    } else {
-        priv->socket->write(data);
-    }
-}
-
 inline void WebSocket::close(quint16 code)
 {
     if (priv->state == Priv::CLOSING
@@ -559,10 +498,10 @@ inline void WebSocket::close(quint16 code)
 
     QByteArray data(reinterpret_cast<char*>(chunk), 2);
 
-    Priv::Frame frame = controlFrame();
-    frame.setOpcode(Priv::FrameType::CONNECTION_CLOSE);
+    Priv::Frame frame = Priv::Frame::controlFrame(priv->isClientNode);
+    frame.setOpcode(FrameType::CONNECTION_CLOSE);
 
-    writePayload(frame, data);
+    frame.writePayload(priv->socket, priv->isClientNode, data);
 
     priv->state = Priv::CLOSING;
 }
@@ -633,7 +572,7 @@ inline bool WebSocket::parseFrame()
     priv->buffer.remove(0, 2);
 
     if (!priv->frame.fin() && priv->frame.isControlFrame()) {
-        close(Priv::StatusCode::PROTOCOL_ERROR);
+        close(StatusCode::PROTOCOL_ERROR);
         priv->lastError = WEBSOCKET_PROTOCOL_ERROR;
         priv->socket->close();
         return false;
@@ -641,7 +580,7 @@ inline bool WebSocket::parseFrame()
 
     if ((priv->frame.masked() && priv->isClientNode)
             || (!priv->frame.masked() && !priv->isClientNode)) {
-        close(Priv::StatusCode::PROTOCOL_ERROR);
+        close(StatusCode::PROTOCOL_ERROR);
         priv->lastError = WEBSOCKET_PROTOCOL_ERROR;
         priv->socket->close();
         return false;
@@ -760,7 +699,7 @@ inline bool WebSocket::parsePayloadData()
         if (priv->frame.isControlFrame()) {
             evaluateControlFrame();
         } else {
-            if (priv->frame.opcode() == Priv::FrameType::CONTINUATION) {
+            if (priv->frame.opcode() == FrameType::CONTINUATION) {
                 // CONTINUATION
                 QByteArray chunk(priv->fragment);
                 priv->fragment.clear();
@@ -777,7 +716,7 @@ inline bool WebSocket::parsePayloadData()
         priv->fragment += priv->payload;
         priv->payload.clear();
 
-        if (priv->frame.opcode() != Priv::FrameType::CONTINUATION)
+        if (priv->frame.opcode() != FrameType::CONTINUATION)
             priv->fragmentOpcode = priv->frame.opcode();
     }
 
@@ -798,14 +737,14 @@ inline void WebSocket::decodeFragment(QByteArray &fragment)
 inline void WebSocket::evaluateControlFrame()
 {
     switch (priv->frame.opcode()) {
-    case Priv::FrameType::CONNECTION_CLOSE:
+    case FrameType::CONNECTION_CLOSE:
     {
         if (priv->state == Priv::CLOSING) {
             priv->socket->close();
         } else {
-            Priv::Frame frame = controlFrame();
-            frame.setOpcode(Priv::FrameType::CONNECTION_CLOSE);
-            writePayload(frame, priv->payload);
+            Priv::Frame frame = Priv::Frame::controlFrame(priv->isClientNode);
+            frame.setOpcode(FrameType::CONNECTION_CLOSE);
+            frame.writePayload(priv->socket, priv->isClientNode, priv->payload);
 
             priv->state = Priv::CLOSING;
             if (!priv->isClientNode)
@@ -813,26 +752,24 @@ inline void WebSocket::evaluateControlFrame()
         }
         break;
     }
-    case Priv::FrameType::PING:
+    case FrameType::PING:
     {
-        Priv::Frame frame = controlFrame();
-        frame.setOpcode(Priv::FrameType::PONG);
-        writePayload(frame, priv->payload);
+        Priv::Frame frame = Priv::Frame::controlFrame(priv->isClientNode);
+        frame.setOpcode(FrameType::PONG);
+        frame.writePayload(priv->socket, priv->isClientNode, priv->payload);
         break;
     }
-    case Priv::FrameType::PONG:
+    case FrameType::PONG:
         emit pong(priv->payload);
         break;
     default:
         priv->lastError = WEBSOCKET_PROTOCOL_ERROR;
-        close(Priv::StatusCode::UNKOWN_ERROR);
+        close(StatusCode::UNKOWN_ERROR);
         priv->socket->close();
         break;
     }
     priv->payload.clear();
 }
-
-namespace Priv {
 
 struct HttpClientSettings
 {
@@ -885,8 +822,7 @@ inline int WebSocketHttpClient::statusCode()
 int WebSocketHttpClient::on_header_field(http_parser *parser, const char *at,
                                       size_t length)
 {
-    Tufao::Priv::WebSocketHttpClient *wsr
-            = static_cast<Tufao::Priv::WebSocketHttpClient *>(parser->data);
+    WebSocketHttpClient *wsr = static_cast<WebSocketHttpClient *>(parser->data);
     Q_ASSERT(wsr);
 
     if (wsr->lastWasValue) {
@@ -902,8 +838,7 @@ int WebSocketHttpClient::on_header_field(http_parser *parser, const char *at,
 int WebSocketHttpClient::on_header_value(http_parser *parser, const char *at,
                                       size_t length)
 {
-    Tufao::Priv::WebSocketHttpClient *wsr
-            = static_cast<Tufao::Priv::WebSocketHttpClient *>(parser->data);
+    WebSocketHttpClient *wsr = static_cast<WebSocketHttpClient *>(parser->data);
     Q_ASSERT(wsr);
 
     if (wsr->lastWasValue) {
@@ -920,8 +855,7 @@ int WebSocketHttpClient::on_header_value(http_parser *parser, const char *at,
 
 int WebSocketHttpClient::on_headers_complete(http_parser *parser)
 {
-    Tufao::Priv::WebSocketHttpClient *wsr
-            = static_cast<Tufao::Priv::WebSocketHttpClient *>(parser->data);
+    WebSocketHttpClient *wsr = static_cast<WebSocketHttpClient *>(parser->data);
     Q_ASSERT(wsr);
 
     wsr->lastHeader.clear();
@@ -946,8 +880,7 @@ int WebSocketHttpClient::on_headers_complete(http_parser *parser)
 
 int WebSocketHttpClient::on_message_complete(http_parser *parser)
 {
-    Tufao::Priv::WebSocketHttpClient *wsr
-            = static_cast<Tufao::Priv::WebSocketHttpClient *>(parser->data);
+    WebSocketHttpClient *wsr = static_cast<WebSocketHttpClient *>(parser->data);
     Q_ASSERT(wsr);
 
     wsr->ready = true;
@@ -955,5 +888,4 @@ int WebSocketHttpClient::on_message_complete(http_parser *parser)
     return 0;
 }
 
-} // namespace Priv
 } // namespace Tufao

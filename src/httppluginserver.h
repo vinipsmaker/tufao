@@ -23,12 +23,6 @@
 
 namespace Tufao {
 
-namespace Priv {
-
-struct HttpPluginServer;
-
-} // namespace Priv
-
 /*!
   This class provides a plugin-based request handler. If you need to change the
   running server code at runtime, then this class is made for you.
@@ -106,7 +100,8 @@ public slots:
 private:
     void clear();
 
-    Priv::HttpPluginServer *priv;
+    struct Priv;
+    Priv *priv;
 };
 
 } // namespace Tufao

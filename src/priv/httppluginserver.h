@@ -19,13 +19,13 @@
 #ifndef TUFAO_PRIV_HTTPPLUGINSERVER_H
 #define TUFAO_PRIV_HTTPPLUGINSERVER_H
 
+#include "../httppluginserver.h"
 #include "../httpserverrequestrouter.h"
 #include <QtCore/QPluginLoader>
 
 namespace Tufao {
-namespace Priv {
 
-struct HttpPluginServer
+struct HttpPluginServer::Priv
 {
     Tufao::HttpServerRequestRouter router;
     QString configFile;
@@ -33,7 +33,6 @@ struct HttpPluginServer
     QObjectList handlers;
 };
 
-} // namespace Priv
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_HTTPPLUGINSERVER_H

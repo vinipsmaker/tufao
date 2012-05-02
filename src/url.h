@@ -26,12 +26,6 @@ namespace Tufao {
 
 class HttpServerRequest;
 
-namespace Priv {
-
-struct Url;
-
-} // namespace Priv
-
 /*!
   This class provides a convenient interface for parsing URLs.
 
@@ -243,7 +237,8 @@ public:
     static QByteArray url(Tufao::HttpServerRequest *request);
 
 private:
-    Priv::Url *priv;
+    struct Priv;
+    Priv *priv;
 };
 
 } // namespace Tufao

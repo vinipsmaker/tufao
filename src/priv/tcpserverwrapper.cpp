@@ -19,17 +19,15 @@
 #include "tcpserverwrapper.h"
 
 namespace Tufao {
-namespace Priv {
 
 TcpServerWrapper::TcpServerWrapper(QObject *parent) :
     QTcpServer(parent)
 {
 }
 
-void Tufao::Priv::TcpServerWrapper::incomingConnection(int socketDescriptor)
+void TcpServerWrapper::incomingConnection(int socketDescriptor)
 {
     emit newConnection(socketDescriptor);
 }
 
-} // namespace Priv
 } // namespace Tufao

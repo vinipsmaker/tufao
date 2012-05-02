@@ -23,7 +23,6 @@
 #include <QtCore/QDateTime>
 
 namespace Tufao {
-namespace Priv {
 
 class Asctime
 {
@@ -93,7 +92,6 @@ inline QDateTime Asctime::operator ()()
                      Qt::UTC);
 }
 
-} // namespace Priv
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_ASCTIME_H

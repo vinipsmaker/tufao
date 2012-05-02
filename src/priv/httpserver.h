@@ -19,24 +19,23 @@
 #ifndef TUFAO_PRIV_HTTPSERVER_H
 #define TUFAO_PRIV_HTTPSERVER_H
 
+#include "../httpserver.h"
 #include "tcpserverwrapper.h"
 
 namespace Tufao {
-namespace Priv {
 
-struct HttpServer
+struct HttpServer::Priv
 {
-    HttpServer();
+    Priv();
 
     TcpServerWrapper tcpServer;
     int timeout;
 };
 
-inline HttpServer::HttpServer() :
+inline HttpServer::Priv::Priv() :
     timeout(120000)
 {}
 
-} // namespace Priv
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_HTTPSERVER_H

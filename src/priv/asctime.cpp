@@ -19,7 +19,6 @@
 #include "asctime.h"
 
 namespace Tufao {
-namespace Priv {
 
 const QRegExp Asctime::asctime("(?:\\w{3})\\s+" // day
                                "(\\w{3})\\s+" // month-1
@@ -30,5 +29,4 @@ const QRegExp Asctime::asctime("(?:\\w{3})\\s+" // day
                                "(\\d{4})" // year-6
                                );
 
-} // namespace Priv
 } // namespace Tufao

@@ -23,7 +23,6 @@
 #include "../tufao_global.h"
 
 namespace Tufao {
-namespace Priv {
 
 class TcpServerWrapper : public QTcpServer
 {
@@ -38,7 +37,6 @@ protected:
     void incomingConnection(int socketDescriptor);
 };
 
-} // namespace Priv
 } // namespace Tufao
 
 #endif // TCPSERVERWRAPPER_H

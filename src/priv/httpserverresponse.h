@@ -20,24 +20,24 @@
 #define TUFAO_PRIV_HTTPSERVERRESPONSE_H
 
 #include "../httpserverresponse.h"
-#include <QtCore/QIODevice>
 #include "../headers.h"
 
+#include <QtCore/QIODevice>
+
 namespace Tufao {
-namespace Priv {
 
-enum HttpResponseFormattingState
+struct HttpServerResponse::Priv
 {
-    STATUS_LINE,
-    HEADERS,
-    MESSAGE_BODY,
-    TRAILERS,
-    END
-};
+    enum HttpResponseFormattingState
+    {
+        STATUS_LINE,
+        HEADERS,
+        MESSAGE_BODY,
+        TRAILERS,
+        END
+    };
 
-struct HttpServerResponse
-{
-    HttpServerResponse(QIODevice *device,
+    Priv(QIODevice *device,
                        Tufao::HttpServerResponse::Options options) :
         device(device),
         formattingState(STATUS_LINE),
@@ -52,7 +52,6 @@ struct HttpServerResponse
     QByteArray http10Buffer;
 };
 
-} // namespace Priv
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_HTTPSERVERRESPONSE_H

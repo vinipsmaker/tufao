@@ -22,11 +22,9 @@
 #include "../tufao_global.h"
 
 namespace Tufao {
-namespace Priv {
 
 QByteArray reasonPhrase(int statusCode);
 
-} // namespace Priv
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_REASONPHRASE_H

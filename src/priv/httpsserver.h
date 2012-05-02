@@ -19,20 +19,20 @@
 #ifndef TUFAO_PRIV_HTTPSSERVER_H
 #define TUFAO_PRIV_HTTPSSERVER_H
 
+#include "../httpsserver.h"
 #include "../tufao_global.h"
+
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslKey>
 
 namespace Tufao {
-namespace Priv {
 
-struct HttpsServer
+struct HttpsServer::Priv
 {
     QSslCertificate localCertificate;
     QSslKey privateKey;
 };
 
-} // namespace Priv
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_HTTPSSERVER_H

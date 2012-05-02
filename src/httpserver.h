@@ -29,12 +29,6 @@ namespace Tufao {
 class HttpServerRequest;
 class HttpServerResponse;
 
-namespace Priv {
-
-struct HttpServer;
-
-} // namespace Priv
-
 /*!
   The Tufao::HttpServer class provides an implementation of the HTTP protocol.
 
@@ -216,7 +210,8 @@ private slots:
     void onUpgrade(const QByteArray &head);
 
 private:
-    Priv::HttpServer *priv;
+    struct Priv;
+    Priv *priv;
 };
 
 } // namespace Tufao

@@ -16,7 +16,6 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "httpserver.h"
 #include "priv/httpserver.h"
 #include "httpserverrequest.h"
 #include <QtNetwork/QTcpSocket>
@@ -26,7 +25,7 @@ namespace Tufao {
 
 HttpServer::HttpServer(QObject *parent) :
     QObject(parent),
-    priv(new Priv::HttpServer)
+    priv(new Priv)
 {
     connect(&priv->tcpServer, SIGNAL(newConnection(int)),
             this, SLOT(onNewConnection(int)));

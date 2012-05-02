@@ -19,7 +19,6 @@
 #include "rfc1123.h"
 
 namespace Tufao {
-namespace Priv {
 
 const QRegExp Rfc1123::rfc1123("(?:\\w{3}\\s*,\\s*)?" // day
                                "(\\d{1,2})\\s+" // day-1
@@ -31,5 +30,4 @@ const QRegExp Rfc1123::rfc1123("(?:\\w{3}\\s*,\\s*)?" // day
                                "GMT"
                                );
 
-} // namespace Priv
 } // namespace Tufao

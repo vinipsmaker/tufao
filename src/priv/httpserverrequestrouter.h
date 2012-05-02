@@ -19,6 +19,8 @@
 #ifndef TUFAO_PRIV_HTTPSERVERREQUESTROUTER_H
 #define TUFAO_PRIV_HTTPSERVERREQUESTROUTER_H
 
+#include "../httpserverrequestrouter.h"
+
 #include <QtCore/QRegExp>
 #include <QtCore/QPair>
 #include <QtCore/QMap>
@@ -27,17 +29,14 @@ namespace Tufao {
 
 class AbstractHttpServerRequestHandler;
 
-namespace Priv {
-
 typedef AbstractHttpServerRequestHandler Handler;
 
-struct HttpServerRequestRouter
+struct HttpServerRequestRouter::Priv
 {
     QList< QPair<QRegExp, Handler*> > general;
     QMap< QByteArray, QList< QPair<QRegExp, Handler*> > > methods;
 };
 
-} // namespace Priv
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_HTTPSERVERREQUESTROUTER_H

@@ -19,93 +19,15 @@
 #ifndef TUFAO_PRIV_WEBSOCKET_H
 #define TUFAO_PRIV_WEBSOCKET_H
 
-#include <QtNetwork/QAbstractSocket>
 #include "../websocket.h"
 #include "http_parser.h"
 
+#include <QtNetwork/QAbstractSocket>
+#include <QtCore/QtEndian>
+
 namespace Tufao {
-namespace Priv {
 
-union Frame {
-    char bytes[2];
-
-    bool fin() const
-    {
-        return bytes[0] & 0x80;
-    }
-
-    void setFin()
-    {
-        bytes[0] |= 0x80;
-    }
-
-    void unsetFin()
-    {
-        bytes[0] &= 0x7F;
-    }
-
-    bool rsv1() const
-    {
-        return bytes[0] & 0x40;
-    }
-
-    bool rsv2() const
-    {
-        return bytes[0] & 0x20;
-    }
-
-    bool rsv3() const
-    {
-        return bytes[0] & 0x10;
-    }
-
-    quint8 opcode() const
-    {
-        return bytes[0] & 0xF;
-    }
-
-    void setOpcode(quint8 opcode)
-    {
-        bytes[0] &= 0xF0;
-        bytes[0] |= opcode & 0xF;
-    }
-
-    bool masked() const
-    {
-        return bytes[1] & 0x80;
-    }
-
-    void setMasked()
-    {
-        bytes[1] |= 0x80;
-    }
-
-    void unsetMasked()
-    {
-        bytes[1] &= 0x7F;
-    }
-
-    quint8 payloadLength() const
-    {
-        return bytes[1] & 0x7F;
-    }
-
-    void setPayloadLength(quint8 length)
-    {
-        bytes[1] &= 0x80;
-        bytes[1] |= length & 0x7F;
-    }
-
-    bool isControlFrame()
-    {
-        return bytes[0] & 0x8;
-    }
-
-    bool isDataFrame()
-    {
-        return !isControlFrame();
-    }
-};
+struct HttpClientSettings;
 
 namespace FrameType
 {
@@ -122,16 +44,6 @@ enum FrameType
 };
 } // namespace FrameType
 
-inline bool isControlFrame(FrameType::FrameType opcode)
-{
-    return opcode & 0x8;
-}
-
-inline bool isDataFrame(FrameType::FrameType opcode)
-{
-    return !isControlFrame(opcode);
-}
-
 namespace StatusCode {
 enum
 {
@@ -147,25 +59,6 @@ enum
     UNEXPECTED_CONDITION  = 1011
 };
 } // namespace StatusCode
-
-enum State
-{
-    CONNECTING,
-    OPEN,
-    CLOSING,
-    CLOSED
-};
-
-enum ParsingState
-{
-    PARSING_FRAME,
-    PARSING_SIZE_16BIT,
-    PARSING_SIZE_64BIT,
-    PARSING_MASKING_KEY,
-    PARSING_PAYLOAD_DATA
-};
-
-struct HttpClientSettings;
 
 class WebSocketHttpClient
 {
@@ -218,9 +111,178 @@ struct WebSocketClientNode
     QByteArray expectedWebSocketAccept;
 };
 
-struct WebSocket
+struct WebSocket::Priv
 {
-    WebSocket() :
+    union Frame
+    {
+        char bytes[2];
+
+        bool fin() const
+        {
+            return bytes[0] & 0x80;
+        }
+
+        void setFin()
+        {
+            bytes[0] |= 0x80;
+        }
+
+        void unsetFin()
+        {
+            bytes[0] &= 0x7F;
+        }
+
+        bool rsv1() const
+        {
+            return bytes[0] & 0x40;
+        }
+
+        bool rsv2() const
+        {
+            return bytes[0] & 0x20;
+        }
+
+        bool rsv3() const
+        {
+            return bytes[0] & 0x10;
+        }
+
+        quint8 opcode() const
+        {
+            return bytes[0] & 0xF;
+        }
+
+        void setOpcode(quint8 opcode)
+        {
+            bytes[0] &= 0xF0;
+            bytes[0] |= opcode & 0xF;
+        }
+
+        bool masked() const
+        {
+            return bytes[1] & 0x80;
+        }
+
+        void setMasked()
+        {
+            bytes[1] |= 0x80;
+        }
+
+        void unsetMasked()
+        {
+            bytes[1] &= 0x7F;
+        }
+
+        quint8 payloadLength() const
+        {
+            return bytes[1] & 0x7F;
+        }
+
+        void setPayloadLength(quint8 length)
+        {
+            bytes[1] &= 0x80;
+            bytes[1] |= length & 0x7F;
+        }
+
+        bool isControlFrame()
+        {
+            return bytes[0] & 0x8;
+        }
+
+        bool isDataFrame()
+        {
+            return !isControlFrame();
+        }
+
+        void writePayload(QAbstractSocket *socket, bool isClientNode, const QByteArray &data)
+        {
+            int size = data.size();
+
+            if (size < 126)
+                setPayloadLength(size);
+            else if (size <= 65535)
+                setPayloadLength(126);
+            else
+                setPayloadLength(127);
+
+            socket->write(bytes, 2);
+
+            if (size >= 126 && size <= 65535) {
+                uchar chunk[2];
+                qToBigEndian(quint16(size), chunk);
+                socket->write(reinterpret_cast<char*>(chunk), sizeof(chunk));
+            } else if (size > 65535) {
+                uchar chunk[8];
+                qToBigEndian(quint64(size), chunk);
+                socket->write(reinterpret_cast<char*>(chunk), sizeof(chunk));
+            }
+
+            if (isClientNode) {
+                union
+                {
+                    quint32 key;
+                    uchar pieces[4];
+                } mask;
+                mask.key = qrand();
+                qToBigEndian(mask.key, mask.pieces);
+
+                for (int i = 0;i != size;++i) {
+                    uchar byte = mask.pieces[i % 4] ^ data[i];
+                    socket->write(reinterpret_cast<char*>(&byte), 1);
+                }
+            } else {
+                socket->write(data);
+            }
+        }
+
+        static Frame standardFrame(bool isClientNode)
+        {
+            Priv::Frame frame;
+            frame.bytes[0] = 0;
+            frame.bytes[1] = 0;
+
+            if (isClientNode)
+                frame.setMasked();
+
+            return frame;
+        }
+
+        static Frame controlFrame(bool isClientNode)
+        {
+            Priv::Frame frame = standardFrame(isClientNode);
+            frame.setFin();
+            return frame;
+        }
+    };
+
+    inline bool isControlFrame(FrameType::FrameType opcode)
+    {
+        return opcode & 0x8;
+    }
+
+    inline bool isDataFrame(FrameType::FrameType opcode)
+    {
+        return !isControlFrame(opcode);
+    }
+
+    enum State
+    {
+        CONNECTING,
+        OPEN,
+        CLOSING,
+        CLOSED
+    };
+
+    enum ParsingState
+    {
+        PARSING_FRAME,
+        PARSING_SIZE_16BIT,
+        PARSING_SIZE_64BIT,
+        PARSING_MASKING_KEY,
+        PARSING_PAYLOAD_DATA
+    };
+
+    Priv() :
         messageType(Tufao::WebSocket::BINARY_MESSAGE),
         lastError(Tufao::WebSocket::NO_ERROR),
         state(CLOSED),
@@ -228,7 +290,7 @@ struct WebSocket
         clientNode(NULL)
     {}
 
-    ~WebSocket()
+    ~Priv()
     {
         if (clientNode)
             delete clientNode;
@@ -260,7 +322,6 @@ struct WebSocket
     QByteArray fragment;
 };
 
-} // namespace Priv
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_WEBSOCKET_H

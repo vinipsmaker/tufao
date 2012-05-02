@@ -46,13 +46,13 @@ static QRegExp regex("^(?:([^:/?#]+):)?"
 namespace Tufao {
 
 Url::Url(const QString &url) :
-    priv(new Priv::Url(regex))
+    priv(new Priv(regex))
 {
     priv->regex.indexIn(url);
 }
 
 Url::Url(const Url &url) :
-    priv(new Priv::Url(url.priv->regex))
+    priv(new Priv(url.priv->regex))
 {
 }
 
@@ -67,7 +67,7 @@ Url &Url::operator =(const Url &url)
         return *this;
 
     delete priv;
-    priv = new Priv::Url(url.priv->regex);
+    priv = new Priv(url.priv->regex);
     return *this;
 }
 

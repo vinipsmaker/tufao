@@ -26,12 +26,6 @@ class QSslKey;
 
 namespace Tufao {
 
-namespace Priv {
-
-struct HttpsServer;
-
-} // namespace Priv
-
 /*!
   Tufao::HttpsServer is a subclass of Tufao::HttpServer that provides secure
   communication with the client.
@@ -93,7 +87,8 @@ protected:
     void incomingConnection(int socketDescriptor);
 
 private:
-    Priv::HttpsServer *priv;
+    struct Priv;
+    Priv *priv;
 };
 
 } // namespace Tufao

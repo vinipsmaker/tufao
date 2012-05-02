@@ -23,7 +23,6 @@
 #include <QtCore/QDateTime>
 
 namespace Tufao {
-namespace Priv {
 
 class Rfc1123
 {
@@ -104,7 +103,6 @@ inline QDateTime Rfc1123::operator ()()
                      Qt::UTC);
 }
 
-} // namespace Priv
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_RFC1123_H

@@ -28,12 +28,6 @@ namespace Tufao {
 
 struct Headers;
 
-namespace Priv {
-
-struct HttpServerResponse;
-
-} // namespace Priv
-
 /*!
   The Tufao::HttpServerResponse is used to respond to a
   Tufao::HttpServerRequest.
@@ -383,7 +377,8 @@ public slots:
     bool end(const QByteArray &chunk = QByteArray());
 
 private:
-    Priv::HttpServerResponse *priv;
+    struct Priv;
+    Priv *priv;
 };
 
 inline
