@@ -294,7 +294,8 @@ int HttpServerRequest::Priv::on_headers_complete(http_parser *parser)
             M("NOTIFY"),
             M("SUBSCRIBE"),
             M("UNSUBSCRIBE"),
-            M("PATCH")
+            M("PATCH"),
+            M("PURGE")
         };
 #undef M
         request->priv->method.setRawData(methods[parser->method].str,

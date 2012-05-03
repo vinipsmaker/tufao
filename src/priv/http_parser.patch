@@ -1,40 +1,41 @@
 --- http_parser.c
 +++ http_parser.c
-@@ -21,9 +21,7 @@
-  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+@@ -22,12 +22,6 @@
   * IN THE SOFTWARE.
   */
--#include <http_parser.h>
+ #include "http_parser.h"
 -#include <assert.h>
 -#include <stddef.h>
-+#include "http_parser.h"
+-#include <ctype.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <limits.h>
  
- 
- #ifndef MIN
+ #ifndef ULLONG_MAX
+ # define ULLONG_MAX ((uint64_t) -1) /* 2^64-1 */
 --- http_parser.h
 +++ http_parser.h
-@@ -20,15 +20,11 @@
-  */
- #ifndef http_parser_h
- #define http_parser_h
--#ifdef __cplusplus
--extern "C" {
--#endif
- 
+@@ -27,22 +27,7 @@ extern "C" {
  #define HTTP_PARSER_VERSION_MAJOR 1
  #define HTTP_PARSER_VERSION_MINOR 0
  
 -#include <sys/types.h>
+-#if defined(_WIN32) && !defined(__MINGW32__) && (!defined(_MSC_VER) || _MSC_VER<1600)
+-typedef __int8 int8_t;
+-typedef unsigned __int8 uint8_t;
+-typedef __int16 int16_t;
+-typedef unsigned __int16 uint16_t;
+-typedef __int32 int32_t;
+-typedef unsigned __int32 uint32_t;
+-typedef __int64 int64_t;
+-typedef unsigned __int64 uint64_t;
+-
+-typedef unsigned int size_t;
+-typedef int ssize_t;
+-#else
 -#include <stdint.h>
+-#endif
 +#include "http_parser_qt_helper.h"
  
  /* Compile with -DHTTP_PARSER_STRICT=0 to make less checks, but run
   * faster
-@@ -256,7 +252,4 @@
- /* Return a string description of the given error */
- const char *http_errno_description(enum http_errno err);
- 
--#ifdef __cplusplus
--}
--#endif
- #endif
