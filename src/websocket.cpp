@@ -70,6 +70,20 @@ bool WebSocket::connectToHost(const QHostAddress &address,
     return connectToHost(address, 80, resource, headers);
 }
 
+bool WebSocket::connectToHost(const QString &address, quint16 port,
+                              const QByteArray &resource,
+                              const Headers &headers)
+{
+    return connectToHost(QHostAddress(address), port, resource, headers);
+}
+
+bool WebSocket::connectToHost(const QString &address,
+                              const QByteArray &resource,
+                              const Headers &headers)
+{
+    return connectToHost(address, 80, resource, headers);
+}
+
 bool WebSocket::connectToHostEncrypted(const QString &address, quint16 port,
                                        const QByteArray &resource,
                                        const Headers &headers)
@@ -91,6 +105,20 @@ bool WebSocket::connectToHostEncrypted(const QString &address, quint16 port,
 }
 
 bool WebSocket::connectToHostEncrypted(const QString &address,
+                                       const QByteArray &resource,
+                                       const Headers &headers)
+{
+    return connectToHostEncrypted(address, 443, resource, headers);
+}
+
+bool WebSocket::connectToHostEncrypted(const QHostAddress &address,
+                                       quint16 port, const QByteArray &resource,
+                                       const Headers &headers)
+{
+    return connectToHostEncrypted(address.toString(), port, resource, headers);
+}
+
+bool WebSocket::connectToHostEncrypted(const QHostAddress &address,
                                        const QByteArray &resource,
                                        const Headers &headers)
 {

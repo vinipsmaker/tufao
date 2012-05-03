@@ -244,6 +244,27 @@ public:
                        const Headers &headers = Headers());
 
     /*!
+      This is an overloaded function.
+
+      \since
+      0.3
+      */
+    bool connectToHost(const QString &address, quint16 port,
+                       const QByteArray &resource,
+                       const Headers &headers = Headers());
+
+    /*!
+      This is an overloaded function.
+
+      It uses port 80 to establish the connection.
+
+      \since
+      0.3
+      */
+    bool connectToHost(const QString &address, const QByteArray &resource,
+                       const Headers &headers = Headers());
+
+    /*!
       The same as WebSocket::connectToHost, but uses a TLS connection.
 
       \sa
@@ -259,6 +280,31 @@ public:
       It uses port 443 to establish the connection.
       */
     bool connectToHostEncrypted(const QString &address,
+                                const QByteArray &resource,
+                                const Headers &headers = Headers());
+
+    /*!
+      This is an overloaded function.
+
+      \sa
+      Tufao::WebSocket::connectToHost
+
+      \since
+      0.3
+      */
+    bool connectToHostEncrypted(const QHostAddress &address, quint16 port,
+                                const QByteArray &resource,
+                                const Headers &headers = Headers());
+
+    /*!
+      This is an overloaded function.
+
+      It uses port 443 to establish the connection.
+
+      \since
+      0.3
+      */
+    bool connectToHostEncrypted(const QHostAddress &address,
                                 const QByteArray &resource,
                                 const Headers &headers = Headers());
 
