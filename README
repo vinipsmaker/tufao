@@ -30,8 +30,8 @@ is also experimental support for Qt compressed help files.
 == LICENSE ==
 -------------
 
-The library and the documentation are licensed under the LGPLv3 and the example
-codes are licensed under MIT license.
+The library is under the LGPLv3 and public header files, documentation and
+examples are under MIT license.
 
 The library is dynamic linked against Qt and include code from Ryan Dahl's HTTP
 parser. Qt library is licensed under LGPL and Ryan Dahl's HTTP parser is
