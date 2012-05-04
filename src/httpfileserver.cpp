@@ -326,8 +326,11 @@ bool HttpFileServer::handleRequest(HttpServerRequest *request,
     QString fileName(priv->rootDir
                      + QDir::toNativeSeparators(QDir::cleanPath(resource)));
 
-    if (!QFileInfo(fileName).exists())
-        return false;
+    {
+        QFileInfo fileInfo(fileName);
+        if (!fileInfo.exists() || !fileInfo.isFile())
+            return false;
+    }
 
     serveFile(fileName, request, response);
     return true;
