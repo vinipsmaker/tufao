@@ -11,6 +11,11 @@ system (signals & slots). It features:
    * 100-continue status
    * WebSocket
   * HTTPS support
+  * Flexible request router
+  * Static file server with support for conditional requests and partial
+    download
+  * Plugin-based server to allow change running code at runtime
+  * QtCreator's plugin to allow create new applications rapidly
   * Lots of tests
   * Timeout support
 
@@ -56,7 +61,7 @@ $ qmake 'CONFIG=debug staticlib'
 </pre>
 
 NOTE:
-Qt 4.8 should be required, but I didn't test earlier versions.
+Qt 4.7 or later is required.
 
 After build the project, the following directories will be created:
   * build: where temporary build objects are
@@ -132,6 +137,17 @@ experimental and is recomended to use the documentation in html format).
 == NEWS ==
 ----------
 
+Version 0.3
+  * More application templates in QtCreator Tufão's plugin
+  * Class to serve static files with support for conditional requests and
+    byte-range requests
+  * Robust request router added
+  * HTTP plugin server added
+  * Using newer version of Joyent's HTTP parser
+  * Changed license from public headers to MIT
+  * MSVC support
+  * Some minor improvements
+
 Version 0.2:
   * Code is more stable
   * Documentation improved
@@ -146,15 +162,11 @@ Version 0.2:
 
 Here is a small roadmap for Tufão:
 
-0.3:
-  * Module to serve static files
-
 0.4:
   * Session/cookies support
   * Forms
 
 0.5:
-  * Plugin-based application Server
   * Multi-thread support
 
 0.6:
