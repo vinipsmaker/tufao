@@ -35,6 +35,7 @@ class TcpServer : public QTcpServer
     Q_OBJECT
 public:
     explicit TcpServer(QObject *parent = 0);
+    virtual ~TcpServer();
 
     void run(int threadsNumber, int port,
              Tufao::AbstractHttpServerRequestHandlerFactory *handlerFactory);
