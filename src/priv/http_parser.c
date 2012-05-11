@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  */
 #include "http_parser.h"
+#include <stdlib.h>
 
 #ifndef ULLONG_MAX
 # define ULLONG_MAX ((uint64_t) -1) /* 2^64-1 */

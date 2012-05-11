@@ -29,6 +29,18 @@ TcpServer::TcpServer(QObject *parent) :
 {
 }
 
+TcpServer::~TcpServer()
+{
+    // the thread can't have a parent then...
+    foreach (Thread* t, threads) {
+        t->quit();
+    }
+    foreach (Thread* t, threads) {
+        t->wait();
+        delete t;
+    }
+}
+
 void TcpServer::run(int threadsNumber, int port,
                     Tufao::AbstractHttpServerRequestHandlerFactory *handlerFactory)
 {

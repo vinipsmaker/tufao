@@ -31,9 +31,13 @@ using namespace Tufao;
 
 Thread::Thread(Tufao::AbstractHttpServerRequestHandler *handler,
                QObject *parent) :
-    QThread(parent),
+    QThread(),
     handler(handler)
 {
+    // need this to make the signals and slots run in current thread
+    moveToThread(this);
+    connect(parent, SIGNAL(destroyed()), this, SLOT(quit()));
+    connect(parent, SIGNAL(destroyed()), this, SLOT(deleteLater()));
     connect(this, SIGNAL(newConnection(int)), this, SLOT(onNewConnection(int)));
 }
 
