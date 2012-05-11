@@ -28,8 +28,8 @@
 
 namespace Tufao {
 
-TufaoWizardDialog::TufaoWizardDialog(QWidget *parent) :
-    ProjectExplorer::BaseProjectWizardDialog(parent)
+TufaoWizardDialog::TufaoWizardDialog(QWidget *parent, const Core::WizardDialogParameters &parameters) :
+    ProjectExplorer::BaseProjectWizardDialog(parent, parameters)
 {
     setWindowTitle(trUtf8("New Tufão Web Server Project"));
     setIntroDescription(trUtf8("This wizard generates a"
@@ -43,19 +43,22 @@ TufaoWizard::TufaoWizard(const Core::BaseFileWizardParameters &parameters,
 }
 
 QWizard *TufaoWizard::createWizardDialog(QWidget *parent,
-                                         const QString &defaultPath,
-                                         const WizardPageList &extensionPages)
-const
+                                         const Core::WizardDialogParameters &
+                                         wizardDialogParameters) const
 {
-    TufaoWizardDialog *wizard = new TufaoWizardDialog(parent);
-    wizard->setPath(defaultPath);
+    TufaoWizardDialog *wizard
+            = new TufaoWizardDialog(parent, wizardDialogParameters);
     setupWizard(wizard);
 
     wizard->addPage(new ProjectTypeWizardPage);
 
-    foreach (QWizardPage *p, extensionPages)
-        BaseFileWizard::applyExtensionPageShortTitle(wizard,
-                                                     wizard->addPage(p));
+    {
+        const WizardPageList &
+                extensionPages(wizardDialogParameters.extensionPages());
+        foreach (QWizardPage *p, extensionPages)
+            BaseFileWizard::applyExtensionPageShortTitle(wizard,
+                                                         wizard->addPage(p));
+    }
 
     return wizard;
 }

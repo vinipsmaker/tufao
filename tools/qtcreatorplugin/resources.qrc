@@ -13,7 +13,6 @@
         <file>templates/data/application/pluginreloader.cpp</file>
         <file>templates/data/application/pluginreloader.h</file>
         <file>templates/data/application/static.qrc</file>
-        <file>templates/data/application/public/index.html</file>
         <file>templates/metadata/application/motd</file>
         <file>templates/metadata/application/project.pro</file>
         <file>templates/data/plugin/plugin.cpp</file>

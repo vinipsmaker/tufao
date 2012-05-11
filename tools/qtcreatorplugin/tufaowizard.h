@@ -30,7 +30,8 @@ class TUFAO_EXPORT TufaoWizardDialog:
 {
     Q_OBJECT
 public:
-    explicit TufaoWizardDialog(QWidget *parent = 0);
+    explicit TufaoWizardDialog(QWidget *parent,
+                               const Core::WizardDialogParameters &parameters);
 };
 
 class TUFAO_EXPORT TufaoWizard : public Core::BaseFileWizard
@@ -41,8 +42,9 @@ public:
                          QObject *parent = 0);
 
 protected:
-    QWizard *createWizardDialog(QWidget *parent, const QString &defaultPath,
-                                const WizardPageList &extensionPages) const;
+    QWizard *createWizardDialog(QWidget *parent,
+                                const Core::WizardDialogParameters &
+                                wizardDialogParameters) const;
     Core::GeneratedFiles generateFiles(const QWizard *w,
                                        QString *errorMessage) const;
     bool postGenerateFiles(const QWizard *w, const Core::GeneratedFiles &l,
