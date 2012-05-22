@@ -323,8 +323,10 @@ bool HttpFileServer::handleRequest(HttpServerRequest *request,
 {
     QString resource(QByteArray::fromPercentEncoding(Url(request->url())
                                                      .path().toUtf8()));
-    QString fileName(priv->rootDir
-                     + QDir::toNativeSeparators(QDir::cleanPath(resource)));
+    QString fileName(QDir::cleanPath(priv->rootDir
+                                     + QDir::toNativeSeparators(resource)));
+    if (!fileName.startsWith(priv->rootDir + QDir::separator()))
+        return false;
 
     {
         QFileInfo fileInfo(fileName);
