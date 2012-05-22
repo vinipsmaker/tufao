@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-TARGET = pluginserverconfigeditor
+TARGET = tufao-routes-editor
 TEMPLATE = app
 
 
