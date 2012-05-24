@@ -30,7 +30,7 @@ is also experimental support for Qt compressed help files.
 == LICENSE ==
 -------------
 
-The library is under the LGPLv3 and public header files, documentation and
+The library is under the LGPLv2 and public header files, documentation and
 examples are under MIT license.
 
 The library is dynamic linked against Qt and include code from Ryan Dahl's HTTP
@@ -45,8 +45,10 @@ you do any modifications to *Tufão*, these modifications must be redistributed)
 
 Make sure you have Qt installed, then run:
 
+<pre>
 $ qmake OPTIONS
 $ make
+</pre>
 
 OPTIONS can be null or have a combination of the following values:
   * INSTALLDIR=${INSTALLDIR}
@@ -90,12 +92,16 @@ execute-tests.sh script.
 
 The default install prefix is /, if you don't intend to change it, just run:
 
+<pre>
 # make install
+</pre>
 
 To install to a different prefix, run:
 
+<pre>
 $ qmake INSTALLDIR=${DESTDIR}
 $ make install
+</pre>
 
 NOTE:
 If you just install the release version, you won't be able to compile debug
@@ -105,12 +111,14 @@ Tufão projects. I highly recomend you install both versions (see next section).
 
 If you want to install release and debug versions, run the following commands:
 
+<pre>
 $ qmake
 $ make
 # make install
 $ qmake CONFIG=debug
 $ make
 # make install
+</pre>
 
 NOTE:
 If you want to create a package and the variable $PKGROOT holds the package root
@@ -164,10 +172,11 @@ Here is a small roadmap for Tufão:
 
 0.4:
   * Session/cookies support
-  * Forms
+  * Forms and file uploads
 
 0.5:
-  * Multi-thread support
+  * Better (and easier) multi-thread support
 
 0.6:
+  * RPC support
   * Service discovery and description support
