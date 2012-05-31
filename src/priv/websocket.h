@@ -224,7 +224,7 @@ struct WebSocket::Priv
                     uchar pieces[4];
                 } mask;
                 mask.key = qrand();
-                qToBigEndian(mask.key, mask.pieces);
+                socket->write(reinterpret_cast<char*>(mask.pieces), 4);
 
                 for (int i = 0;i != size;++i) {
                     uchar byte = mask.pieces[i % 4] ^ data[i];
