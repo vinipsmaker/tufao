@@ -50,6 +50,11 @@ bool WebSocket::connectToHost(const QHostAddress &address, quint16 port,
     if (priv->state != Priv::CLOSED)
         return false;
 
+    if (!priv->clientNode) {
+        priv->clientNode = new WebSocketClientNode;
+        priv->clientNode->headers = headers;
+    }
+
     if (!headers.contains("Host")) {
         priv->clientNode->headers.insert("Host",
                                          (address.toString() + ':'
@@ -90,6 +95,11 @@ bool WebSocket::connectToHostEncrypted(const QString &address, quint16 port,
 {
     if  (priv->state != Priv::CLOSED)
         return false;
+
+    if (!priv->clientNode) {
+        priv->clientNode = new WebSocketClientNode;
+        priv->clientNode->headers = headers;
+    }
 
     if (!headers.contains("Host")) {
         priv->clientNode->headers.insert("Host",
