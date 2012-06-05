@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd .. > /dev/null
+
 for i in $(ls tests); do
     cd tests/$i
     if [ -f motd ]; then
