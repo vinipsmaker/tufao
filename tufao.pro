@@ -7,7 +7,7 @@ release {
 }
 
 TEMPLATE = lib
-VERSION = 0.3
+VERSION = 0.3.2
 
 CONFIG += QT
 QT += network
