@@ -21,16 +21,17 @@
 #include "priv/rfc1036.h"
 #include "priv/asctime.h"
 
+#include <QtCore/QLocale>
+
 namespace Tufao {
 
 QByteArray Headers::fromDateTime(const QDateTime &dateTime)
 {
-    return dateTime.toUTC().toString(
+    return QLocale(QLocale::C).toString(dateTime.toUTC(),
                 "ddd," // day
                 " d MMM yyyy" // date
                 " hh:mm:ss" // hour
-                " GMT" // zone
-                ).toUtf8();
+                ).toUtf8() + " GMT"; // zone
 }
 
 QDateTime Headers::toDateTime(const QByteArray &headerValue,
