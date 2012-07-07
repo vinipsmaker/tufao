@@ -30,7 +30,7 @@ release {
 target.path = $$INSTALLDIR$$[QT_INSTALL_LIBS]
 
 qmakefile.path = $$INSTALLDIR$$[QMAKE_MKSPECS]/features
-qmakefile.files = tufao.prf
+qmakefile.files = pkg/tufao.prf
 
 headers.path = $$INSTALLDIR$$[QT_INSTALL_HEADERS]/Tufao
 headers.files = src/*.h \
