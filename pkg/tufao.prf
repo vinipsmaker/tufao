@@ -5,5 +5,5 @@ DEFINES += TUFAO_VERSION_MAJOR=0
 release {
     LIBS += -ltufao
 } else {
-    LIBS += -ltufao_d
+    LIBS += -ltufaod
 }

@@ -3,7 +3,7 @@
 release {
     TARGET = tufao
 } else {
-    TARGET = tufao_d
+    TARGET = tufaod
 }
 
 TEMPLATE = lib
