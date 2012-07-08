@@ -19,9 +19,7 @@ system (signals & slots). It features:
   * Lots of tests
   * Timeout support
 
-It uses a patched version of Ryan Dahl's HTTP parser to provide good
-performance. The patch provides better integration with Qt to provide better
-cross-plataform support and can be found in src/priv/http_parser.patch.
+It uses Ryan Dahl's HTTP parser to provide good performance.
 
 You can generate documentation from the source code using Doxygen. The
 documentation will be put on the doc folder in the html and tex formats. There
@@ -151,7 +149,7 @@ Version 0.3
     byte-range requests
   * Robust request router added
   * HTTP plugin server added
-  * Using newer version of Joyent's HTTP parser
+  * Using newer version of Ryan Dahl's HTTP parser
   * Changed license from public headers to MIT
   * MSVC support
   * Some minor improvements

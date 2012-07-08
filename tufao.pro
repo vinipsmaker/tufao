@@ -51,7 +51,7 @@ SOURCES += src/httpserver.cpp \
     src/querystring.cpp \
     src/priv/tcpserverwrapper.cpp \
     src/priv/reasonphrase.cpp \
-    src/priv/http_parser.cpp \
+    src/priv/http_parser.c \
     src/websocket.cpp \
     src/abstractmessagesocket.cpp \
     src/httpfileserver.cpp \
@@ -76,7 +76,6 @@ HEADERS += src/httpserver.h \
     src/priv/httpsserver.h \
     src/priv/httpserverresponse.h \
     src/priv/reasonphrase.h \
-    src/priv/http_parser_qt_helper.h \
     src/priv/http_parser.h \
     src/priv/url.h \
     src/ibytearray.h \
