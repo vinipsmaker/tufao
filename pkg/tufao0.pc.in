@@ -1,0 +1,12 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${prefix}/@libdir@
+includedir=${prefix}/@includedir@
+
+Name: tufao
+Description: An asynchronous web framework for C++ built on top of Qt
+URL: http://code.google.com/p/tufao/
+Version: @version@
+Requires: QtCore QtNetwork
+Libs: -L${libdir} -ltufao
+Cflags: -I${includedir}

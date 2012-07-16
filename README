@@ -41,31 +41,32 @@ you do any modifications to *Tufão*, these modifications must be redistributed)
 == BUILD ==
 -----------
 
-Make sure you have Qt installed, then run:
+Make sure you have Qt and CMake installed, then run:
 
 <pre>
-$ qmake OPTIONS
-$ make
+$ cmake OPTIONS
+$ make MAKEOPTIONS
 </pre>
 
 OPTIONS can be null or have a combination of the following values:
-  * INSTALLDIR=${INSTALLDIR}
-  * CONFIG=debug
-  * CONFIG=staticlib (force creation of static lib)
+  * -DCMAKE_INSTALL_PREFIX=${INSTALLDIR} sets the directory where to install
+    Tufão.
 
-If you want to combine values for the same variable, just use a single string
-space separated, as in the following example:
+MAKEOPTIONS can be null or have a combination of the following values:
+  * install installs Tufão
+  * DESTDIR=${PKGDIR} sets the directory where to install Tufão. This options
+    should be used if you intend to package Tufão to set the package directory.
+    To choose another installation directory, see options in OPTIONS, above.
+
+Example:
 
 <pre>
-$ qmake 'CONFIG=debug staticlib'
+$ cmake -DCMAKE_INSTALL_PREFIX=/usr
+$ make DESTDIR=pkg install
 </pre>
 
 NOTE:
 Qt 4.7 or later is required.
-
-After build the project, the following directories will be created:
-  * build: where temporary build objects are
-  * lib: where the library file is
 
 To generate the documentation, just run doxygen using Doxyfile as configuration
 file and the documentation will be generated in the folder doc. The
@@ -88,7 +89,8 @@ execute-tests.sh script.
 == INSTALL ==
 -------------
 
-The default install prefix is /, if you don't intend to change it, just run:
+The default install prefix is /usr/local, if you don't intend to change it, just
+run, after build:
 
 <pre>
 # make install
@@ -97,31 +99,9 @@ The default install prefix is /, if you don't intend to change it, just run:
 To install to a different prefix, run:
 
 <pre>
-$ qmake INSTALLDIR=${DESTDIR}
+$ cmake -DCMAKE_INSTALL_PREFIX=${DESTDIR}
 $ make install
 </pre>
-
-NOTE:
-If you just install the release version, you won't be able to compile debug
-Tufão projects. I highly recomend you install both versions (see next section).
-
-=== EXECUTING A SYSTEM-WIDE FULL INSTALL ===
-
-If you want to install release and debug versions, run the following commands:
-
-<pre>
-$ qmake
-$ make
-# make install
-$ qmake CONFIG=debug
-$ make
-# make install
-</pre>
-
-NOTE:
-If you want to create a package and the variable $PKGROOT holds the package root
-dir, you should run the previous commands using the INSTALLDIR=$PKGROOT option
-when executing the qmake command.
 
 == USAGE ==
 -----------
@@ -129,19 +109,25 @@ when executing the qmake command.
 To use Tufão in your Qt projects, just edit your .pro file and add the line:
 
 <pre>
-CONFIG += TUFAO
+CONFIG += TUFAO0
 </pre>
 
 You can find some examples in the examples folder.
 
-If you want use Tufão in other build system, just add the compiler option
--ltufao for release version and -ltufao_d for debug version.
+Tufão has PKG-CONFIG support also. Its module name is 'tufao0'.
 
-You can also see Tufão documentation integrated in QtAssistant (this feature is
-experimental and is recomended to use the documentation in html format).
+If you want use Tufão in other build system, just add the compiler option
+-ltufao.
+
+You can also see Tufão documentation integrated in QtAssistant.
 
 == NEWS ==
 ----------
+
+Version 0.4:
+  * Using CMake build system
+   * Changes to allow parallel Tufão installations (if major versions differs)
+   * Added PKGCONFIG support
 
 Version 0.3
   * More application templates in QtCreator Tufão's plugin
