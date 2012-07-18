@@ -46,11 +46,11 @@ add_definitions(-DTUFAO_LIBRARY
     -Wall
 )
 
-QT4_WRAP_CPP(tufao_MOC ${tufao_MOC_HDRS})
+qt4_wrap_cpp(tufao_MOC ${tufao_MOC_HDRS})
 add_library(tufao SHARED ${tufao_SRC} ${tufao_MOC})
 target_link_libraries(tufao ${QT_LIBRARIES})
 
-SET_TARGET_PROPERTIES(
+set_target_properties(
     tufao
     PROPERTIES
     SOVERSION ${version_major}
