@@ -14,3 +14,8 @@ if(PKG_CONFIG_FOUND)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tufao0.pc
             DESTINATION ${libdir}/pkgconfig)
 endif(PKG_CONFIG_FOUND)
+
+# Legacy support
+install(FILES tufao.prf
+    DESTINATION ${QT_MKSPECS_DIR}/features
+)
