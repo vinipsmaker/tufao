@@ -38,7 +38,6 @@ set(tufao_MOC_HDRS
     abstracthttpserverrequesthandler.h
     httpserverrequestrouter.h
     httppluginserver.h
-    abstracthttpserverrequesthandlerfactory.h
 )
 
 # Build info
@@ -53,8 +52,8 @@ target_link_libraries(tufao ${QT_LIBRARIES})
 set_target_properties(
     tufao
     PROPERTIES
-    SOVERSION ${version_major}
-    VERSION ${version}
+    SOVERSION ${TUFAO_VERSION_MAJOR}
+    VERSION ${TUFAO_VERSION}
 )
 
 # Install info

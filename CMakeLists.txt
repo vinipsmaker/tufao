@@ -3,9 +3,11 @@ cmake_minimum_required(VERSION 2.8)
 find_package(Qt4 4.6 REQUIRED QtCore QtNetwork)
 
 # Install info
-set(version_major 0)
-set(version ${version_major}.3.4)
-set(includedir include/tufao${version_major})
+set(TUFAO_VERSION_MAJOR 0)
+set(TUFAO_VERSION_MINOR 3)
+set(TUFAO_VERSION_PATCH 4)
+set(TUFAO_VERSION ${TUFAO_VERSION_MAJOR}.${TUFAO_VERSION_MINOR}.${TUFAO_VERSION_PATCH})
+set(includedir include/tufao${TUFAO_VERSION_MAJOR})
 set(libdir lib)
 
 # Targets
