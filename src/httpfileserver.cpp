@@ -28,7 +28,7 @@
 #include "httpserverrequest.h"
 #include "url.h"
 
-static qint64 bufferSize = 64;
+static qint64 bufferSize = BUFFER_SIZE;
 
 inline static QList< QPair<qulonglong, qulonglong> >
 ranges(const Tufao::Headers &headers, qulonglong fileSize)

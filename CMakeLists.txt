@@ -2,6 +2,11 @@
 cmake_minimum_required(VERSION 2.8)
 find_package(Qt4 4.6 REQUIRED QtCore QtNetwork)
 
+# Configure options
+set(BUFFER_SIZE 128 CACHE STRING
+    "The default buffer size (in bytes) used by Tufão")
+add_definitions(-DBUFFER_SIZE=${BUFFER_SIZE})
+
 # Install info
 set(TUFAO_VERSION_MAJOR 0)
 set(TUFAO_VERSION_MINOR 3)
