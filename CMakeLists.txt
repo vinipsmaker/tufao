@@ -7,7 +7,7 @@ set(TUFAO_VERSION_MAJOR 0)
 set(TUFAO_VERSION_MINOR 3)
 set(TUFAO_VERSION_PATCH 4)
 set(TUFAO_VERSION ${TUFAO_VERSION_MAJOR}.${TUFAO_VERSION_MINOR}.${TUFAO_VERSION_PATCH})
-set(includedir include/tufao${TUFAO_VERSION_MAJOR})
+set(includedir include/tufao-${TUFAO_VERSION_MAJOR})
 set(libdir lib)
 
 # Targets

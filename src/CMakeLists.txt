@@ -54,15 +54,18 @@ set_target_properties(
     PROPERTIES
     SOVERSION ${TUFAO_VERSION_MAJOR}
     VERSION ${TUFAO_VERSION}
+    VS_KEYWORD Qt4VSv1.0
 )
 
 # Install info
 install(TARGETS tufao
-    DESTINATION ${libdir}
+    DESTINATION "${libdir}"
+    COMPONENT runtime
 )
 install(DIRECTORY .
-    DESTINATION ${includedir}/Tufao
-    PATTERN *.h
+    DESTINATION "${includedir}/Tufao"
+    COMPONENT development
+    FILES_MATCHING PATTERN *.h
     PATTERN doc EXCLUDE
     PATTERN priv EXCLUDE
 )
