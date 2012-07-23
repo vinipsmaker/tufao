@@ -86,6 +86,16 @@ folder tests. If you got Tufão from a git checkout (not a stable release), then
 you may be interessed in run these tests. To compile and run them, just run the
 execute-tests.sh script.
 
+NOTE:
+If you intend to create a CPack-based installer, just run:
+<pre>
+# To create a binary distribution:
+cpack -C CPackConfig.cmake
+
+# To create a source distribution:
+cpack -C CPackSourceConfig.cmake
+</pre>
+
 == INSTALL ==
 -------------
 

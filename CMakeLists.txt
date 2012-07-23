@@ -19,3 +19,13 @@ set(libdir lib)
 add_subdirectory(src)
 add_subdirectory(include)
 add_subdirectory(pkg)
+
+# CPack installer
+set(CPACK_PACKAGE_NAME "Tufão")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
+    "An asynchronous web framework for C++ built on top of Qt")
+set(CPACK_PACKAGE_VERSION_MAJOR "${TUFAO_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${TUFAO_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${TUFAO_VERSION_PATCH}")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING.LESSER")
+include(CPack)
