@@ -1,5 +1,3 @@
-# Project Tufão
-project(tufao)
 include(${QT_USE_FILE})
 
 # Source files

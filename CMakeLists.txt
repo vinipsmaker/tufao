@@ -1,4 +1,5 @@
 # Project Tufão
+project(tufao)
 cmake_minimum_required(VERSION 2.8)
 find_package(Qt4 4.6 REQUIRED QtCore QtNetwork)
 
