@@ -46,6 +46,11 @@ HttpServerResponse::Options HttpServerResponse::options() const
     return priv->options;
 }
 
+const Headers &HttpServerResponse::headers() const
+{
+    return priv->headers;
+}
+
 Headers &HttpServerResponse::headers()
 {
     return priv->headers;
