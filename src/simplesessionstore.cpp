@@ -1,0 +1,144 @@
+/*  This file is part of the Tufão project
+    Copyright (C) 2012 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any
+    later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "priv/simplesessionstore.h"
+#include <QtCore/QUuid>
+
+namespace Tufao {
+
+SimpleSessionStore::SimpleSessionStore(const SessionSettings &settings,
+                                       QObject *parent) :
+    SessionStore(settings, parent),
+    priv(new Priv)
+{
+    priv->timer.setInterval(DEFAULT_REFRESH_INTERVAL);
+    connect(&priv->timer, SIGNAL(timeout()), this, SLOT(onTimer()));
+}
+
+SimpleSessionStore::~SimpleSessionStore()
+{
+    delete priv;
+}
+
+int SimpleSessionStore::refreshInterval() const
+{
+    return priv->timer.interval();
+}
+
+void SimpleSessionStore::setRefreshInterval(int msecs)
+{
+    priv->timer.setInterval(msecs);
+}
+
+bool SimpleSessionStore::hasSession(const HttpServerRequest &request) const
+{
+    QByteArray session(SessionStore::session(request));
+    return !session.isEmpty() && priv->database.contains(session);
+}
+
+QVariant SimpleSessionStore::property(const HttpServerRequest &request,
+                                      HttpServerResponse &response,
+                                      const QByteArray &key) const
+{
+    QByteArray session(SessionStore::session(request, response));
+
+    if (session.isEmpty())
+        return QVariant();
+
+    if (!priv->database.contains(session)) {
+        // possibly avoid useless future queries
+        unsetSession(response);
+
+        return QVariant();
+    }
+
+    // change session expire time
+    priv->lifetimeDatabase.insert(key, QDateTime::currentDateTimeUtc());
+    priv->lifetimeDatabase[key].addSecs(settings.expirationTime);
+
+    // update cookie (expire time)
+    setSession(response, session);
+
+    const QVariantMap &sessionData(priv->database[session]);
+
+    if (!sessionData.contains(key))
+        return QVariant();
+
+    return sessionData[key];
+}
+
+void SimpleSessionStore::setProperty(const HttpServerRequest &request,
+                                     HttpServerResponse &response,
+                                     const QByteArray &key,
+                                     const QVariant &value)
+{
+    // init session variable
+    QByteArray session(SessionStore::session(request, response));
+
+    if (session.isEmpty() || !priv->database.contains(session))
+        session = createSession();
+
+    // set property
+    priv->database[session][key] = value;
+
+    // change session expire time
+    priv->lifetimeDatabase.insert(key, QDateTime::currentDateTimeUtc());
+    priv->lifetimeDatabase[key].addSecs(settings.expirationTime);
+
+    // create, if not set yet, and update cookie (expire time)
+    setSession(response, session);
+}
+
+void SimpleSessionStore::removeSession(const HttpServerRequest &request,
+                                       HttpServerResponse &response)
+{
+    QByteArray session(SessionStore::session(request, response));
+
+    if (session.isEmpty())
+        return;
+
+    if (!priv->database.contains(session)) {
+        unsetSession(response);
+        return;
+    }
+
+    priv->database.remove(session);
+    priv->lifetimeDatabase.remove(session);
+    unsetSession(response);
+}
+
+void SimpleSessionStore::onTimer()
+{
+    QHash<QByteArray, QDateTime>::iterator i(priv->lifetimeDatabase.begin());
+    while (i != priv->lifetimeDatabase.end()) {
+        if (i.value() <= QDateTime::currentDateTimeUtc()) {
+            priv->database.remove(i.key());
+            i = priv->lifetimeDatabase.erase(i);
+            continue;
+        }
+
+        ++i;
+    }
+}
+
+inline QByteArray SimpleSessionStore::createSession() const
+{
+    return static_cast<QString>(QUuid::createUuid()).toUtf8();
+}
+
+} // namespace Tufao

@@ -22,6 +22,7 @@ set(tufao_SRC
     priv/rfc1036.cpp
     priv/asctime.cpp
     sessionstore.cpp
+    simplesessionstore.cpp
 )
 
 # MOC header files
@@ -38,6 +39,7 @@ set(tufao_MOC_HDRS
     httpserverrequestrouter.h
     httppluginserver.h
     sessionstore.h
+    simplesessionstore.h
 )
 
 # Build info
