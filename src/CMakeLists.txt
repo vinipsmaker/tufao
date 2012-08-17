@@ -21,6 +21,7 @@ set(tufao_SRC
     priv/rfc1123.cpp
     priv/rfc1036.cpp
     priv/asctime.cpp
+    sessionstore.cpp
 )
 
 # MOC header files
@@ -36,6 +37,7 @@ set(tufao_MOC_HDRS
     abstracthttpserverrequesthandler.h
     httpserverrequestrouter.h
     httppluginserver.h
+    sessionstore.h
 )
 
 # Build info
