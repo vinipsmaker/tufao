@@ -22,7 +22,6 @@ add_subdirectory(include)
 add_subdirectory(pkg)
 
 # CPack installer
-set(CPACK_PACKAGE_NAME "Tufão")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
     "An asynchronous web framework for C++ built on top of Qt")
 set(CPACK_PACKAGE_VERSION_MAJOR "${TUFAO_VERSION_MAJOR}")
