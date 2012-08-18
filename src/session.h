@@ -39,6 +39,11 @@ public:
     class PropertyWrapper
     {
     public:
+        PropertyWrapper(Session &session, const QByteArray &key) :
+            session(session),
+            key(key)
+        {}
+
         operator bool() const
         {
             return session.hasValue(key);
@@ -56,15 +61,8 @@ public:
         }
 
     private:
-        PropertyWrapper(Session &session, const QByteArray &key) :
-            session(session),
-            key(key)
-        {}
-
         Session &session;
-        const QByteArray &key;
-
-        friend class Tufao::Session;
+        const QByteArray key;
     };
 
     Session(SessionStore &store, const HttpServerRequest &request,
