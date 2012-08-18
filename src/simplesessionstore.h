@@ -48,6 +48,8 @@ public:
     void removeSession(const HttpServerRequest &request,
                        HttpServerResponse &response);
 
+    QList<QByteArray> properties(const HttpServerRequest &request,
+                                 const HttpServerResponse &response) const;
     bool hasProperty(const HttpServerRequest &request,
                      const HttpServerResponse &response,
                      const QByteArray &key) const;

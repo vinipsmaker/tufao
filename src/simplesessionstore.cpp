@@ -69,6 +69,26 @@ void SimpleSessionStore::removeSession(const HttpServerRequest &request,
     unsetSession(response);
 }
 
+QList<QByteArray>
+SimpleSessionStore::properties(const HttpServerRequest &request,
+                               const HttpServerResponse &response) const
+{
+    QByteArray session(SessionStore::session(request, response));
+
+    if (session.isEmpty() || !priv->database.contains(session))
+        return QList<QByteArray>();
+
+    QList<QString> keys(priv->database[session].keys());
+    QList<QByteArray> ret;
+
+    ret.reserve(keys.size());
+
+    for (int i = 0;i != keys.size();++i)
+        ret += keys[i].toUtf8();
+
+    return ret;
+}
+
 bool SimpleSessionStore::hasProperty(const HttpServerRequest &request,
                                      const HttpServerResponse &response,
                                      const QByteArray &key) const

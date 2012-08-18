@@ -44,6 +44,9 @@ public:
     virtual void removeSession(const HttpServerRequest &request,
                                HttpServerResponse &response) = 0;
 
+    virtual QList<QByteArray> properties(const HttpServerRequest &request,
+                                         const HttpServerResponse &response)
+        const = 0;
     virtual bool hasProperty(const HttpServerRequest &request,
                              const HttpServerResponse &response,
                              const QByteArray &key) const = 0;
