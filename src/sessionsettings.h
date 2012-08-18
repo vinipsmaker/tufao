@@ -41,7 +41,7 @@ struct SessionSettings
         QNetworkCookie cookie;
 
         cookie.setExpirationDate(QDateTime::currentDateTimeUtc()
-                                 .addSecs(settings.expirationTime));
+                                 .addSecs(settings.timeout * 60));
         cookie.setHttpOnly(settings.httpOnly);
         cookie.setName(settings.key);
         cookie.setPath(settings.path);
@@ -53,9 +53,9 @@ struct SessionSettings
     }
 
     /*!
-     * Timeout, in seconds.
+     * Timeout, in minutes.
      */
-    int expirationTime;
+    int timeout;
 
     bool httpOnly;
     QByteArray key;

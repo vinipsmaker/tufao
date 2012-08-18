@@ -96,7 +96,7 @@ SessionSettings SessionStore::defaultSettings()
 {
     SessionSettings settings;
 
-    settings.expirationTime = 15 * 60;
+    settings.timeout = 15;
     settings.httpOnly = true;
     settings.key = "SID";
     settings.path = "/";
