@@ -36,10 +36,10 @@ namespace Tufao {
 class TUFAO_EXPORT Session
 {
 public:
-    class Wrapper
+    class PropertyWrapper
     {
     public:
-        Wrapper(Session &session, const QByteArray &key) :
+        PropertyWrapper(Session &session, const QByteArray &key) :
             session(session),
             key(key)
         {}
@@ -54,7 +54,7 @@ public:
             return session.value(key);
         }
 
-        Wrapper &operator =(const QVariant &value)
+        PropertyWrapper &operator =(const QVariant &value)
         {
             session.setValue(key, value);
             return *this;
@@ -92,9 +92,9 @@ public:
         store.setProperty(request, response, key, value);
     }
 
-    Wrapper operator [](const QByteArray &key)
+    PropertyWrapper operator [](const QByteArray &key)
     {
-        return Wrapper(*this, key);
+        return PropertyWrapper(*this, key);
     }
 
 private:
