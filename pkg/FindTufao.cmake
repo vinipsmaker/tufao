@@ -8,13 +8,22 @@ find_library(TUFAO_LIBRARIES
     NAMES tufao
 )
 
+# list of subdirectories where Tufão used to be installed
+set(tufao_paths "tufao-0")
+
 foreach(path ${CMAKE_SYSTEM_PREFIX_PATH})
-    set(tufao_search_path ${tufao_search_path} "${path}/include/tufao-0")
+    foreach(subpath ${tufao_paths})
+        set(tufao_search_path ${tufao_search_path} "${path}/include/${subpath}")
+    endforeach()
 endforeach()
 
-foreach(path ${CMAKE_SYSTEM_INCLUDE_PATH})
-    set(tufao_search_path ${tufao_search_path} "${path}/tufao-0")
+foreach(path ${CMAKE_SYSTEM_INCLUDE_PATH} ${CMAKE_SYSTEM_FRAMEWORK_PATH})
+    foreach(subpath ${tufao_paths})
+        set(tufao_search_path ${tufao_search_path} "${path}/${subpath}")
+    endforeach()
 endforeach()
+
+unset(tufao_paths)
 
 find_path(TUFAO_INCLUDE_DIR
     NAMES Tufao/tufao_global.h
