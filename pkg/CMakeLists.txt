@@ -17,6 +17,10 @@ if(PKG_CONFIG_FOUND)
             COMPONENT development
     )
 endif(PKG_CONFIG_FOUND)
+install(FILES FindTufao.cmake
+    DESTINATION "${CMAKE_ROOT}/Modules"
+    COMPONENT development
+)
 
 # Legacy support
 install(FILES tufao0.prf
