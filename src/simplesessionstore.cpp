@@ -134,6 +134,27 @@ void SimpleSessionStore::setProperty(const HttpServerRequest &request,
     setSession(response, session);
 }
 
+void SimpleSessionStore::removeProperty(const HttpServerRequest &request,
+                                        HttpServerResponse &response,
+                                        const QByteArray &key)
+{
+    // init session variable
+    QByteArray session(SessionStore::session(request, response));
+
+    if (session.isEmpty() || !priv->database.contains(session))
+        return;
+
+    // remove property
+    priv->database[session].remove(key);
+
+    // change session expire time
+    priv->lifetimeDatabase.insert(session, QDateTime::currentDateTimeUtc());
+    priv->lifetimeDatabase[session].addSecs(settings.expirationTime);
+
+    // create, if not set yet, and update cookie (expire time)
+    setSession(response, session);
+}
+
 void SimpleSessionStore::onTimer()
 {
     QHash<QByteArray, QDateTime>::iterator i(priv->lifetimeDatabase.begin());

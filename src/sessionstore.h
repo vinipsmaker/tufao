@@ -53,6 +53,9 @@ public:
     virtual void setProperty(const HttpServerRequest &request,
                              HttpServerResponse &response,
                              const QByteArray &key, const QVariant &value) = 0;
+    virtual void removeProperty(const HttpServerRequest &request,
+                                HttpServerResponse &response,
+                                const QByteArray &key) = 0;
 
     static SessionSettings defaultSettings();
 

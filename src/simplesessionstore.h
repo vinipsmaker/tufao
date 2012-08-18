@@ -57,6 +57,8 @@ public:
     void setProperty(const HttpServerRequest &request,
                      HttpServerResponse &response, const QByteArray &key,
                      const QVariant &value);
+    void removeProperty(const HttpServerRequest &request,
+                        HttpServerResponse &response, const QByteArray &key);
 
 private slots:
     void onTimer();
