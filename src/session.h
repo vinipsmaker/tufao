@@ -44,6 +44,11 @@ public:
             key(key)
         {}
 
+        operator bool() const
+        {
+            return session.hasValue(key);
+        }
+
         operator QVariant() const
         {
             return session.value(key);
@@ -71,6 +76,11 @@ public:
         request(request),
         response(response)
     {}
+
+    bool hasValue(const QByteArray &key) const
+    {
+        store.hasProperty(request, response, key);
+    }
 
     QVariant value(const QByteArray &key) const
     {
