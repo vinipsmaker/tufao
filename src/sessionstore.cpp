@@ -96,11 +96,11 @@ SessionSettings SessionStore::defaultSettings()
 {
     SessionSettings settings;
 
-    settings.expirationTime = 5 * 60;
+    settings.expirationTime = 15 * 60;
     settings.httpOnly = true;
     settings.key = "SID";
     settings.path = "/";
-    settings.secure = true;
+    settings.secure = false;
 
     return settings;
 }
