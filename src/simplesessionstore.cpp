@@ -98,8 +98,8 @@ QVariant SimpleSessionStore::property(const HttpServerRequest &request,
     }
 
     // change session expire time
-    priv->lifetimeDatabase.insert(key, QDateTime::currentDateTimeUtc());
-    priv->lifetimeDatabase[key].addSecs(settings.expirationTime);
+    priv->lifetimeDatabase.insert(session, QDateTime::currentDateTimeUtc());
+    priv->lifetimeDatabase[session].addSecs(settings.expirationTime);
 
     // update cookie (expire time)
     setSession(response, session);
@@ -127,8 +127,8 @@ void SimpleSessionStore::setProperty(const HttpServerRequest &request,
     priv->database[session][key] = value;
 
     // change session expire time
-    priv->lifetimeDatabase.insert(key, QDateTime::currentDateTimeUtc());
-    priv->lifetimeDatabase[key].addSecs(settings.expirationTime);
+    priv->lifetimeDatabase.insert(session, QDateTime::currentDateTimeUtc());
+    priv->lifetimeDatabase[session].addSecs(settings.expirationTime);
 
     // create, if not set yet, and update cookie (expire time)
     setSession(response, session);
