@@ -41,14 +41,18 @@ public:
                           QObject *parent = 0);
 
     virtual bool hasSession(const HttpServerRequest &request) const = 0;
+    virtual void removeSession(const HttpServerRequest &request,
+                               HttpServerResponse &response) = 0;
+
+    virtual bool hasProperty(const HttpServerRequest &request,
+                             const HttpServerResponse &response,
+                             const QByteArray &key) const = 0;
     virtual QVariant property(const HttpServerRequest &request,
                               HttpServerResponse &response,
                               const QByteArray &key) const = 0;
     virtual void setProperty(const HttpServerRequest &request,
                              HttpServerResponse &response,
                              const QByteArray &key, const QVariant &value) = 0;
-    virtual void removeSession(const HttpServerRequest &request,
-                               HttpServerResponse &response) = 0;
 
     static SessionSettings defaultSettings();
 

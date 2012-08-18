@@ -45,14 +45,18 @@ public:
     void setRefreshInterval(int msecs);
 
     bool hasSession(const HttpServerRequest &request) const;
+    void removeSession(const HttpServerRequest &request,
+                       HttpServerResponse &response);
+
+    bool hasProperty(const HttpServerRequest &request,
+                     const HttpServerResponse &response,
+                     const QByteArray &key) const;
     QVariant property(const HttpServerRequest &request,
                       HttpServerResponse &response,
                       const QByteArray &key) const;
     void setProperty(const HttpServerRequest &request,
                      HttpServerResponse &response, const QByteArray &key,
                      const QVariant &value);
-    void removeSession(const HttpServerRequest &request,
-                       HttpServerResponse &response);
 
 private slots:
     void onTimer();

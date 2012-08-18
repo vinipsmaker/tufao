@@ -51,6 +51,36 @@ bool SimpleSessionStore::hasSession(const HttpServerRequest &request) const
     return !session.isEmpty() && priv->database.contains(session);
 }
 
+void SimpleSessionStore::removeSession(const HttpServerRequest &request,
+                                       HttpServerResponse &response)
+{
+    QByteArray session(SessionStore::session(request, response));
+
+    if (session.isEmpty())
+        return;
+
+    if (!priv->database.contains(session)) {
+        unsetSession(response);
+        return;
+    }
+
+    priv->database.remove(session);
+    priv->lifetimeDatabase.remove(session);
+    unsetSession(response);
+}
+
+bool SimpleSessionStore::hasProperty(const HttpServerRequest &request,
+                                     const HttpServerResponse &response,
+                                     const QByteArray &key) const
+{
+    QByteArray session(SessionStore::session(request, response));
+
+    if (session.isEmpty() || !priv->database.contains(session))
+        return false;
+
+    return priv->database[session].contains(key);
+}
+
 QVariant SimpleSessionStore::property(const HttpServerRequest &request,
                                       HttpServerResponse &response,
                                       const QByteArray &key) const
@@ -102,24 +132,6 @@ void SimpleSessionStore::setProperty(const HttpServerRequest &request,
 
     // create, if not set yet, and update cookie (expire time)
     setSession(response, session);
-}
-
-void SimpleSessionStore::removeSession(const HttpServerRequest &request,
-                                       HttpServerResponse &response)
-{
-    QByteArray session(SessionStore::session(request, response));
-
-    if (session.isEmpty())
-        return;
-
-    if (!priv->database.contains(session)) {
-        unsetSession(response);
-        return;
-    }
-
-    priv->database.remove(session);
-    priv->lifetimeDatabase.remove(session);
-    unsetSession(response);
 }
 
 void SimpleSessionStore::onTimer()
