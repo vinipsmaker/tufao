@@ -33,12 +33,12 @@ namespace Tufao {
  * different requests.
  *
  * The session data is stored in properties. You can create a session to any
- * pair of request and response objects and each one has a independent set of
+ * pair of request and response objects and each one has an independent set of
  * properties.
  *
- * To access the session properties, you must pass request and response objects
- * each time you want to manipulate a property, but this repetitive task can be
- * eliminated using the Session helper class.
+ * To access the session properties, you must pass the request and response
+ * objects each time you want to manipulate a property, but this error-prone
+ * task can be eliminated using the Session helper class.
  *
  * One session only persists for a specified period of time (set through
  * SessionSettings) and the storage details depends upon the class implementing
@@ -48,8 +48,8 @@ namespace Tufao {
  * 500-level status responses), but user agents may ignore sessions in 100-level
  * status.
  *
- * If you intend to provide your own storage backend, implements the pure
- * virtual methods (the protected methods may help you).
+ * If you intend to provide your own storage backend, you must implement the
+ * pure virtual methods. The protected methods may help you in this task.
  *
  * \sa
  * SessionSettings Session
@@ -75,7 +75,7 @@ public:
     virtual bool hasSession(const HttpServerRequest &request) const = 0;
 
     /*!
-     * Remove a set session, if any, in \p request.
+     * Removes the session, if any, in the \p request.
      *
      * \par response The object used to invalidate the user's cookie.
      */
@@ -120,7 +120,7 @@ public:
                              const QByteArray &key, const QVariant &value) = 0;
 
     /*!
-     * Remove the property referenced by \p key in the session, if any.
+     * Removes the property referenced by \p key in the session, if any.
      *
      * The session is represented by the pair \p request, \p response.
      */
@@ -145,13 +145,53 @@ public:
     static SessionSettings defaultSettings();
 
 protected:
+    /*!
+     * Returns the value of the first cookie that is compatible with this
+     * store's properties, as defined in its settings.
+     */
     QByteArray session(const HttpServerRequest &request) const;
+
+    /*!
+     * Returns the value of the first cookie that is compatible with this
+     * store's properties, as defined in its settings.
+     *
+     * Besides searching in the \p request's headers named as "Cookie", search
+     * in \p response's headers named as "Set-Cookie". This allows you to
+     * manipulate sessions as soon as they are set.
+     */
     QByteArray session(const HttpServerRequest &request,
                        const HttpServerResponse &response) const;
+
+    /*!
+     * Sets a cookie that matches the store's settings in the \p response
+     * object.
+     *
+     * \note
+     * It will also renew cokie's lifetime.
+     *
+     * \warning
+     * Call this method more than once to the same \p response object has
+     * undefined behaviour.
+     *
+     * \sa
+     * SessionSettings::cookie
+     */
     void setSession(HttpServerResponse &response, const QByteArray &session)
         const;
+
+    /*!
+     * Invalidates the user's session.
+     *
+     * This is done by setting the expiration date to the past, as specified by
+     * RFC 6265.
+     */
     void unsetSession(HttpServerResponse &response) const;
 
+    /*!
+     * This attribute represents the session's settings. It will be used in
+     * the operations involving cookie's handling and is set automatically in
+     * SessionStore's constructor.
+     */
     SessionSettings settings;
 };
 
