@@ -64,9 +64,9 @@ struct SessionSettings
                                      .addSecs(settings.timeout * 60));
         }
         cookie.setHttpOnly(settings.httpOnly);
-        if (settings.name.isEmpty()) cookie.setName(settings.name);
-        if (settings.domain.isEmpty()) cookie.setName(settings.domain);
-        if (settings.path.isEmpty()) cookie.setPath(settings.path);
+        if (!settings.name.isEmpty()) cookie.setName(settings.name);
+        if (!settings.domain.isEmpty()) cookie.setName(settings.domain);
+        if (!settings.path.isEmpty()) cookie.setPath(settings.path);
         cookie.setSecure(settings.secure);
 
         cookie.setValue(value);
