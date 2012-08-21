@@ -15,6 +15,7 @@ system (signals & slots). It features:
   * Static file server with support for conditional requests and partial
     download
   * Plugin-based server to allow change running code at runtime
+  * Flexible session support (with support for signing)
   * QtCreator's plugin to allow create new applications rapidly
   * Lots of tests
   * Timeout support
@@ -178,7 +179,6 @@ Version 0.2:
 Here is a small roadmap for Tufão:
 
 0.4:
-  * Session/cookies support
   * Forms and file uploads
 
 0.5:
