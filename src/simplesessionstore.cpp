@@ -28,6 +28,7 @@ SimpleSessionStore::SimpleSessionStore(const SessionSettings &settings,
 {
     priv->timer.setInterval(DEFAULT_REFRESH_INTERVAL);
     connect(&priv->timer, SIGNAL(timeout()), this, SLOT(onTimer()));
+    priv->timer.start();
 }
 
 SimpleSessionStore::~SimpleSessionStore()
@@ -48,7 +49,18 @@ void SimpleSessionStore::setRefreshInterval(int msecs)
 bool SimpleSessionStore::hasSession(const HttpServerRequest &request) const
 {
     QByteArray session(SessionStore::session(request));
-    return !session.isEmpty() && priv->database.contains(session);
+
+    if (session.isEmpty() || !priv->lifetimeDatabase.contains(session))
+        return false;
+
+    // expired session...
+    if (priv->lifetimeDatabase[session] <= QDateTime::currentDateTimeUtc()) {
+        priv->lifetimeDatabase.remove(session);
+        priv->database.remove(session);
+        return false;
+    }
+
+    return true;
 }
 
 void SimpleSessionStore::removeSession(const HttpServerRequest &request,
@@ -75,8 +87,15 @@ SimpleSessionStore::properties(const HttpServerRequest &request,
 {
     QByteArray session(SessionStore::session(request, response));
 
-    if (session.isEmpty() || !priv->database.contains(session))
+    if (session.isEmpty() || !priv->lifetimeDatabase.contains(session))
         return QList<QByteArray>();
+
+    // expired session...
+    if (priv->lifetimeDatabase[session] <= QDateTime::currentDateTimeUtc()) {
+        priv->lifetimeDatabase.remove(session);
+        priv->database.remove(session);
+        return QList<QByteArray>();
+    }
 
     QList<QString> keys(priv->database[session].keys());
     QList<QByteArray> ret;
@@ -95,8 +114,15 @@ bool SimpleSessionStore::hasProperty(const HttpServerRequest &request,
 {
     QByteArray session(SessionStore::session(request, response));
 
-    if (session.isEmpty() || !priv->database.contains(session))
+    if (session.isEmpty() || !priv->lifetimeDatabase.contains(session))
         return false;
+
+    // expired session...
+    if (priv->lifetimeDatabase[session] <= QDateTime::currentDateTimeUtc()) {
+        priv->lifetimeDatabase.remove(session);
+        priv->database.remove(session);
+        return false;
+    }
 
     return priv->database[session].contains(key);
 }
@@ -110,16 +136,23 @@ QVariant SimpleSessionStore::property(const HttpServerRequest &request,
     if (session.isEmpty())
         return QVariant();
 
-    if (!priv->database.contains(session)) {
+    if (!priv->lifetimeDatabase.contains(session)) {
         // possibly avoid useless future queries
         unsetSession(response);
 
         return QVariant();
     }
 
+    // expired session...
+    if (priv->lifetimeDatabase[session] <= QDateTime::currentDateTimeUtc()) {
+        priv->lifetimeDatabase.remove(session);
+        priv->database.remove(session);
+        return QVariant();
+    }
+
     // change session expire time
-    priv->lifetimeDatabase.insert(session, QDateTime::currentDateTimeUtc());
-    priv->lifetimeDatabase[session].addSecs(settings.timeout * 60);
+    priv->lifetimeDatabase[session]
+        = QDateTime::currentDateTimeUtc().addSecs(settings.timeout * 60);
 
     // update cookie (expire time)
     setSession(response, session);
@@ -147,8 +180,8 @@ void SimpleSessionStore::setProperty(const HttpServerRequest &request,
     priv->database[session][key] = value;
 
     // change session expire time
-    priv->lifetimeDatabase.insert(session, QDateTime::currentDateTimeUtc());
-    priv->lifetimeDatabase[session].addSecs(settings.timeout * 60);
+    priv->lifetimeDatabase[session]
+        = QDateTime::currentDateTimeUtc().addSecs(settings.timeout * 60);
 
     // create, if not set yet, and update cookie (expire time)
     setSession(response, session);
@@ -168,10 +201,10 @@ void SimpleSessionStore::removeProperty(const HttpServerRequest &request,
     priv->database[session].remove(key);
 
     // change session expire time
-    priv->lifetimeDatabase.insert(session, QDateTime::currentDateTimeUtc());
-    priv->lifetimeDatabase[session].addSecs(settings.timeout * 60);
+    priv->lifetimeDatabase[session]
+        = QDateTime::currentDateTimeUtc().addSecs(settings.timeout * 60);
 
-    // create, if not set yet, and update cookie (expire time)
+    // update cookie (expire time)
     setSession(response, session);
 }
 
