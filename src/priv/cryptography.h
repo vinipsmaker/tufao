@@ -44,8 +44,9 @@ inline QByteArray hmacSha1(QByteArray key, const QByteArray &message)
         iKeyPad[i] = iKeyPad[i] ^ key[i];
     }
 
-    return QCryptographicHash::hash(oKeyPad + QCryptographicHash
-                                    ::hash(iKeyPad + message, method), method);
+    return QCryptographicHash
+        ::hash(oKeyPad + QCryptographicHash::hash(iKeyPad + message, method),
+               method).toHex();
 }
 
 } // namespace Tufao
