@@ -196,6 +196,11 @@ protected:
     /*!
      * Returns the value of the first cookie that is compatible with this
      * store's properties, as defined in its settings.
+     *
+     * \warning
+     * If you get a session that doesn't exists, you *MUST NOT* reuse this id.
+     * Create a new one and discard this, or you will introduce a session
+     * fixation vulnerability.
      */
     QByteArray session(const HttpServerRequest &request) const;
 
@@ -206,6 +211,11 @@ protected:
      * Besides searching in the \p request's headers named as "Cookie", search
      * in \p response's headers named as "Set-Cookie". This allows you to
      * manipulate sessions as soon as they are set.
+     *
+     * \warning
+     * If you get a session that doesn't exists, you *MUST NOT* reuse this id.
+     * Create a new one and discard this, or you will introduce a session
+     * fixation vulnerability.
      */
     QByteArray session(const HttpServerRequest &request,
                        const HttpServerResponse &response) const;
