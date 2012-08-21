@@ -16,7 +16,8 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "sessionstore.h"
+#include "priv/sessionstore.h"
+#include "priv/cryptography.h"
 #include "headers.h"
 
 /*!
@@ -31,8 +32,14 @@ namespace Tufao {
 
 SessionStore::SessionStore(const SessionSettings &settings, QObject *parent) :
     QObject(parent),
-    settings(settings)
+    settings(settings),
+    priv(new Priv)
 {
+}
+
+SessionStore::~SessionStore()
+{
+    delete priv;
 }
 
 QByteArray SessionStore::session(const HttpServerRequest &request) const
@@ -47,7 +54,7 @@ QByteArray SessionStore::session(const HttpServerRequest &request) const
 
         for (int i = 0;i != cookies.size();++i) {
             if (cookies[i].name() == settings.name)
-                return cookies[i].value();
+                return unsignSession(cookies[i].value());
         }
     }
 
@@ -69,7 +76,7 @@ QByteArray SessionStore::session(const HttpServerRequest &request,
 
         for (int i = 0;i != cookies.size();++i) {
             if (cookies[i].name() == settings.name)
-                return cookies[i].value();
+                return unsignSession(cookies[i].value());
         }
     }
 
@@ -81,8 +88,9 @@ QByteArray SessionStore::session(const HttpServerRequest &request,
 void SessionStore::setSession(HttpServerResponse &response,
                               const QByteArray &session) const
 {
-    response.headers().insert("Set-Cookie",
-                              settings.cookie(session).toRawForm());
+    response.headers()
+        .insert("Set-Cookie",
+                settings.cookie(signSession(session)).toRawForm());
 }
 
 void SessionStore::unsetSession(HttpServerResponse &response) const
@@ -90,6 +98,11 @@ void SessionStore::unsetSession(HttpServerResponse &response) const
     QNetworkCookie cookie(settings.cookie());
     cookie.setExpirationDate(PAST);
     response.headers().insert("Set-Cookie", cookie.toRawForm());
+}
+
+void SessionStore::setMacSecret(const QByteArray &secret)
+{
+    priv->macSecret = secret;
 }
 
 SessionSettings SessionStore::defaultSettings()
@@ -103,6 +116,29 @@ SessionSettings SessionStore::defaultSettings()
     settings.secure = false;
 
     return settings;
+}
+
+inline QByteArray SessionStore::signSession(const QByteArray &message) const
+{
+    if (priv->macSecret.isEmpty())
+        return message;
+
+    return message + ':' + hmacSha1(priv->macSecret, message);
+}
+
+inline QByteArray SessionStore::unsignSession(const QByteArray &message) const
+{
+    if (priv->macSecret.isEmpty())
+        return message;
+
+    const int indexOfColon(message.lastIndexOf(':'));
+    const QByteArray unhashedMessage(message.left(indexOfColon));
+    const QByteArray hash(message.mid(indexOfColon + 1));
+
+    if (hmacSha1(priv->macSecret, unhashedMessage) != hash)
+        return QByteArray();
+
+    return unhashedMessage;
 }
 
 } // namespace Tufao

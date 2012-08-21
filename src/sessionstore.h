@@ -78,7 +78,7 @@ namespace Tufao {
  *
  * The protected methods may help you process and include the cookies. They
  * already take care of the boring task of read and comply with the
- * SessionSettings object.
+ * SessionSettings object and sign the cookies.
  *
  * This flexible design is what allows you, among other, implement a pure cookie
  * based storage mechanism.
@@ -100,6 +100,11 @@ public:
      */
     explicit SessionStore(const SessionSettings &settings = defaultSettings(),
                           QObject *parent = 0);
+
+    /*!
+     * Destructs a SessionStore object.
+     */
+    ~SessionStore();
 
     /*!
      * Returns true if a session has been set the \p request.
@@ -161,12 +166,23 @@ public:
                                 const QByteArray &key) = 0;
 
     /*!
+     * Sets the secret key of the message authentication code. If set, it will
+     * protects the cookies integrity and authenticity.
+     *
+     * \warning
+     * The value used here *must* remain secret.
+     *
+     * The algorithm used by Tufão is HMAC + SHA1.
+     */
+    void setMacSecret(const QByteArray &secret);
+
+    /*!
      * Returns the default settings, used when you don't specify the settings
      * argument in SessionStore constructor.
      *
      * The default values to these settings are:
      *   - timeout: 15
-     *   - httpOnlye: true
+     *   - httpOnly: true
      *   - key: "SID"
      *   - path: "/"
      *   - secure: false
@@ -229,8 +245,15 @@ protected:
      * SessionStore's constructor.
      */
     SessionSettings settings;
+
+ private:
+    QByteArray signSession(const QByteArray &message) const;
+    QByteArray unsignSession(const QByteArray &message) const;
+
+    struct Priv;
+    Priv *priv;
 };
 
-} // namespace Tufao
+} // Namespace Tufao
 
 #endif // TUFAO_SESSIONSTORE_H
