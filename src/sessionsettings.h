@@ -64,11 +64,11 @@ struct SessionSettings
                                      .addSecs(settings.timeout * 60));
         }
         cookie.setHttpOnly(settings.httpOnly);
-        if (!settings.name.isEmpty()) cookie.setName(settings.name);
+        cookie.setSecure(settings.secure);
         if (!settings.domain.isEmpty()) cookie.setName(settings.domain);
         if (!settings.path.isEmpty()) cookie.setPath(settings.path);
-        cookie.setSecure(settings.secure);
 
+        cookie.setName(settings.name);
         cookie.setValue(value);
 
         return cookie;
