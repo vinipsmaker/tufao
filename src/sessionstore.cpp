@@ -46,7 +46,7 @@ QByteArray SessionStore::session(const HttpServerRequest &request) const
         QList<QNetworkCookie> cookies(QNetworkCookie::parseCookies(headers[i]));
 
         for (int i = 0;i != cookies.size();++i) {
-            if (cookies[i].name() == settings.key)
+            if (cookies[i].name() == settings.name)
                 return cookies[i].value();
         }
     }
@@ -68,7 +68,7 @@ QByteArray SessionStore::session(const HttpServerRequest &request,
         QList<QNetworkCookie> cookies(QNetworkCookie::parseCookies(headers[i]));
 
         for (int i = 0;i != cookies.size();++i) {
-            if (cookies[i].name() == settings.key)
+            if (cookies[i].name() == settings.name)
                 return cookies[i].value();
         }
     }
@@ -98,7 +98,7 @@ SessionSettings SessionStore::defaultSettings()
 
     settings.timeout = 15;
     settings.httpOnly = true;
-    settings.key = "SID";
+    settings.name = "SID";
     settings.path = "/";
     settings.secure = false;
 
