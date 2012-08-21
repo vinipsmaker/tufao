@@ -30,26 +30,58 @@ namespace Tufao {
 
 /*!
  * SessionStore class can be used to store data that must persist among
- * different requests.
+ * different requests. This is used in web applications, among other, to measure
+ * online users, create a shopping list per user and implement a login system.
+ *
+ * Using sessions
+ * ==============
  *
  * The session data is stored in properties. You can create a session to any
- * pair of request and response objects and each one has an independent set of
- * properties.
+ * pair of request and response objects and each one will have an independent
+ * set of properties.
+ *
+ * \note
+ * You can configure a session in any response (including 400-level and
+ * 500-level status responses), but the user agent may ignore sessions with a
+ * 100-level status line.
  *
  * To access the session properties, you must pass the request and response
- * objects each time you want to manipulate a property, but this error-prone
- * task can be eliminated using the Session helper class.
+ * objects each time you want to manipulate, but this step can be eliminated
+ * using the Session helper class.
+ *
+ * \note
+ * You can configure multiple sessions to the same user agent, but only if you
+ * are using settings that have different scope. The settings have the same
+ * scope if the name, domain and path attributes are equal.
+ *
+ * \warning
+ * Despite the possibility of use different stores having SessionSetting objects
+ * with the same name attribue, it's recomended to avoid the use of this feature
+ * because a store don't have knowledge about the settings of other stores and
+ * can easily use the wrong request's cookie in a misconfigured application.
  *
  * One session only persists for a specified period of time (set through
  * SessionSettings) and the storage details depends upon the class implementing
  * the SessionStore interface.
  *
- * \note You can configure a session in any response (including 400-level and
- * 500-level status responses), but user agents may ignore sessions in 100-level
- * status.
+ * \note
+ * The use of sessions don't preclude HTTP caches from storing and reusing a
+ * response.
  *
- * If you intend to provide your own storage backend, you must implement the
- * pure virtual methods. The protected methods may help you in this task.
+ * Implementing your own storage backend
+ * =====================================
+ *
+ * If the implementations shipped with Tufão don't supply your needs, you can
+ * provide your own storage backend. To do that, you must implement the pure
+ * virtual methods of this class. They give you full access to the cookies
+ * returned from the user agent and included in the response objects.
+ *
+ * The protected methods may help you process and include the cookies. They
+ * already take care of the boring task of read and comply with the
+ * SessionSettings object.
+ *
+ * This flexible design is what allows you, among other, implement a pure cookie
+ * based storage mechanism.
  *
  * \sa
  * SessionSettings Session
@@ -172,6 +204,10 @@ protected:
      * \warning
      * Call this method more than once to the same \p response object has
      * undefined behaviour.
+     *
+     * \note
+     * If you need to create a new unique identifier, but don't know how, check
+     * the QUuid class.
      *
      * \sa
      * SessionSettings::cookie
