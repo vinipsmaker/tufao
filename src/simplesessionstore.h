@@ -25,40 +25,92 @@
 
 #include "sessionstore.h"
 
-#define DEFAULT_REFRESH_INTERVAL 2 * 60 * 1000
+/*!
+ * This macro represents the default refresh interval of SimpleSessionStore.
+ */
+#define DEFAULT_REFRESH_INTERVAL 2
 
 namespace Tufao {
 
+/*!
+ * SimpleSessionStore implements a simple storage mechanism to SessionStore. It
+ * will store the data in the system memory.
+ *
+ * It will look for expired cookies (and delete them) at a defined interval (the
+ * default value is DEFAULT_REFRESH_INTERVAL).
+ */
 class TUFAO_EXPORT SimpleSessionStore : public SessionStore
 {
     Q_OBJECT
 public:
+    /*!
+     * Constructs a new SimpleSessionStore object.
+     *
+     * It will pass \p parent to QObject constructor and \p settings to
+     * SessionStore constructor.
+     */
     explicit SimpleSessionStore(const SessionSettings &
                                 settings = defaultSettings(),
                                 QObject *parent = 0);
+
+    /*!
+     * Destructs a SimpleSessionStore object.
+     */
     ~SimpleSessionStore();
 
     /*!
-     * Default interval is the value of the macro DEFAULT_REFRESH_INTERVAL.
+     * The refresh interval used to look for (and delete) expired cookies.
+     *
+     * The default interval is the value of the macro DEFAULT_REFRESH_INTERVAL.
      */
     int refreshInterval() const;
+
+    /*!
+     * Sets the refresh interval used to look for (and delete) expired cookies.
+     */
     void setRefreshInterval(int msecs);
 
+    /*!
+     * Implements SessionStore::hasSession.
+     */
     bool hasSession(const HttpServerRequest &request) const;
+
+    /*!
+     * Implements SessionStore::removeSession.
+     */
     void removeSession(const HttpServerRequest &request,
                        HttpServerResponse &response);
 
+    /*!
+     * Implements SessionStore::properties.
+     */
     QList<QByteArray> properties(const HttpServerRequest &request,
                                  const HttpServerResponse &response) const;
+
+    /*!
+     * Implements SessionStore::hasProperty.
+     */
     bool hasProperty(const HttpServerRequest &request,
                      const HttpServerResponse &response,
                      const QByteArray &key) const;
+
+    /*!
+     * Implements SessionStore::property
+     */
     QVariant property(const HttpServerRequest &request,
                       HttpServerResponse &response,
                       const QByteArray &key) const;
+
+    /*!
+     * Implements SessionStore::setProperty.
+     */
     void setProperty(const HttpServerRequest &request,
                      HttpServerResponse &response, const QByteArray &key,
                      const QVariant &value);
+
+    /*!
+     * Implements SessionStore::removeProperty.
+     */
     void removeProperty(const HttpServerRequest &request,
                         HttpServerResponse &response, const QByteArray &key);
 
