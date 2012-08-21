@@ -59,11 +59,14 @@ struct SessionSettings
     {
         QNetworkCookie cookie;
 
-        cookie.setExpirationDate(QDateTime::currentDateTimeUtc()
-                                 .addSecs(settings.timeout * 60));
+        if (settings.timeout) {
+            cookie.setExpirationDate(QDateTime::currentDateTimeUtc()
+                                     .addSecs(settings.timeout * 60));
+        }
         cookie.setHttpOnly(settings.httpOnly);
-        cookie.setName(settings.name);
-        cookie.setPath(settings.path);
+        if (settings.name.isEmpty()) cookie.setName(settings.name);
+        if (settings.domain.isEmpty()) cookie.setName(settings.domain);
+        if (settings.path.isEmpty()) cookie.setPath(settings.path);
         cookie.setSecure(settings.secure);
 
         cookie.setValue(value);
@@ -154,7 +157,7 @@ struct SessionSettings
      * include the cookie to requests made to the origin server. In other words,
      * it will, for example, exclude any subdomains.
      */
-    QString domain;
+    QByteArray domain;
 };
 
 } // namespace Tufao
