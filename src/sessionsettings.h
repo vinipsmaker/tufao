@@ -33,6 +33,15 @@ namespace Tufao {
  * cookies. Cookies are a mechanism to store state in the mostly stateless HTTP
  * protocol. These details are the cookies attributes.
  *
+ * \note
+ * Cookies don't provide isolation by port. For example, if a cookie is
+ * accessible by a service running on one port, it will also be accessible by a
+ * service running on another port on the same server.
+ *
+ * \par
+ * \note
+ * Cookies also don't provide isolation by scheme (HTTPS, HTTP, FTP, ...).
+ *
  * \warning
  * You should *not* create SessionSetting objects with equal names and different
  * domain and paths hoping that SessionStore and some other objects making use
@@ -117,6 +126,14 @@ struct SessionSettings
      * \note
      * If it's not specified, the user agent will choose a path based on the
      * current request's uri path component.
+     *
+     * \par
+     * \note
+     * Cookies don't provide integrity protection to this attribute. For
+     * example, a service running on the path "/foo" can set a cookie with a
+     * path attribute with the value "/bar". As a result, servers *should not*
+     * both run mutually distrusting services on different paths of the same
+     * host and use cookies to store sensitive data.
      */
     QByteArray path;
 
