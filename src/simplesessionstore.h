@@ -26,9 +26,11 @@
 #include "sessionstore.h"
 
 /*!
- * This macro represents the default refresh interval of SimpleSessionStore.
+ * \def DEFAULT_REFRESH_INTERVAL
+ * This macro represents the default refresh interval of SimpleSessionStore. The
+ * value is represented in miliseconds.
  */
-#define DEFAULT_REFRESH_INTERVAL 2
+#define DEFAULT_REFRESH_INTERVAL 2 * 60 * 1000
 
 namespace Tufao {
 
