@@ -22,25 +22,24 @@
 namespace Tufao {
 namespace QueryString {
 
+inline QByteArray escape(const QByteArray &string, bool percentEncoding,
+                         char percent)
+{
+    if (percentEncoding)
+        return string.toPercentEncoding(QByteArray(), QByteArray(), percent);
+    else
+        return string;
+}
+
 QByteArray stringify(const QMap<QByteArray, QByteArray> &map, char sep, char eq,
                      bool percentEncoding, char percent)
 {
     QByteArray ret;
 
-    if (percentEncoding) {
-        for (QMap<QByteArray, QByteArray>::const_iterator i = map.begin()
+    for (QMap<QByteArray, QByteArray>::const_iterator i = map.begin()
              ;i != map.end();++i) {
-            ret.append(i.key().toPercentEncoding(QByteArray(), QByteArray(),
-                                                 percent)
-                       + eq + i.value().toPercentEncoding(QByteArray(),
-                                                          QByteArray(), percent)
-                       + sep);
-        }
-    } else {
-        for (QMap<QByteArray, QByteArray>::const_iterator i = map.begin()
-             ;i != map.end();++i) {
-            ret.append(i.key() + eq + i.value() + sep);
-        }
+        ret.append(escape(i.key(), percentEncoding, percent) + eq
+                   + escape(i.value(), percentEncoding, percent) + sep);
     }
 
     if (map.size())
@@ -49,85 +48,56 @@ QByteArray stringify(const QMap<QByteArray, QByteArray> &map, char sep, char eq,
     return ret;
 }
 
+inline QByteArray unescape(const QByteArray &string, bool percentEncoding,
+                           char percent)
+{
+    if (percentEncoding)
+        return QByteArray::fromPercentEncoding(string, percent);
+    else
+        return string;
+}
+
 QMap<QByteArray, QByteArray> parse(const QByteArray &string, char sep, char eq,
                                    bool percentEncoding, char percent)
 {
     QMap<QByteArray, QByteArray> ret;
 
-    if (percentEncoding) {
-        int i = 0;
-        while (string[i] == '&') ++i;
-        int j = string.indexOf(sep, i + 1);
+    int i = 0;
+    while (string[i] == '&') ++i;
+    int j = string.indexOf(sep, i + 1);
 
-        while (j != -1) {
-            int k = string.indexOf(eq, i);
-
-            if (k == -1 || k > j) {
-                QByteArray key(string.mid(i, j - i));
-                if (key.size())
-                    ret[QByteArray::fromPercentEncoding(key, percent)];
-            } else {
-                QByteArray key(string.mid(i, k - i));
-                if (key.size())
-                    ret[QByteArray::fromPercentEncoding(key, percent)]
-                            = QByteArray::fromPercentEncoding(string
-                                                              .mid(k + 1,
-                                                                   j - k - 1),
-                                                              percent);
-            }
-
-            i = j + 1;
-            j = string.indexOf(sep, j + 1);
-        }
-
+    while (j != -1) {
         int k = string.indexOf(eq, i);
 
-        if (k == -1) {
-            QByteArray key(string.mid(i, string.size() - i));
+        if (k == -1 || k > j) {
+            QByteArray key(string.mid(i, j - i));
             if (key.size())
-                ret[QByteArray::fromPercentEncoding(key, percent)];
+                ret[unescape(key, percentEncoding, percent)];
         } else {
             QByteArray key(string.mid(i, k - i));
-            if (key.size())
-                ret[QByteArray::fromPercentEncoding(key, percent)]
-                        = QByteArray::fromPercentEncoding(string
-                                                          .mid(k + 1,
-                                                               string.size()
-                                                               - k - 1),
-                                                          percent);
+            if (key.size()) {
+                ret[unescape(key, percentEncoding, percent)]
+                    = unescape(string.mid(k + 1, j - k - 1), percentEncoding,
+                               percent);
+            }
         }
+
+        i = j + 1;
+        j = string.indexOf(sep, j + 1);
+    }
+
+    int k = string.indexOf(eq, i);
+
+    if (k == -1) {
+        QByteArray key(string.mid(i, string.size() - i));
+        if (key.size())
+            ret[unescape(key, percentEncoding, percent)];
     } else {
-        int i = 0;
-        while (string[i] == '&') ++i;
-        int j = string.indexOf(sep, i + 1);
-
-        while (j != -1) {
-            int k = string.indexOf(eq, i);
-
-            if (k == -1 || k > j) {
-                QByteArray key(string.mid(i, j - i));
-                if (key.size())
-                    ret[key];
-            } else {
-                QByteArray key(string.mid(i, k - i));
-                if (key.size())
-                    ret[key] = string.mid(k + 1, j - k - 1);
-            }
-
-            i = j + 1;
-            j = string.indexOf(sep, j + 1);
-        }
-
-        int k = string.indexOf(eq, i);
-
-        if (k == -1) {
-            QByteArray key(string.mid(i, string.size() - i));
-            if (key.size())
-                ret[key];
-        } else {
-            QByteArray key(string.mid(i, k - i));
-            if (key.size())
-                ret[key] = string.mid(k + 1, string.size() - k - 1);
+        QByteArray key(string.mid(i, k - i));
+        if (key.size()) {
+            ret[unescape(key, percentEncoding, percent)]
+                = unescape(string .mid(k + 1, string.size() - k - 1),
+                           percentEncoding, percent);
         }
     }
 
