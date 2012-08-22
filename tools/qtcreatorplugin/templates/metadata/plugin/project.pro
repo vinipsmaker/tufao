@@ -3,7 +3,7 @@ TEMPLATE = lib
 
 QT -= gui
 QT += core
-CONFIG += plugin TUFAO
+CONFIG += plugin TUFAO0
 
 DEFINES += PLUGIN=%1
 
