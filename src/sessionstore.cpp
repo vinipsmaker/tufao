@@ -21,6 +21,7 @@
 #include "headers.h"
 
 /*!
+ * \def PAST
  * This macro expands to some QDateTime in the past;
  *
  * To remove a cookie, the server returns a Set-Cookie header with an expiration
