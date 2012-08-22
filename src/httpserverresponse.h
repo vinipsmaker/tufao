@@ -188,6 +188,14 @@ public:
     Options options() const;
 
     /*!
+      Returns a const reference to the headers which will be sent when the first
+      piece of body is written.
+
+      \since 0.4
+      */
+    const Headers &headers() const;
+
+    /*!
       Returns a reference to the headers which will be sent when the first piece
       of body is written.
 
@@ -195,7 +203,8 @@ public:
 
       \note
       Change this object when the first piece of the message body was already
-      written won't take any effects.
+      written won't take any effects. However the object will retain the
+      changes.
       */
     Headers &headers();
 
