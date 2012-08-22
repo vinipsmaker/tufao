@@ -57,6 +57,7 @@ OPTIONS can be null or have a combination of the following values:
   * -DCMAKE_BUILD_TYPE=Release
   * -DCMAKE_BUILD_TYPE=RelWithDebInfo
   * -DCMAKE_BUILD_TYPE=MinSizeRel
+  * -DGENERATE_DOC=YES generate documentation using Doxygen
 
 OPTIONS available on Windows:
   * -G"MinGW Makefiles" to generate Makefiles for use with MinGW environment

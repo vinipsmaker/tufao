@@ -4,6 +4,10 @@ cmake_minimum_required(VERSION 2.8)
 find_package(Qt4 4.6 REQUIRED QtCore QtNetwork)
 
 # Configure options
+option(GENERATE_DOC
+    "Use Doxygen to generate the project documentation" OFF
+)
+
 set(BUFFER_SIZE 128 CACHE STRING
     "The default buffer size (in bytes) used by Tufão")
 add_definitions(-DBUFFER_SIZE=${BUFFER_SIZE})
@@ -20,6 +24,10 @@ set(libdir lib)
 add_subdirectory(src)
 add_subdirectory(include)
 add_subdirectory(pkg)
+
+if (GENERATE_DOC)
+    add_subdirectory(doc)
+endif()
 
 # uninstall target
 configure_file(
