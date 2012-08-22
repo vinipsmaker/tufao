@@ -17,6 +17,7 @@ set(TUFAO_VERSION_MAJOR 0)
 set(TUFAO_VERSION_MINOR 3)
 set(TUFAO_VERSION_PATCH 4)
 set(TUFAO_VERSION ${TUFAO_VERSION_MAJOR}.${TUFAO_VERSION_MINOR}.${TUFAO_VERSION_PATCH})
+set(TUFAO_BRIEF "An asynchronous web framework for C++ built on top of Qt")
 set(includedir include/tufao-${TUFAO_VERSION_MAJOR})
 set(libdir lib)
 
@@ -39,8 +40,7 @@ add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
 # CPack installer
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
-    "An asynchronous web framework for C++ built on top of Qt")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${TUFAO_BRIEF}")
 set(CPACK_PACKAGE_VERSION_MAJOR "${TUFAO_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${TUFAO_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${TUFAO_VERSION_PATCH}")
