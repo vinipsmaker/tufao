@@ -12,19 +12,18 @@
 int main(int argc, char *argv[])
 {
     Q_INIT_RESOURCE(static);
-    // First we create a event loop and the server objects
+    // First we create the event loop and the server objects
     QCoreApplication a(argc, argv);
     Tufao::HttpServer server;
 
-    // Then we create a request router and configure a request router...
+    // Then we create a request router and configure it...
     Tufao::HttpServerRequestRouter router;
 
     //   ...using some handlers
 
-    // to allow you change the running code at runtime through plugins
+    // to allow you change the running code without restart the application
     Tufao::HttpPluginServer pluginServer("routes.conf");
     // do a request to http://localhost:8080/reload to reload the plugins
-    // without stopping the server
     PluginReloader pluginReloader(&pluginServer);
     // to server static files under public folder
     Tufao::HttpFileServer fileServer("public");
@@ -43,8 +42,9 @@ int main(int argc, char *argv[])
     QObject::connect(&server, SIGNAL(requestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)),
                      &router, SLOT(handleRequest(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)));
 
-    // Last, we run our server
+    // Last, we run our server...
     server.listen(QHostAddress::Any, 8080);
 
+    //   ...and start the event loop
     return a.exec();
 }
