@@ -23,7 +23,7 @@
 /*!
   \mainpage
 
-  \section overview Introduction
+  \section tufao-overview Introduction
 
   Tufão is a web framework for C++ that makes use of Qt's object communication
   system (signals & slots). It features:
@@ -49,12 +49,12 @@
 
   \tableofcontents
 
-  \section introduction Creating a Tufão-based application
+  \section tufao-introduction Creating a Tufão-based application
 
   In this section, I assume that you already have installed Tufão libraries and
   tools (tufao-routes-editor, QtCreator's plugin, ...).
 
-  \subsection hello Hello World!
+  \subsection tufao-hello Hello World!
 
   ![](get_started_1.png "QtCreator's Tufão plugin")
 
@@ -70,7 +70,7 @@
   configuration. If you don't configure the project, QtCreator won't be able to
   compile your project.
 
-  \subsection code And then, there was the code
+  \subsection tufao-code And then, there was the code
 
   You may have a _main.cpp_ file with a code like this:
 
@@ -157,7 +157,7 @@
   [favicon](https://en.wikipedia.org/wiki/Favicon) to your application using the
   \ref pluginsystem.
 
-  \subsection build Build system integration
+  \subsection tufao-build Build system integration
 
   The Tufão has native support to three build systems: qmake, pkgconfig and
   CMake.
