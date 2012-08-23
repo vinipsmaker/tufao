@@ -33,6 +33,8 @@ namespace Tufao {
  * features used in containers to provide a familiar interface, such as
  * overloading the operator [].
  *
+ * \include sessionusage.cpp
+ *
  * \note
  * All member functions of this class are inlined and should add the minimum (if
  * any) of overhead.
