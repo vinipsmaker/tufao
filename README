@@ -4,7 +4,8 @@
 Tufão is a web framework for C++ that makes use of Qt's object communication
 system (signals & slots). It features:
   * High performance standalone server
-  * Cross-plataform
+  * Cross-plataform support
+  * Good documentation
   * Support modern HTTP features
    * Persistent streams
    * Chunked entities
@@ -14,10 +15,10 @@ system (signals & slots). It features:
   * Flexible request router
   * Static file server with support for conditional requests and partial
     download
-  * Plugin-based server to allow change running code at runtime
-  * Flexible session support (with support for signing)
+  * Plugin-based server to allow change the running code without restart the
+    application
+  * Flexible and secure session support
   * QtCreator's plugin to allow create new applications rapidly
-  * Lots of tests
   * Timeout support
 
 It uses Ryan Dahl's HTTP parser to provide good performance.
