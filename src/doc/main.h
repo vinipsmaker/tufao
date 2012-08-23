@@ -187,7 +187,8 @@
       $ pkg-config tufaox
 
   If want to use a build system that don't support pkgconfig, you should be
-  ashamed, but you may still be able to use Tufão.
+  ashamed, but you may still be able to use Tufão (probably editing the compiler
+  -I flag and the linker -L and -l flags).
   */
 
 /*!

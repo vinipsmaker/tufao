@@ -46,6 +46,9 @@ namespace Tufao {
   \sa
   AbstractHttpServerRequestHandlerFactory to implement your plugins.
 
+  \sa
+  \ref pluginsystem
+
   \since
   0.3
   */
