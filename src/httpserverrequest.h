@@ -106,11 +106,9 @@ public:
       This contains only the URL that is present in the actual HTTP request.
       If the request is:
 
-      \verbatim
-GET /login?username=tux HTTP/1.1\r\n
-Accept: text/plain\r\n
-\r\n
-      \endverbatim
+          GET /login?username=tux HTTP/1.1\r\n
+          Accept: text/plain\r\n
+          \r\n
 
       Then Tufao::HttpServerRequest::url() will be "/login?username=tux"
 
