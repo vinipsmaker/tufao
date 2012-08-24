@@ -9,7 +9,7 @@ bool RequestHandler::handleRequest(Tufao::HttpServerRequest *request,
     QByteArray username(getUsername(request));
     QByteArray userpassword(getUserpassword(request));
 
-    if (!passwordMatches(username, userpassword)) {
+    if (!performLogin(username, userpassword)) {
         loginFail(response);
         return true;
     }
