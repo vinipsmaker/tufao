@@ -162,6 +162,33 @@ namespace Tufao {
  * To generate a challenge token, you can use QUuid. To improve this design even
  * further, you can regenerate the token and name parameters for each request.
  *
+ * Yet another option is to requiring the client to provide authentication data
+ * in the same request used to perform the action, but this solution add a
+ * usability issue.
+ *
+ * ### Other problems ###
+ *
+ * As defined in RFC 6265 and implemented in browsers, cookies don't provide
+ * strong confidentiality. They don't provide:
+ *
+ *   - Isolation by port. A service running on one port has access to cookies
+ *     of a service running on another port of the same host.
+ *   - Isolation by scheme.
+ *   - Full-isolation by path. User agents won't send cookies from one path to
+ *     another, but it's still possible for a service to *set* a cookie of a
+ *     service running in another path of the same host.
+ *
+ * Cookies don't provide strong integrity also.
+ *
+ * You can avoid the previous problems by signing or encrypting cookies, but
+ * it'll still be possible for an attacker to perform a replay attack.
+ *
+ * You can signing cookies in Tufão using SessionStore::setMacSecret and hide
+ * the session data using a SessionStore implementation that don't store its
+ * data in the cookie.
+ *
+ * See SessionSettings for more information.
+ *
  * Implementing your own storage backend
  * =====================================
  *
