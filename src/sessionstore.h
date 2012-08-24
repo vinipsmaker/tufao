@@ -137,6 +137,31 @@ namespace Tufao {
  *
  * \include sessionfixation2.cpp
  *
+ * ### Attacks using cross site request forgery ###
+ *
+ * After the user is authenticated in your application, it can perform some
+ * actions, such as transfer money to another account. If it's possible to
+ * create a script to automate these actions, then it's possible for an
+ * attacker to instruct the victim's user agent to perform this action. An
+ * example of a scriptable action is the url below:
+ *
+ * > http://bank.example.com/withdraw?account=foo&amount=1000000&for=bar
+ *
+ * First, you *shouldn't* allow GET methods to mutate the server's state, but,
+ * in this case, use POST wouldn't defend our users against attackers. To
+ * prevent our actions from being scriptable, we need to require that an action
+ * only will be valid if it's originated from our application.
+ *
+ * A technique to achieve the behaviour suggested in the previous paragraph is
+ * to generate some random data (a challenge token) and associate it with the
+ * user's current session. Then, we insert this token in the pages served to
+ * this user. The following code shows part of the solution:
+ *
+ * \include csrf.cpp
+ *
+ * To generate a challenge token, you can use QUuid. To improve this design even
+ * further, you can regenerate the token and name parameters for each request.
+ *
  * Implementing your own storage backend
  * =====================================
  *
