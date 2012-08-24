@@ -57,6 +57,10 @@ namespace Tufao {
   that responds to any request with a <i>404 not found</i> as the last handler
   in the most top-level request router.
 
+  The code below provides an example usage:
+
+  \include applicationdefaultmain.cpp
+
   \since
   0.3
   */

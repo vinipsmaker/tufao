@@ -36,7 +36,7 @@ class HttpServerResponse;
 /*!
   The Tufao::HttpServer class provides an implementation of the HTTP protocol.
 
-  The HTTP is stateless request-response based protoccol. It let you create
+  The HTTP is a stateless request-response based protoccol. It let you create
   distributed dynamic collaborative applications.
 
   To create a webserver, all you need to do is call Tufao::HttpServer::listen
@@ -46,6 +46,8 @@ class HttpServerResponse;
 
   \sa
   Tufao::HttpServerRequest
+
+  \sa
   Tufao::HttpServerResponse
   */
 class TUFAO_EXPORT HttpServer : public QObject

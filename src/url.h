@@ -31,7 +31,16 @@ namespace Tufao {
 class HttpServerRequest;
 
 /*!
-  This class provides a convenient interface for parsing URLs.
+  This class provides a convenient interface for parsing URLs. Consider the
+  following request coming from a user agent:
+
+      GET /search?q=foo&category=z HTTP/1.1
+      Host: example.com
+      ...
+
+  The HttpServerRequest::url method will return the full url, making difficult
+  to your application take the right decision with the object. This class will
+  facilitate your job.
 
   Some fields in URLs are optionals. If the optional fields are absent, the
   object will return empty strings for these fields, but if you try to use this
@@ -43,6 +52,9 @@ class HttpServerRequest;
   won't parse them, but this isn't really a problem if you are using Tufao::Url
   just to parse urls received from Tufao::HttpServerRequest, because user agents
   implementing the HTTP protocol always send valid URLs.
+
+  \sa
+  QueryString to parse query strings.
   */
 class TUFAO_EXPORT Url
 {

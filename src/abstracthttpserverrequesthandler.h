@@ -33,7 +33,16 @@ class HttpServerRequest;
 class HttpServerResponse;
 
 /*!
-  This class provides an interface for HttpServerRequest handlers.
+  This class provides an interface for HttpServerRequest handlers. A request
+  handler is usually registered to handle requests matching some set of rules
+  and usually used with a set of other handlers.
+
+  A sample request handler is given below:
+
+  \include requesthandler.cpp
+
+  \sa
+  HttpServerRequestRouter
 
   \since
   0.3
