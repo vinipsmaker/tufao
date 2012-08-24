@@ -68,6 +68,75 @@ namespace Tufao {
  * The use of sessions don't preclude HTTP caches from storing and reusing a
  * response.
  *
+ * Security concerns
+ * ----------------------
+ *
+ * \warning
+ * Tufão uses cookies as base for its session support, but cookies have a number
+ * of security pitfalls and you should read this section if you are going to use
+ * them to store any sensitive information, such as login systems.
+ *
+ * To better understand the problems shown in the following subsections, you
+ * should understand how cookies works.
+ *
+ * A cookie is a piece of text built of a name and a value. The server includes
+ * a _Set-Cookie_ header and the user agent will include this cookie in every
+ * subsequent request made to this server (when the cookie's scope applies),
+ * until the cookie expires.
+ *
+ * For example, consider that user _U_ made a request to server _S_ and received
+ * the following reply:
+ *
+ *     HTTP/1.1 200 OK
+ *     Set-Cookie: Pants=On
+ *     ...
+ *
+ * Then, user _U_ will include the following header in every request made to
+ * _S_:
+ *
+ *     Cookie: Pants=On
+ *
+ * In SessionStore, cookies are abstracted, and they'll be created as needed by
+ * some operations. If it finds a valid cookie, it'll use, but if not, it'll
+ * create one.
+ *
+ * The "valid cookie" term depends on the implementation used.
+ *
+ * ### Attacks using session fixation ###
+ *
+ * These attacks exploits applications that allows one user fixate another's
+ * user cookie. Consider the following code:
+ *
+ * \include sessionfixation.cpp
+ *
+ * Try to answer: What could happen with an application running the previous
+ * code?
+ *
+ * Here is what can happens:
+ *
+ *   1. The attacker fixate the victim cookie's value to "I_KNOW_YOUR_ID".
+ *      Depending on the application store's settings (including implementation
+ *      and mac secret), an arbitrary value will be rejected by the store, but
+ *      the attacker may still be able get an usable cookie value (maybe using
+ *      the application itself to generate one).
+ *   2. The victim access the application and perform the login.
+ *   3. The application's store finds a cookie and reuses it to set the _user_
+ *      property.
+ *   4. The attacker uses the victim cookie's value and will have unlimited
+ *      access to the victim's account.
+ *
+ * How an attacker could set the victim cookie value is out of the scope of this
+ * document, because there are *several* techniques to achieve this.
+ *
+ * > Never trust users input.
+ *
+ * #### How defend against session fixation ####
+ *
+ * In Tufão, you can defend against session fixation calling
+ * SessionStore::resetSession to force a new session to be created.
+ *
+ * \include sessionfixation2.cpp
+ *
  * Implementing your own storage backend
  * =====================================
  *
@@ -82,6 +151,14 @@ namespace Tufao {
  *
  * This flexible design is what allows you, among other, implement a pure cookie
  * based storage mechanism.
+ *
+ * Security concerns
+ * -----------------
+ *
+ * If the application request your store to manipulate some property and the
+ * request provides a session's id that don't correspond to any session in the
+ * store, you *should not* reuse this value as an id. You should *ignore it* and
+ * create a new one. This design may add restrictions to some forms of attacks.
  *
  * \sa
  * SessionSettings Session
@@ -118,6 +195,17 @@ public:
      */
     virtual void removeSession(const HttpServerRequest &request,
                                HttpServerResponse &response) = 0;
+
+    /*!
+     * This method removes all cookies matching with this store's settings from
+     * \p request.
+     *
+     * The purpose is hide the cookies from other pieces of code handling \p
+     * request.
+     *
+     * Call this if you need to reset the session id.
+     */
+    void resetSession(HttpServerRequest &request) const;
 
     /*!
      * Returns a list of set properties to this session.

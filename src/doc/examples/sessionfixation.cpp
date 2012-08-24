@@ -1,0 +1,17 @@
+bool RequestHandler::handleRequest(Tufao::HttpServerRequest *request,
+                                   Tufao::HttpServerResponse *response,
+                                   const QStringList &)
+{
+    QByteArray username(getUsername(request));
+    QByteArray userpassword(getUserpassword(request));
+
+    if (!passwordMatches(username, userpassword)) {
+        loginFail(response);
+        return true;
+    }
+
+    store.setProperty(*request, *response, "user", username);
+
+    loginSuccess(response);
+    return true;
+}
