@@ -71,14 +71,13 @@ void SimpleSessionStore::removeSession(const HttpServerRequest &request,
     if (session.isEmpty())
         return;
 
-    if (!priv->database.contains(session)) {
-        unsetSession(response);
+    unsetSession(response);
+
+    if (!priv->database.contains(session))
         return;
-    }
 
     priv->database.remove(session);
     priv->lifetimeDatabase.remove(session);
-    unsetSession(response);
 }
 
 QList<QByteArray>
