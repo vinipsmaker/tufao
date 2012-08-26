@@ -207,6 +207,12 @@ void SimpleSessionStore::removeProperty(const HttpServerRequest &request,
     setSession(response, session);
 }
 
+SimpleSessionStore &SimpleSessionStore::defaultInstance()
+{
+    static SimpleSessionStore instance;
+    return instance;
+}
+
 void SimpleSessionStore::onTimer()
 {
     QHash<QByteArray, QDateTime>::iterator i(priv->lifetimeDatabase.begin());

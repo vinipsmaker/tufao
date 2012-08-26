@@ -116,6 +116,17 @@ public:
     void removeProperty(const HttpServerRequest &request,
                         HttpServerResponse &response, const QByteArray &key);
 
+    /*!
+     * Returns a reference to the same store every time it's called. It acts
+     * like a [singleton](https://en.wikipedia.org/wiki/Singleton_pattern).
+     *
+     * \note
+     * This method is added for convenience and if you are developing
+     * multithreaded applications you shouldn't use it. But, if you insist use
+     * it for these applications, you can use a mutex to control its access.
+     */
+    static SimpleSessionStore &defaultInstance();
+
 private slots:
     void onTimer();
 
