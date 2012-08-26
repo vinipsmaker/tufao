@@ -1,7 +1,7 @@
 TARGET = ThreadsExample
 TEMPLATE = app
 
-CONFIG += TUFAO
+CONFIG += TUFAO0
 QT -= gui
 
 SOURCES += main.cpp \
