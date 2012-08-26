@@ -21,12 +21,12 @@
   */
 
 #include "mainhandler.h"
-#include "storesingleton.h"
 #include <QtCore/QVariant>
 #include <Tufao/HttpServerRequest>
 #include <Tufao/Headers>
 #include <Tufao/Url>
 #include <Tufao/QueryString>
+#include <Tufao/SimpleSessionStore>
 
 #define MANUAL "You can choose an action appending ?action=foobar to the\n" \
     "url, where foobar is the action you want to perform\n" \
@@ -48,7 +48,7 @@ void MainHandler::handleRequest(Tufao::HttpServerRequest *request,
     Tufao::Url url(request->url());
     QMap<QByteArray, QByteArray> vars(Tufao::QueryString
                                       ::parse(url.query().toUtf8()));
-    Tufao::SessionStore &store(StoreSingleton::store());
+    Tufao::SessionStore &store(Tufao::SimpleSessionStore::defaultInstance());
 
     if (vars["action"] == "unset") {
         store.removeSession(*request, *response);

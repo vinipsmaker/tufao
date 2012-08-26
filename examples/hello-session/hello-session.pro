@@ -4,8 +4,7 @@ TEMPLATE = app
 CONFIG += TUFAO0
 
 SOURCES += main.cpp \
-    mainhandler.cpp \
-    storesingleton.cpp
+    mainhandler.cpp
 
 HEADERS  += \
     mainhandler.h
