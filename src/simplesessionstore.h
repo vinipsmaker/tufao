@@ -40,6 +40,8 @@ namespace Tufao {
  *
  * It will look for expired cookies (and delete them) at a defined interval (the
  * default value is DEFAULT_REFRESH_INTERVAL).
+ *
+ * \since 0.4
  */
 class TUFAO_EXPORT SimpleSessionStore : public SessionStore
 {

@@ -48,6 +48,9 @@ namespace Tufao {
  * of SessionSettings will work correctly. When a user agent sends a cookie, the
  * only attributes sent in the request are the name and value pair, making
  * impossible, in several cases, to identify the right cookie.
+ *
+ * \since
+ * 0.4
  */
 struct SessionSettings
 {

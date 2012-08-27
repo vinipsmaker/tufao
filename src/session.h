@@ -41,6 +41,9 @@ namespace Tufao {
  *
  * \sa
  * SessionStore
+ *
+ * \since
+ * 0.4
  */
 class TUFAO_EXPORT Session
 {
