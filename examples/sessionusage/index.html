@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Session usage</title>
+    <script type="text/javascript">
+      function setproperty()
+      {
+        var property_name = document.getElementById('setproperty_name_field').value;
+        var property_value = document.getElementById('setproperty_value_field').value;
+
+        if (property_name.length == 0 || property_value.length == 0) {
+          alert("You must fill the property name and value fields");
+          return false;
+        }
+
+        window.location = window.location + 'set/' + encodeURIComponent(property_name)
+          + '?value=' + encodeURIComponent(property_value);
+        return false;
+      }
+      function readproperty()
+      {
+        var subpath = "read";
+        var property = document.getElementById('readproperty_field').value;
+
+        if (property.length != 0)
+          subpath += "/" + encodeURIComponent(property);
+
+        window.location = window.location + subpath;
+        return false;
+      }
+      function unsetproperty()
+      {
+        var property = document.getElementById('unsetproperty_field').value;
+
+        if (property.length == 0) {
+          alert("You must fill the property name field");
+          return false;
+        }
+
+        window.location = window.location + 'unset/' + encodeURIComponent(property);
+        return false;
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Set a property -->
+    <form action="#" onsubmit="return setproperty()">
+      <button type="submit">set</button>
+      <input type="property name" id="setproperty_name_field" placeholder="">
+      <input type="property value" id="setproperty_value_field" placeholder="">
+    </form>
+    <!-- View a property -->
+    <form action="#" onsubmit="return readproperty()">
+      <button type="submit">View</button>
+      <input type="property name" id="readproperty_field" placeholder="">
+    </form>
+    <!-- Unset a property -->
+    <form action="#" onsubmit="return unsetproperty()">
+      <button type="submit">Unset</button>
+      <input type="property name" id="unsetproperty_field" placeholder="">
+    </form>
+  </body>
+</html>
