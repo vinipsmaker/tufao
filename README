@@ -154,6 +154,7 @@ Version 0.4:
    * Changes to allow parallel Tufão installations (if major versions differs)
    * Added PKGCONFIG support
   * Session support
+  * Better documentation
 
 Version 0.3
   * More application templates in QtCreator Tufão's plugin
@@ -180,12 +181,12 @@ Version 0.2:
 
 Here is a small roadmap for Tufão:
 
-0.4:
-  * Forms and file uploads
-
 0.5:
   * Better (and easier) multi-thread support
 
 0.6:
   * RPC support
   * Service discovery and description support
+
+1.1:
+  * Forms and file uploads
