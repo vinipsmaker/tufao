@@ -285,6 +285,7 @@ int HttpServerRequest::Priv::on_headers_complete(http_parser *parser)
             M("MOVE"),
             M("PROPFIND"),
             M("PROPPATCH"),
+            M("SEARCH"),
             M("UNLOCK"),
             M("REPORT"),
             M("MKACTIVITY"),
