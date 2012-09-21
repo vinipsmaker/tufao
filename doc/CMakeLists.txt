@@ -31,3 +31,8 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/latex/refman.pdf"
     DESTINATION "share/doc/tufao/pdf"
     COMPONENT doc
 )
+#  man
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/man"
+    DESTINATION "share"
+    COMPONENT doc
+)
