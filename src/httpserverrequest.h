@@ -88,15 +88,17 @@ public:
         - "MOVE"
         - "PROPFIND"
         - "PROPPATCH"
+        - "SEARCH"
         - "UNLOCK"
         - "REPORT"
         - "MKACTIVITY"
         - "CHECKOUT"
         - "MERGE"
-        - "MSEARCH"
+        - "M-SEARCH"
         - "NOTIFY"
         - "SUBSCRIBE"
         - "UNSUBSCRIBE"
+        - "PURGE"
       */
     QByteArray method() const;
 
