@@ -34,7 +34,11 @@ signals:
     void newConnection(int socketDescriptor);
 
 protected:
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    void incomingConnection(qintptr socketDescriptor);
+#else
     void incomingConnection(int socketDescriptor);
+#endif
 };
 
 } // namespace Tufao
