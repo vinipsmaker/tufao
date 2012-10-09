@@ -31,7 +31,11 @@ public:
     explicit TcpServerWrapper(QObject *parent = 0);
 
 signals:
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    void newConnection(qintptr socketDescriptor);
+#else
     void newConnection(int socketDescriptor);
+#endif
 
 protected:
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)

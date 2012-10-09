@@ -170,7 +170,11 @@ protected:
       Reimplement this function to alter the server's behavior when a connection
       is available.
       */
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    virtual void incomingConnection(qintptr socketDescriptor);
+#else
     virtual void incomingConnection(int socketDescriptor);
+#endif
 
     /*!
       This virtual function is called by HttpServer when a client do a request
@@ -211,7 +215,11 @@ protected:
     virtual void upgrade(HttpServerRequest *request, const QByteArray &head);
 
 private slots:
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    void onNewConnection(qintptr socketDescriptor);
+#else
     void onNewConnection(int socketDescriptor);
+#endif
     void onRequestReady();
     void onUpgrade(const QByteArray &head);
 

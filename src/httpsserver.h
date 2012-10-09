@@ -88,7 +88,11 @@ public:
     void setPrivateKey(const QSslKey &key);
 
 protected:
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    void incomingConnection(qintptr socketDescriptor);
+#else
     void incomingConnection(int socketDescriptor);
+#endif
 
 private:
     struct Priv;

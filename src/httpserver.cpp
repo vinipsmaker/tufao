@@ -27,8 +27,13 @@ HttpServer::HttpServer(QObject *parent) :
     QObject(parent),
     priv(new Priv)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    connect(&priv->tcpServer, SIGNAL(newConnection(qintptr)),
+            this, SLOT(onNewConnection(qintptr)));
+#else
     connect(&priv->tcpServer, SIGNAL(newConnection(int)),
             this, SLOT(onNewConnection(int)));
+#endif
 }
 
 HttpServer::~HttpServer()
@@ -66,7 +71,11 @@ void HttpServer::close()
     priv->tcpServer.close();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+void HttpServer::incomingConnection(qintptr socketDescriptor)
+#else
 void HttpServer::incomingConnection(int socketDescriptor)
+#endif
 {
     QTcpSocket *socket = new QTcpSocket;
 
@@ -105,7 +114,11 @@ void HttpServer::upgrade(HttpServerRequest *request, const QByteArray &)
     request->socket()->close();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+void HttpServer::onNewConnection(qintptr socketDescriptor)
+#else
 void HttpServer::onNewConnection(int socketDescriptor)
+#endif
 {
     incomingConnection(socketDescriptor);
 }
