@@ -22,6 +22,19 @@
 #include <QtNetwork/QTcpServer>
 #include "../tufao_global.h"
 
+// moc isn't properly including "../tufao_global.h", so I need to provide the
+// below definition manually:
+// ==== BEGIN ====
+
+#ifdef Q_MOC_RUN
+#define QT_VERSION_CHECK(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
+// QT_VERSION_* macros should be provided through -D when you call moc
+#define QT_VERSION \
+    QT_VERSION_CHECK(QT_VERSION_MAJOR,QT_VERSION_MINOR,QT_VERSION_PATCH)
+#endif // Q_MOC_RUN
+
+// ====  END  ====
+
 namespace Tufao {
 
 class TcpServerWrapper : public QTcpServer

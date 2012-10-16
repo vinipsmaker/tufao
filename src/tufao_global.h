@@ -39,4 +39,11 @@
 #  define TUFAO_VERSION_MINOR 4
 #endif
 
+#ifdef Q_MOC_RUN
+#define QT_VERSION_CHECK(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
+// QT_VERSION_* macros should be provided through -D when you call moc
+#define QT_VERSION \
+    QT_VERSION_CHECK(QT_VERSION_MAJOR,QT_VERSION_MINOR,QT_VERSION_PATCH)
+#endif // Q_MOC_RUN
+
 #endif // TUFAO_GLOBAL_H

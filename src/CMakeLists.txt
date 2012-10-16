@@ -47,7 +47,12 @@ add_definitions(-DTUFAO_LIBRARY
     -Wall
 )
 
-qt4_wrap_cpp(tufao_MOC ${tufao_MOC_HDRS})
+qt4_wrap_cpp(tufao_MOC ${tufao_MOC_HDRS}
+    OPTIONS
+    "-DQT_VERSION_MAJOR=${QT_VERSION_MAJOR}"
+    "-DQT_VERSION_MINOR=${QT_VERSION_MINOR}"
+    "-DQT_VERSION_PATCH=${QT_VERSION_PATCH}"
+)
 add_library(tufao SHARED ${tufao_SRC} ${tufao_MOC})
 target_link_libraries(tufao ${QT_LIBRARIES})
 
