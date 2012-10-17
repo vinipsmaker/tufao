@@ -1,4 +1,4 @@
-TARGET = ThreadsExample
+TARGET = threads-example
 TEMPLATE = app
 
 CONFIG += TUFAO0
