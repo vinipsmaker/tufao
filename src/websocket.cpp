@@ -445,7 +445,6 @@ void WebSocket::onConnected()
                this, SLOT(onSocketError(QAbstractSocket::SocketError)));
 
     connect(priv->socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
-    connect(this, SIGNAL(disconnected()), priv->socket, SLOT(deleteLater()));
 
     priv->clientNode->headers.clear();
     priv->clientNode->resource.clear();
@@ -458,6 +457,7 @@ void WebSocket::onReadyRead()
 
 void WebSocket::onDisconnected()
 {
+    priv->socket->deleteLater();
     priv->socket = NULL;
     priv->state = Priv::CLOSED;
     emit disconnected();
