@@ -24,6 +24,8 @@
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QSslSocket>
 
+#include <QtCore/QDebug>
+
 // Writes a string without the '\0' char using function \p func
 #define WRITE_STRING(func, chunk) (func)(chunk, sizeof(chunk) - 1)
 
@@ -50,19 +52,17 @@ bool WebSocket::connectToHost(const QHostAddress &address, quint16 port,
     if (priv->state != Priv::CLOSED)
         return false;
 
-    if (!priv->clientNode) {
-        priv->clientNode = new WebSocketClientNode;
-        priv->clientNode->headers = headers;
-    }
+    QAbstractSocket *socket = new QTcpSocket(this);
 
     if (!headers.contains("Host")) {
-        priv->clientNode->headers.insert("Host",
-                                         (address.toString() + ':'
-                                          + QString::number(port)).toUtf8());
+        Headers newHeaders(headers);
+        newHeaders.insert("Host", (address.toString() + ':'
+                                   + QString::number(port)).toUtf8());
+        connectToHost(socket, resource, newHeaders);
+    } else {
+        connectToHost(socket, resource, headers);
     }
 
-    QAbstractSocket *socket = new QTcpSocket(this);
-    connectToHost(socket, resource, headers);
     socket->connectToHost(address, port);
 
     return true;
@@ -75,56 +75,76 @@ bool WebSocket::connectToHost(const QHostAddress &address,
     return connectToHost(address, 80, resource, headers);
 }
 
-bool WebSocket::connectToHost(const QString &address, quint16 port,
+bool WebSocket::connectToHost(const QString &hostname, quint16 port,
                               const QByteArray &resource,
                               const Headers &headers)
 {
-    return connectToHost(QHostAddress(address), port, resource, headers);
+    if (priv->state != Priv::CLOSED)
+        return false;
+
+    QAbstractSocket *socket = new QTcpSocket(this);
+
+    if (!headers.contains("Host")) {
+        Headers newHeaders(headers);
+        newHeaders.insert("Host", hostname.toUtf8());
+        connectToHost(socket, resource, newHeaders);
+    } else {
+        connectToHost(socket, resource, headers);
+    }
+
+    socket->connectToHost(hostname, port);
+
+    return true;
 }
 
-bool WebSocket::connectToHost(const QString &address,
+bool WebSocket::connectToHost(const QString &hostname,
                               const QByteArray &resource,
                               const Headers &headers)
 {
-    return connectToHost(address, 80, resource, headers);
+    return connectToHost(hostname, 80, resource, headers);
 }
 
-bool WebSocket::connectToHostEncrypted(const QString &address, quint16 port,
+bool WebSocket::connectToHostEncrypted(const QString &hostname, quint16 port,
                                        const QByteArray &resource,
                                        const Headers &headers)
 {
     if  (priv->state != Priv::CLOSED)
         return false;
 
-    if (!priv->clientNode) {
-        priv->clientNode = new WebSocketClientNode;
-        priv->clientNode->headers = headers;
-    }
+    QSslSocket *socket = new QSslSocket(this);
 
     if (!headers.contains("Host")) {
-        priv->clientNode->headers.insert("Host",
-                                         (address + ':'
-                                          + QString::number(port)).toUtf8());
+        Headers newHeaders(headers);
+        newHeaders.insert("Host", hostname.toUtf8());
+        connectToHost(socket, resource, newHeaders);
+    } else {
+        connectToHost(socket, resource, headers);
     }
 
-    QSslSocket *socket = new QSslSocket(this);
-    connectToHost(socket, resource, headers);
-    socket->connectToHostEncrypted(address, port);
+    socket->connectToHostEncrypted(hostname, port);
 
     return true;
 }
 
-bool WebSocket::connectToHostEncrypted(const QString &address,
+bool WebSocket::connectToHostEncrypted(const QString &hostname,
                                        const QByteArray &resource,
                                        const Headers &headers)
 {
-    return connectToHostEncrypted(address, 443, resource, headers);
+    return connectToHostEncrypted(hostname, 443, resource, headers);
 }
 
 bool WebSocket::connectToHostEncrypted(const QHostAddress &address,
                                        quint16 port, const QByteArray &resource,
                                        const Headers &headers)
 {
+    if (!headers.contains("Host")) {
+        Headers newHeaders(headers);
+        newHeaders.insert("Host", (address.toString() + ':'
+                                   + QString::number(port)).toUtf8());
+        return connectToHostEncrypted(address.toString(), port, resource,
+                                      newHeaders);
+    }
+
     return connectToHostEncrypted(address.toString(), port, resource, headers);
 }
 
@@ -395,8 +415,21 @@ void WebSocket::onSocketError(QAbstractSocket::SocketError error)
     emit disconnected();
 }
 
+void WebSocket::onSslErrors(const QList<QSslError> &)
+{
+    priv->socket->deleteLater();
+    priv->socket = NULL;
+    delete priv->clientNode;
+    priv->clientNode = NULL;
+    priv->state = Priv::CLOSED;
+    priv->lastError = SSL_HANDSHAKE_FAILED;
+
+    emit disconnected();
+}
+
 void WebSocket::onConnected()
 {
+    qDebug("connected");
     WRITE_STRING(priv->socket->write, "GET ");
     priv->socket->write(priv->clientNode->resource);
     WRITE_STRING(priv->socket->write, " HTTP/1.1\r\n");
@@ -472,11 +505,20 @@ void WebSocket::connectToHost(QAbstractSocket *socket,
     priv->lastError = NO_ERROR;
     priv->socket = socket;
 
-    priv->clientNode = new WebSocketClientNode;
+    if (!priv->clientNode)
+        priv->clientNode = new WebSocketClientNode;
+
     priv->clientNode->headers = headers;
     priv->clientNode->resource = resource;
 
-    connect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
+    if (qobject_cast<QSslSocket*>(priv->socket)) {
+        connect(priv->socket, SIGNAL(encrypted()), this, SLOT(onConnected()));
+        connect(priv->socket, SIGNAL(sslErrors(QList<QSslError>)),
+                this, SLOT(onSslErrors(QList<QSslError>)));
+    } else {
+        connect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
+    }
+
     connect(priv->socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(priv->socket, SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(onSocketError(QAbstractSocket::SocketError)));
@@ -547,6 +589,7 @@ inline void WebSocket::close(quint16 code)
 
 inline void WebSocket::readData(const QByteArray &data)
 {
+    qDebug() << data;
     priv->buffer += data;
     switch (priv->state) {
     case Priv::CONNECTING:

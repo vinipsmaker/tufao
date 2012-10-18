@@ -26,7 +26,9 @@
 #include "abstractmessagesocket.h"
 #include "headers.h"
 
-#include <QAbstractSocket>
+#include <QtNetwork/QAbstractSocket>
+
+class QSslError;
 
 namespace Tufao {
 
@@ -249,7 +251,7 @@ public:
       \since
       0.3
       */
-    bool connectToHost(const QString &address, quint16 port,
+    bool connectToHost(const QString &hostname, quint16 port,
                        const QByteArray &resource,
                        const Headers &headers = Headers());
 
@@ -261,7 +263,7 @@ public:
       \since
       0.3
       */
-    bool connectToHost(const QString &address, const QByteArray &resource,
+    bool connectToHost(const QString &hostname, const QByteArray &resource,
                        const Headers &headers = Headers());
 
     /*!
@@ -270,7 +272,7 @@ public:
       \sa
       Tufao::WebSocket::connectToHost
       */
-    bool connectToHostEncrypted(const QString &address, quint16 port,
+    bool connectToHostEncrypted(const QString &hostname, quint16 port,
                                 const QByteArray &resource,
                                 const Headers &headers = Headers());
 
@@ -279,7 +281,7 @@ public:
 
       It uses port 443 to establish the connection.
       */
-    bool connectToHostEncrypted(const QString &address,
+    bool connectToHostEncrypted(const QString &hostname,
                                 const QByteArray &resource,
                                 const Headers &headers = Headers());
 
@@ -426,6 +428,7 @@ public slots:
 
 private slots:
     void onSocketError(QAbstractSocket::SocketError error);
+    void onSslErrors(const QList<QSslError> &errors);
     void onConnected();
     void onReadyRead();
     void onDisconnected();
