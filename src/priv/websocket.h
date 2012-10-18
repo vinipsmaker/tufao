@@ -322,6 +322,16 @@ struct WebSocket::Priv
     QByteArray fragment;
 };
 
+inline bool hasValueCaseInsensitively(const QList<QByteArray> &values,
+                                      const QByteArray &value)
+{
+    for (int i = 0;i != values.size();++i) {
+        if (qstricmp(values[i].constData(), value.constData()) == 0)
+            return true;
+    }
+    return false;
+}
+
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_WEBSOCKET_H
