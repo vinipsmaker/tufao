@@ -24,8 +24,6 @@
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QSslSocket>
 
-#include <QtCore/QDebug>
-
 // Writes a string without the '\0' char using function \p func
 #define WRITE_STRING(func, chunk) (func)(chunk, sizeof(chunk) - 1)
 
@@ -429,7 +427,6 @@ void WebSocket::onSslErrors(const QList<QSslError> &)
 
 void WebSocket::onConnected()
 {
-    qDebug("connected");
     WRITE_STRING(priv->socket->write, "GET ");
     priv->socket->write(priv->clientNode->resource);
     WRITE_STRING(priv->socket->write, " HTTP/1.1\r\n");
@@ -589,7 +586,6 @@ inline void WebSocket::close(quint16 code)
 
 inline void WebSocket::readData(const QByteArray &data)
 {
-    qDebug() << data;
     priv->buffer += data;
     switch (priv->state) {
     case Priv::CONNECTING:
@@ -751,9 +747,6 @@ inline bool WebSocket::parsePayloadData()
     if (!priv->remainingPayloadSize) {
         if (priv->frame.isControlFrame())
             evaluateControlFrame();
-        else
-            qDebug("Tufao::WebSocket: Some idiot sent me an empty data"
-                   " message.");
 
         priv->parsingState = Priv::PARSING_FRAME;
 
