@@ -168,10 +168,12 @@ public:
 
       \p parent is passed to the QObject constructor.
 
-      \param options It controls some aspects of the response.
-
       \param device The socket used by Tufao::HttpServerResponse to write a HTTP
       response message. If you pass NULL, the object will do nothing.
+
+      \param options It controls some aspects of the response.
+
+      \param parent Its parent.
       */
     explicit HttpServerResponse(QIODevice *device,
                                 Options options,

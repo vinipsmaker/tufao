@@ -24,12 +24,17 @@
 #define HTTPSERVERREQUEST_H
 
 #include "httpserverresponse.h"
+#include "ibytearray.h"
+#include <QMultiMap>
+#include <QTemporaryFile>
 
 class QAbstractSocket;
 
 namespace Tufao {
 
 struct Headers;
+class Parameters : public QMultiMap<IByteArray, QByteArray> {};
+class UploadedFiles : public QMultiMap<IByteArray, QTemporaryFile*> {};
 
 /*!
   The Tufao::HttpServer represents a HTTP request received by Tufao::HttpServer.
@@ -57,7 +62,7 @@ public:
     /*!
       Constructs a Tufao::HttpServerRequest object.
 
-      \p parent is passed to the QObject constructor.
+      \param parent is passed to the QObject constructor.
 
       \param socket The connection used by Tufao::HttpServerRequest to receive
       HTTP messages. If you pass NULL, the object will be useless.
@@ -150,6 +155,32 @@ public:
       Returns the HTTP protocol version used in the request.
       */
     HttpVersion httpVersion() const;
+
+    /*!
+      The HTTP parameters sent by the client. These parameters are fully populated
+      when the signal Tufao::HttpServerRequest::ready signal is emitted.
+
+      \since
+      0.5
+      */
+    Parameters parameters() const;
+
+    /*!
+      The HTTP uploaded files sent by the client. These files are fully populated
+      when the signal Tufao::HttpServerRequest::ready signal is emitted.
+
+      \since
+      0.5
+      */
+    UploadedFiles uploadedFiles() const;
+
+    /*!
+      The HTTP raw body sent by the client.
+
+      \since
+      0.5
+      */
+    QByteArray body() const;
 
     /*!
       The QAbstractSocket object associated with the connection.

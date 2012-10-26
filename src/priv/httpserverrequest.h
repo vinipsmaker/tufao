@@ -81,6 +81,8 @@ struct HttpServerRequest::Priv
     Tufao::HttpServerRequest::HttpVersion httpVersion;
     Headers headers;
     Headers trailers;
+    Parameters parameters;
+    UploadedFiles uploadedFiles;
     Tufao::HttpServerResponse::Options responseOptions;
 
     int timeout;

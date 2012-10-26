@@ -17,6 +17,8 @@
 */
 
 #include "priv/httpserverrequest.h"
+#include <QUrl>
+#include <QBuffer>
 
 namespace Tufao {
 
@@ -40,6 +42,7 @@ HttpServerRequest::HttpServerRequest(QAbstractSocket *socket, QObject *parent) :
 
 HttpServerRequest::~HttpServerRequest()
 {
+    clearRequest();
     delete priv;
 }
 
@@ -71,6 +74,21 @@ Headers HttpServerRequest::trailers() const
 HttpServerRequest::HttpVersion HttpServerRequest::httpVersion() const
 {
     return priv->httpVersion;
+}
+
+Parameters HttpServerRequest::parameters() const
+{
+    return priv->parameters;
+}
+
+UploadedFiles HttpServerRequest::uploadedFiles() const
+{
+    return priv->uploadedFiles;
+}
+
+QByteArray HttpServerRequest::body() const
+{
+    return priv->body;
 }
 
 QAbstractSocket *HttpServerRequest::socket() const
@@ -167,6 +185,13 @@ inline void HttpServerRequest::clearRequest()
     priv->url.clear();
     priv->headers.clear();
     priv->trailers.clear();
+    priv->parameters.clear();
+
+    foreach (QTemporaryFile* file, priv->uploadedFiles.values()) {
+        file->close();
+        delete file;
+    }
+    priv->uploadedFiles.clear();
 }
 
 http_parser_settings HttpServerRequest::Priv::httpSettings()
@@ -369,6 +394,11 @@ int HttpServerRequest::Priv::on_body(http_parser *parser, const char *at,
     return 0;
 }
 
+static QByteArray urlDecode(QByteArray a_source) {
+    a_source.replace('+', ' ');
+    return QByteArray::fromPercentEncoding(a_source);
+}
+
 int HttpServerRequest::Priv::on_message_complete(http_parser *parser)
 {
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
@@ -377,6 +407,117 @@ int HttpServerRequest::Priv::on_message_complete(http_parser *parser)
     if (!parser->upgrade) {
         request->clearBuffer();
         request->priv->whatEmit |= Priv::END;
+    }
+
+    { // decode request params
+        // url query params
+        QPair<QByteArray, QByteArray> l_qry;
+        foreach (l_qry, QUrl(request->url()).encodedQueryItems()) {
+            request->priv->parameters.insert(urlDecode(l_qry.first),
+                                             urlDecode(l_qry.second));
+        }
+
+        QString l_contentType = QString::fromUtf8(request->headers().value("Content-Type")).toLower();
+        if (l_contentType == "application/x-www-form-urlencoded") {
+            // Split the parameters into pairs of value and name
+            foreach (QByteArray l_parm, request->priv->body.split('&')) {
+                if (!l_parm.isEmpty()) {
+                    int l_equalsChar = l_parm.indexOf('=');
+                    if (l_equalsChar >= 0) {
+                        request->priv->parameters.insert(urlDecode(l_parm.left(l_equalsChar).trimmed()),
+                                                         urlDecode(l_parm.mid(l_equalsChar+1).trimmed()));
+                    } else {
+                        // Name without value
+                        request->priv->parameters.insert(urlDecode(l_parm), "");
+                    }
+                }
+            }
+        } else
+        if (l_contentType.startsWith("multipart/form-data")) {
+            int pos = l_contentType.indexOf("boundary=");
+            if (pos >= 0) {
+                QByteArray boundary;
+                QBuffer buffer(&request->priv->body);
+                QByteArray paramName;
+                QByteArray fileName;
+                QTemporaryFile* uploadedFile = NULL;
+                QByteArray paramValue;
+                QByteArray l_line;
+
+                boundary = request->headers().value("Content-Type").mid(pos + 9);
+
+                buffer.open(QBuffer::ReadOnly);
+                bool finished = false;
+                while (!buffer.atEnd() && !finished) {
+                    while (!buffer.atEnd() && !finished) {
+                        QByteArray l_line = buffer.readLine(65536).trimmed();
+                        if (l_line.startsWith("Content-Disposition:")) {
+                            if (l_line.contains("form-data")) {
+                                int l_start = l_line.indexOf(" name=\"");
+                                int l_end = l_line.indexOf("\"", l_start + 7);
+                                if (l_start >= 0 && l_end >= l_start) {
+                                    paramName = l_line.mid(l_start + 7, l_end - l_start - 7);
+                                }
+                                l_start = l_line.indexOf(" filename=\"");
+                                l_end = l_line.indexOf("\"", l_start + 11);
+                                if (l_start >= 0 && l_end >= l_start) {
+                                    fileName = l_line.mid(l_start + 11, l_end - l_start - 11);
+                                }
+                            } else {
+                                qDebug("HttpRequest: ignoring unsupported content part %s", l_line.data());
+                            }
+                        } else
+                        if (l_line.isEmpty()) {
+                            break;
+                        }
+                    }
+
+                    while (!buffer.atEnd() && !finished) {
+                        l_line = buffer.readLine(65536);
+                        if (l_line.startsWith("--" + boundary)) {
+                            // Boundary found. Until now we have collected 2 bytes too much,
+                            // so remove them from the last result
+                            if (fileName.isEmpty() && !paramName.isEmpty()) {
+                                // last param was a form param (remove \r\n)
+                                request->priv->parameters.insert(paramName, paramValue.left(paramValue.size() - 2));
+                            } else if (!fileName.isEmpty() && !paramName.isEmpty()) {
+                                // last param was a file
+                                uploadedFile->resize(uploadedFile->size() - 2);
+                                uploadedFile->flush();
+                                uploadedFile->seek(0);
+                                request->priv->parameters.insert(paramName, fileName);
+                                request->priv->uploadedFiles.insert(paramName, uploadedFile);
+                                uploadedFile = NULL;
+                            }
+                            if (l_line.contains(boundary + "--")) {
+                                finished = true;
+                            }
+                            break;
+                        } else {
+                            if (fileName.isEmpty() && !paramName.isEmpty()) {
+                                // this is a form param.
+                                paramValue.append(QString::fromUtf8(l_line));
+                            } else
+                            if (!fileName.isEmpty() && !paramName.isEmpty()) {
+                                // this is a file
+                                if (!uploadedFile) {
+                                    uploadedFile = new QTemporaryFile();
+                                    uploadedFile->open();
+                                }
+                                uploadedFile->write(l_line);
+                                if (uploadedFile->error()) {
+                                    qCritical("HttpRequest: error writing temp file, %s",qPrintable(uploadedFile->errorString()));
+                                }
+                            }
+                        }
+                    }
+                    if (uploadedFile) {
+                        delete uploadedFile;
+                        uploadedFile = 0;
+                    }
+                }
+            }
+        }
     }
     return 0;
 }

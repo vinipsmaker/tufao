@@ -53,12 +53,15 @@ class TUFAO_EXPORT AbstractHttpServerRequestHandler: public QObject
 public:
     /*!
       Constructs an AbstractHttpServerRequestHandler object.
+      \param parent The parent object
       */
     explicit AbstractHttpServerRequestHandler(QObject *parent = 0);
 
 public slots:
     /*!
       Handles the \p request using the \p response object.
+      \param request The request object
+      \param response The response object
 
       \param args A list of options that may be used by the handler. The
       HttpServerRequestRouter class uses this argument to send the captured
