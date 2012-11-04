@@ -300,14 +300,8 @@ int HttpServerRequest::Priv::on_headers_complete(http_parser *parser)
         };
 #undef M
 
-#if QT_VERSION < QT_VERSION_CHECK(4, 7, 0)
-        request->priv->method
-                = QByteArray::fromRawData(methods[parser->method].str,
-                                          methods[parser->method].size);
-#else
         request->priv->method.setRawData(methods[parser->method].str,
                                          methods[parser->method].size);
-#endif
     }
 
     {
