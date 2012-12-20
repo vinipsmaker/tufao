@@ -43,8 +43,8 @@ you do any modifications to *Tufão*, these modifications must be redistributed)
 Make sure you have Qt and CMake installed and with the PATH to its executables
 set, then create a folder for the build and, from there, run:
 
-> $ cmake OPTIONS path_to_source_dir
-> $ make MAKEOPTIONS
+    $ cmake OPTIONS path_to_source_dir
+    $ make MAKEOPTIONS
 
 OPTIONS can be null or have a combination of the following values:
   * -DCMAKE_INSTALL_PREFIX=${INSTALLDIR} sets the directory where to install
@@ -67,8 +67,8 @@ MAKEOPTIONS can be null or have a combination of the following values:
 
 Example:
 
-> $ cmake -DCMAKE_INSTALL_PREFIX=/usr
-> $ make DESTDIR=pkg install
+    $ cmake -DCMAKE_INSTALL_PREFIX=/usr
+    $ make DESTDIR=pkg install
 
 NOTE:
 Qt 5.0 or later is required.
@@ -94,26 +94,26 @@ execute-tests.sh script.
 NOTE:
 If you intend to create a CPack-based installer, just run:
 
-> # To create a binary distribution:
-> cpack -C CPackConfig.cmake
+    # To create a binary distribution:
+    cpack -C CPackConfig.cmake
 
-> # To create a source distribution:
-> cpack -C CPackSourceConfig.cmake
+    # To create a source distribution:
+    cpack -C CPackSourceConfig.cmake
 
-> # To create a Windows NSIS-based installer:
-> cpack -GNSIS
+    # To create a Windows NSIS-based installer:
+    cpack -GNSIS
 
 ## INSTALL
 
 The default install prefix is /usr/local, if you don't intend to change it, just
 run, after build:
 
-> # make install
+    # make install
 
 To install to a different prefix, run:
 
-> $ cmake -DCMAKE_INSTALL_PREFIX=${DESTDIR}
-> $ make install
+    $ cmake -DCMAKE_INSTALL_PREFIX=${DESTDIR}
+    $ make install
 
 ## USAGE
 
