@@ -1,5 +1,4 @@
-= Tufão - an asynchronous web framework for C++ built on top of Qt =
---------------------------------------------------------------------
+# Tufão - an asynchronous web framework for C++ built on top of Qt
 
 Tufão is a web framework for C++ that makes use of Qt's object communication
 system (signals & slots). It features:
@@ -27,8 +26,7 @@ You can generate documentation from the source code using Doxygen. The
 documentation will be put on the doc folder in the html and tex formats. There
 is also experimental support for Qt compressed help files.
 
-== LICENSE ==
--------------
+## LICENSE
 
 The library is under the LGPLv2 and public header files, documentation and
 examples are under MIT license.
@@ -40,16 +38,13 @@ licensed under MIT license.
 So, you can create commercial applications (the *only* restriction is that *if*
 you do any modifications to *Tufão*, these modifications must be redistributed).
 
-== BUILD ==
------------
+## BUILD
 
 Make sure you have Qt and CMake installed and with the PATH to its executables
 set, then create a folder for the build and, from there, run:
 
-<pre>
-$ cmake OPTIONS path_to_source_dir
-$ make MAKEOPTIONS
-</pre>
+> $ cmake OPTIONS path_to_source_dir
+> $ make MAKEOPTIONS
 
 OPTIONS can be null or have a combination of the following values:
   * -DCMAKE_INSTALL_PREFIX=${INSTALLDIR} sets the directory where to install
@@ -72,13 +67,11 @@ MAKEOPTIONS can be null or have a combination of the following values:
 
 Example:
 
-<pre>
-$ cmake -DCMAKE_INSTALL_PREFIX=/usr
-$ make DESTDIR=pkg install
-</pre>
+> $ cmake -DCMAKE_INSTALL_PREFIX=/usr
+> $ make DESTDIR=pkg install
 
 NOTE:
-Qt 4.7 or later is required.
+Qt 5.0 or later is required.
 
 To generate the documentation, just run doxygen using Doxyfile as configuration
 file and the documentation will be generated in the folder doc. The
@@ -100,42 +93,33 @@ execute-tests.sh script.
 
 NOTE:
 If you intend to create a CPack-based installer, just run:
-<pre>
-# To create a binary distribution:
-cpack -C CPackConfig.cmake
 
-# To create a source distribution:
-cpack -C CPackSourceConfig.cmake
+> # To create a binary distribution:
+> cpack -C CPackConfig.cmake
 
-# To create a Windows NSIS-based installer:
-cpack -GNSIS
-</pre>
+> # To create a source distribution:
+> cpack -C CPackSourceConfig.cmake
 
-== INSTALL ==
--------------
+> # To create a Windows NSIS-based installer:
+> cpack -GNSIS
+
+## INSTALL
 
 The default install prefix is /usr/local, if you don't intend to change it, just
 run, after build:
 
-<pre>
-# make install
-</pre>
+> # make install
 
 To install to a different prefix, run:
 
-<pre>
-$ cmake -DCMAKE_INSTALL_PREFIX=${DESTDIR}
-$ make install
-</pre>
+> $ cmake -DCMAKE_INSTALL_PREFIX=${DESTDIR}
+> $ make install
 
-== USAGE ==
------------
+## USAGE
 
 To use Tufão in your Qt projects, just edit your .pro file and add the line:
 
-<pre>
-CONFIG += TUFAO0
-</pre>
+> CONFIG += TUFAO0
 
 You can find some examples in the examples folder.
 
@@ -146,8 +130,7 @@ If you want use Tufão in other build system, just add the compiler option
 
 You can also see Tufão documentation integrated in QtAssistant.
 
-== NEWS ==
-----------
+## NEWS
 
 Version 0.4:
   * Using CMake build system
@@ -176,8 +159,7 @@ Version 0.2:
   * QtCreator plugin
   * New examples
 
-== ROADMAP ==
--------------
+## ROADMAP
 
 Here is a small roadmap for Tufão:
 
