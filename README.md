@@ -71,7 +71,7 @@ Example:
     $ make DESTDIR=pkg install
 
 NOTE:
-Qt 5.0 or later is required.
+Qt 4.7 or later is required.
 
 To generate the documentation, just run doxygen using Doxyfile as configuration
 file and the documentation will be generated in the folder doc. The
