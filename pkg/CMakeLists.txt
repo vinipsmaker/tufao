@@ -21,10 +21,3 @@ install(FILES FindTufao.cmake
     DESTINATION "${CMAKE_ROOT}/Modules"
     COMPONENT development
 )
-
-# Legacy support
-install(FILES tufao0.prf
-    DESTINATION "${QT_MKSPECS_DIR}/features"
-    COMPONENT development
-    RENAME tufao.prf
-)

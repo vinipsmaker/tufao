@@ -1,3 +1,0 @@
-CONFIG += TUFAO0
-warning("'CONFIG += TUFAO' is deprecated!")
-warning("Use 'CONFIG += TUFAO0' instead!")
