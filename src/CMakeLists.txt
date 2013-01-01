@@ -23,23 +23,13 @@ set(tufao_SRC
     simplesessionstore.cpp
 )
 
-# Build info
-include_directories(${Qt5Core_INCLUDE_DIRS}
-    ${Qt5Network_INCLUDE_DIRS}
-)
-
 add_definitions(-DTUFAO_LIBRARY
-    ${Qt5Core_DEFINITIONS}
-    ${Qt5Network_DEFINITIONS}
     -Wall
 )
 
 add_library(tufao SHARED ${tufao_SRC})
 
-target_link_libraries(tufao
-    ${Qt5Core_LIBRARIES}
-    ${Qt5Network_LIBRARIES}
-)
+qt5_use_modules(tufao Core Network)
 
 set_target_properties(
     tufao
