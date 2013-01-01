@@ -22,11 +22,11 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QPair>
 #include <QtCore/QDir>
+#include <QtCore/QUrl>
 
 #include <QtNetwork/QAbstractSocket>
 
 #include "httpserverrequest.h"
-#include "url.h"
 
 static qint64 bufferSize = BUFFER_SIZE;
 
@@ -321,8 +321,8 @@ bool HttpFileServer::handleRequest(HttpServerRequest *request,
                                    HttpServerResponse *response,
                                    const QStringList &)
 {
-    QString resource(QByteArray::fromPercentEncoding(Url(request->url())
-                                                     .path().toUtf8()));
+    QString resource(QUrl::fromEncoded(request->url(), QUrl::StrictMode)
+                     .path(QUrl::FullyDecoded));
     QString fileName(QDir::cleanPath(priv->rootDir
                                      + QDir::toNativeSeparators(resource)));
     if (!fileName.startsWith(priv->rootDir + QDir::separator()))

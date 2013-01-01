@@ -4,7 +4,6 @@ set(tufao_SRC
     httpserverrequest.cpp
     httpserverresponse.cpp
     httpsserver.cpp
-    url.cpp
     querystring.cpp
     priv/tcpserverwrapper.cpp
     priv/reasonphrase.cpp

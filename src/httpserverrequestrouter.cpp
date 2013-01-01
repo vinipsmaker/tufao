@@ -18,10 +18,10 @@
 
 #include "priv/httpserverrequestrouter.h"
 #include "httpserverrequest.h"
-#include "url.h"
 
 #include <QtCore/QVector>
 #include <QtCore/QStringList>
+#include <QtCore/QUrl>
 
 namespace Tufao {
 
@@ -129,8 +129,8 @@ bool HttpServerRequestRouter::handleRequest(HttpServerRequest *request,
                                             HttpServerResponse *response,
                                             const QStringList &args)
 {
-    QString path(QByteArray::fromPercentEncoding(Url(request->url())
-                                                 .path().toUtf8()));
+    QString path(QUrl::fromEncoded(request->url(), QUrl::StrictMode)
+                 .path(QUrl::FullyDecoded));
 
     if (priv->methods.contains(request->method())) {
         for (int i = 0;i != priv->methods[request->method()].size();++i) {
