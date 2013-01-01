@@ -1,5 +1,3 @@
-include(${QT_USE_FILE})
-
 # Source files
 set(tufao_SRC
     httpserver.cpp
@@ -25,36 +23,23 @@ set(tufao_SRC
     simplesessionstore.cpp
 )
 
-# MOC header files
-set(tufao_MOC_HDRS
-    httpserver.h
-    httpserverrequest.h
-    httpserverresponse.h
-    httpsserver.h
-    priv/tcpserverwrapper.h
-    websocket.h
-    abstractmessagesocket.h
-    httpfileserver.h
-    abstracthttpserverrequesthandler.h
-    httpserverrequestrouter.h
-    httppluginserver.h
-    sessionstore.h
-    simplesessionstore.h
+# Build info
+include_directories(${Qt5Core_INCLUDE_DIRS}
+    ${Qt5Network_INCLUDE_DIRS}
 )
 
-# Build info
 add_definitions(-DTUFAO_LIBRARY
+    ${Qt5Core_DEFINITIONS}
+    ${Qt5Network_DEFINITIONS}
     -Wall
 )
 
-qt4_wrap_cpp(tufao_MOC ${tufao_MOC_HDRS}
-    OPTIONS
-    "-DQT_VERSION_MAJOR=${QT_VERSION_MAJOR}"
-    "-DQT_VERSION_MINOR=${QT_VERSION_MINOR}"
-    "-DQT_VERSION_PATCH=${QT_VERSION_PATCH}"
+add_library(tufao SHARED ${tufao_SRC})
+
+target_link_libraries(tufao
+    ${Qt5Core_LIBRARIES}
+    ${Qt5Network_LIBRARIES}
 )
-add_library(tufao SHARED ${tufao_SRC} ${tufao_MOC})
-target_link_libraries(tufao ${QT_LIBRARIES})
 
 set_target_properties(
     tufao
@@ -62,6 +47,7 @@ set_target_properties(
     SOVERSION ${TUFAO_VERSION_MAJOR}
     VERSION ${TUFAO_VERSION}
     VS_KEYWORD Qt4VSv1.0
+    AUTOMOC ON
 )
 
 # Install info

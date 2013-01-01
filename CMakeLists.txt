@@ -1,7 +1,8 @@
 # Project Tufão
 project(tufao)
-cmake_minimum_required(VERSION 2.8)
-find_package(Qt4 4.7 REQUIRED QtCore QtNetwork)
+cmake_minimum_required(VERSION 2.8.8)
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Network REQUIRED)
 
 # Configure options
 option(GENERATE_DOC
