@@ -5,7 +5,8 @@
 #  TUFAO_VERSION_STRING
 
 find_library(TUFAO_LIBRARIES
-    NAMES "tufao@TUFAO_VERSION_MAJOR@"
+    NAMES tufao
+    PATHS "@CMAKE_INSTALL_PREFIX@/@libdir@"
 )
 
 # list of subdirectories where Tufão used to be installed
