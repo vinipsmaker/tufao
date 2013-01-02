@@ -5,11 +5,11 @@
 #  TUFAO_VERSION_STRING
 
 find_library(TUFAO_LIBRARIES
-    NAMES tufao
+    NAMES "tufao@TUFAO_VERSION_MAJOR@"
 )
 
 # list of subdirectories where Tufão used to be installed
-set(tufao_paths "tufao-0")
+set(tufao_paths "tufao-@TUFAO_VERSION_MAJOR@")
 
 foreach(path ${CMAKE_SYSTEM_PREFIX_PATH})
     foreach(subpath ${tufao_paths})
@@ -24,6 +24,8 @@ foreach(path ${CMAKE_SYSTEM_INCLUDE_PATH} ${CMAKE_SYSTEM_FRAMEWORK_PATH})
 endforeach()
 
 unset(tufao_paths)
+
+set(tufao_search_path "@CMAKE_INSTALL_PREFIX@/@includedir@" ${tufao_search_path})
 
 find_path(TUFAO_INCLUDE_DIR
     NAMES Tufao/tufao_global.h
