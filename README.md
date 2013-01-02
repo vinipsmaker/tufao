@@ -132,6 +132,10 @@ You can also see Tufão documentation integrated in QtAssistant.
 
 ## NEWS
 
+Version 1.0
+  * Url and QueryString removed in favor of QUrl
+  * Headers refactored to inherit from QMultiHash instead of QMultiMap
+
 Version 0.4:
   * Using CMake build system
    * Changes to allow parallel Tufão installations (if major versions differs)

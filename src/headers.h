@@ -23,7 +23,7 @@
 #ifndef TUFAO_HEADERS_H
 #define TUFAO_HEADERS_H
 
-#include <QtCore/QMultiMap>
+#include <QtCore/QMultiHash>
 #include <QtCore/QDateTime>
 #include "ibytearray.h"
 
@@ -39,7 +39,7 @@ namespace Tufao {
   \sa
   Tufao::IByteArray
   */
-struct Headers: public QMultiMap<IByteArray, QByteArray>
+struct Headers: public QMultiHash<IByteArray, QByteArray>
 {
     /*!
       Returns a RFC 1123 date time formatted string if \p dateTime.
