@@ -4,7 +4,7 @@ Tufão is a web framework for C++ that makes use of Qt's object communication
 system (signals & slots). It features:
   * High performance standalone server
   * Cross-plataform support
-  * Good documentation
+  * Good [documentation](http://vinipsmaker.github.com/tufao/ref/)
   * Support modern HTTP features
    * Persistent streams
    * Chunked entities
