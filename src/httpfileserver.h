@@ -134,7 +134,7 @@ public slots:
       */
     bool handleRequest(Tufao::HttpServerRequest *request,
                        Tufao::HttpServerResponse *response,
-                       const QStringList & = QStringList());
+                       const QStringList & = QStringList()) override;
 
 private:
     struct Priv;

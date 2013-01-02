@@ -77,46 +77,48 @@ public:
     /*!
      * Implements SessionStore::hasSession.
      */
-    bool hasSession(const HttpServerRequest &request) const;
+    bool hasSession(const HttpServerRequest &request) const override;
 
     /*!
      * Implements SessionStore::removeSession.
      */
     void removeSession(const HttpServerRequest &request,
-                       HttpServerResponse &response);
+                       HttpServerResponse &response) override;
 
     /*!
      * Implements SessionStore::properties.
      */
     QList<QByteArray> properties(const HttpServerRequest &request,
-                                 const HttpServerResponse &response) const;
+                                 const HttpServerResponse &response)
+    const override;
 
     /*!
      * Implements SessionStore::hasProperty.
      */
     bool hasProperty(const HttpServerRequest &request,
                      const HttpServerResponse &response,
-                     const QByteArray &key) const;
+                     const QByteArray &key) const override;
 
     /*!
      * Implements SessionStore::property
      */
     QVariant property(const HttpServerRequest &request,
                       HttpServerResponse &response,
-                      const QByteArray &key) const;
+                      const QByteArray &key) const override;
 
     /*!
      * Implements SessionStore::setProperty.
      */
     void setProperty(const HttpServerRequest &request,
                      HttpServerResponse &response, const QByteArray &key,
-                     const QVariant &value);
+                     const QVariant &value) override;
 
     /*!
      * Implements SessionStore::removeProperty.
      */
     void removeProperty(const HttpServerRequest &request,
-                        HttpServerResponse &response, const QByteArray &key);
+                        HttpServerResponse &response,
+                        const QByteArray &key) override;
 
     /*!
      * Returns a reference to the same store every time it's called. It acts

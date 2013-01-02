@@ -94,7 +94,7 @@ public slots:
       */
     bool handleRequest(Tufao::HttpServerRequest *request,
                        Tufao::HttpServerResponse *response,
-                       const QStringList &args = QStringList());
+                       const QStringList &args = QStringList()) override;
 
     /*!
       Clear all previous mappings and reload all rules and plugins.
