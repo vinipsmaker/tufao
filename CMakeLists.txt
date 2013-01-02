@@ -1,8 +1,12 @@
 # Project Tufão
 project(tufao)
+
+# Dependencies
 cmake_minimum_required(VERSION 2.8.8)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
+find_package(CXX11 REQUIRED)
 
 # Configure options
 option(GENERATE_DOC
@@ -12,6 +16,9 @@ option(GENERATE_DOC
 set(BUFFER_SIZE 128 CACHE STRING
     "The default buffer size (in bytes) used by Tufão")
 add_definitions(-DBUFFER_SIZE=${BUFFER_SIZE})
+
+# Build options
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
 
 # Install info
 set(TUFAO_VERSION_MAJOR 0)
