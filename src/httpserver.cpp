@@ -27,8 +27,7 @@ HttpServer::HttpServer(QObject *parent) :
     QObject(parent),
     priv(new Priv)
 {
-    connect(&priv->tcpServer,
-            &HttpServer::Priv::TcpServerWrapper::newConnection,
+    connect(&priv->tcpServer, &TcpServerWrapper::newConnection,
             this, &HttpServer::onNewConnection);
 }
 
