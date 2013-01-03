@@ -33,10 +33,7 @@ set(libdir lib)
 add_subdirectory(src)
 add_subdirectory(include)
 add_subdirectory(pkg)
-
-if (GENERATE_DOC)
-    add_subdirectory(doc)
-endif()
+add_subdirectory(doc)
 
 # uninstall target
 configure_file(
