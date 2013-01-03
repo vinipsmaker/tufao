@@ -27,8 +27,9 @@ HttpServer::HttpServer(QObject *parent) :
     QObject(parent),
     priv(new Priv)
 {
-    connect(&priv->tcpServer, SIGNAL(newConnection(qintptr)),
-            this, SLOT(onNewConnection(qintptr)));
+    connect(&priv->tcpServer,
+            &HttpServer::Priv::TcpServerWrapper::newConnection,
+            this, &HttpServer::onNewConnection);
 }
 
 HttpServer::~HttpServer()
@@ -93,11 +94,13 @@ void HttpServer::handleConnection(QAbstractSocket *socket)
     if (priv->timeout)
         handle->setTimeout(priv->timeout);
 
-    connect(handle, SIGNAL(ready()), this, SLOT(onRequestReady()));
-    connect(handle, SIGNAL(upgrade(QByteArray)),
-            this, SLOT(onUpgrade(QByteArray)));
-    connect(socket, SIGNAL(disconnected()), handle, SLOT(deleteLater()));
-    connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
+    connect(handle, &HttpServerRequest::ready,
+            this, &HttpServer::onRequestReady);
+    connect(handle, &HttpServerRequest::upgrade, this, &HttpServer::onUpgrade);
+    connect(socket, &QAbstractSocket::disconnected,
+            handle, &QObject::deleteLater);
+    connect(socket, &QAbstractSocket::disconnected,
+            socket, &QObject::deleteLater);
 }
 
 void HttpServer::upgrade(HttpServerRequest &request, const QByteArray &)
@@ -119,8 +122,10 @@ void HttpServer::onRequestReady()
     HttpServerResponse *response
             = new HttpServerResponse(socket, request->responseOptions(), this);
 
-    connect(&socket, SIGNAL(disconnected()), response, SLOT(deleteLater()));
-    connect(response, SIGNAL(finished()), response, SLOT(deleteLater()));
+    connect(&socket, &QAbstractSocket::disconnected,
+            response, &QObject::deleteLater);
+    connect(response, &HttpServerResponse::finished,
+            response, &QObject::deleteLater);
 
     if (request->headers().contains("Expect", "100-continue"))
         checkContinue(*request, *response);
