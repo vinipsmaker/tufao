@@ -172,9 +172,13 @@ public:
 
       \param device The socket used by Tufao::HttpServerResponse to write a HTTP
       response message. If you pass NULL, the object will do nothing.
+
+      \note
+      if \p options doesn't contain HTTP_1_0 or HTTP_1_1 set, the behaviour is
+      undefined. If you set both flags, the behaviour is undefined also.
       */
     explicit HttpServerResponse(QIODevice *device,
-                                Options options,
+                                Options options = Options(),
                                 QObject *parent = 0);
 
     /*!
@@ -186,6 +190,23 @@ public:
       Returns the options passed to the object constructor.
       */
     Options options() const;
+
+    /*!
+      Change the formatting options to \p options.
+
+      \note
+      if \p options doesn't contain HTTP_1_0 or HTTP_1_1 set, the behaviour is
+      undefined. If you set both flags, the behaviour is undefined also.
+
+      \return true if successful.
+
+      \return false if wasn't possible to change options. This can happen if the
+      first chunk of data was already sent.
+
+      \since
+      1.0
+     */
+    bool setOptions(Options options);
 
     /*!
       Returns a const reference to the headers which will be sent when the first

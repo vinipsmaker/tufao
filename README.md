@@ -135,6 +135,9 @@ You can also see Tufão documentation integrated in QtAssistant.
 Version 1.0
   * Url and QueryString removed in favor of QUrl
   * Headers refactored to inherit from QMultiHash instead of QMultiMap
+  * HttpServerResponse
+   * Constructor's options argument is optional now
+   * setOptions method added
 
 Version 0.4:
   * Using CMake build system

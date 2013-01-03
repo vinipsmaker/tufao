@@ -46,6 +46,15 @@ HttpServerResponse::Options HttpServerResponse::options() const
     return priv->options;
 }
 
+bool HttpServerResponse::setOptions(Options options)
+{
+    if (priv->formattingState != Priv::STATUS_LINE)
+        return false;
+
+    priv->options = options;
+    return true;
+}
+
 const Headers &HttpServerResponse::headers() const
 {
     return priv->headers;
