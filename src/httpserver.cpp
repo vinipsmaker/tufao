@@ -88,7 +88,7 @@ void HttpServer::checkContinue(HttpServerRequest *request,
 void HttpServer::handleConnection(QAbstractSocket *socket)
 {
     socket->setParent(this);
-    HttpServerRequest *handle = new HttpServerRequest(socket, this);
+    HttpServerRequest *handle = new HttpServerRequest(*socket, this);
 
     if (priv->timeout)
         handle->setTimeout(priv->timeout);
@@ -102,7 +102,7 @@ void HttpServer::handleConnection(QAbstractSocket *socket)
 
 void HttpServer::upgrade(HttpServerRequest *request, const QByteArray &)
 {
-    request->socket()->close();
+    request->socket().close();
 }
 
 void HttpServer::onNewConnection(qintptr socketDescriptor)
@@ -115,11 +115,11 @@ void HttpServer::onRequestReady()
     HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
     Q_ASSERT(request);
 
-    QAbstractSocket *socket = request->socket();
+    QAbstractSocket &socket = request->socket();
     HttpServerResponse *response
-            = new HttpServerResponse(*socket, request->responseOptions(), this);
+            = new HttpServerResponse(socket, request->responseOptions(), this);
 
-    connect(socket, SIGNAL(disconnected()), response, SLOT(deleteLater()));
+    connect(&socket, SIGNAL(disconnected()), response, SLOT(deleteLater()));
     connect(response, SIGNAL(finished()), response, SLOT(deleteLater()));
 
     if (request->headers().contains("Expect", "100-continue"))

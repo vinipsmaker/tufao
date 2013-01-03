@@ -62,7 +62,7 @@ public:
       \param socket The connection used by Tufao::HttpServerRequest to receive
       HTTP messages. If you pass NULL, the object will be useless.
       */
-    explicit HttpServerRequest(QAbstractSocket *socket, QObject *parent = 0);
+    explicit HttpServerRequest(QAbstractSocket &socket, QObject *parent = 0);
 
     /*!
       Destroys the object.
@@ -157,7 +157,7 @@ public:
       This will be a QTcpSocket object if created by Tufao::HttpServer and a
       QSslSocket if created by Tufao::HttpsServer.
       */
-    QAbstractSocket *socket() const;
+    QAbstractSocket &socket() const;
 
     /*!
       Sets the timeout of new connections to \p msecs miliseconds.

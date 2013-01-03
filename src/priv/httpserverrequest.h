@@ -44,8 +44,7 @@ struct HttpServerRequest::Priv
     };
     Q_DECLARE_FLAGS(Signals, Signal)
 
-    Priv(Tufao::HttpServerRequest *request,
-                      QAbstractSocket *socket) :
+    Priv(Tufao::HttpServerRequest *request, QAbstractSocket &socket) :
         socket(socket),
         lastWasValue(true),
         useTrailers(false),
@@ -67,7 +66,7 @@ struct HttpServerRequest::Priv
     static int on_body(http_parser *, const char *, size_t);
     static int on_message_complete(http_parser *);
 
-    QAbstractSocket *socket;
+    QAbstractSocket &socket;
     QByteArray buffer;
     http_parser parser;
     QByteArray lastHeader;

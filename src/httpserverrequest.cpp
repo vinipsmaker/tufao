@@ -23,15 +23,12 @@ namespace Tufao {
 const http_parser_settings HttpServerRequest::Priv::httpSettingsInstance
 = HttpServerRequest::Priv::httpSettings();
 
-HttpServerRequest::HttpServerRequest(QAbstractSocket *socket, QObject *parent) :
+HttpServerRequest::HttpServerRequest(QAbstractSocket &socket, QObject *parent) :
     QObject(parent),
     priv(new Priv(this, socket))
 {
-    if (!socket)
-        return;
-
-    connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-    connect(socket, SIGNAL(disconnected()), this, SIGNAL(close()));
+    connect(&socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+    connect(&socket, SIGNAL(disconnected()), this, SIGNAL(close()));
 
     connect(&priv->timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     if (priv->timeout)
@@ -73,7 +70,7 @@ HttpServerRequest::HttpVersion HttpServerRequest::httpVersion() const
     return priv->httpVersion;
 }
 
-QAbstractSocket *HttpServerRequest::socket() const
+QAbstractSocket &HttpServerRequest::socket() const
 {
     return priv->socket;
 }
@@ -103,14 +100,14 @@ void HttpServerRequest::onReadyRead()
     if (priv->timeout)
         priv->timer.start(priv->timeout);
 
-    priv->buffer += priv->socket->readAll();
+    priv->buffer += priv->socket.readAll();
     size_t nparsed = http_parser_execute(&priv->parser,
                                          &Priv::httpSettingsInstance,
                                          priv->buffer.constData(),
                                          priv->buffer.size());
 
     if (priv->parser.http_errno) {
-        priv->socket->close();
+        priv->socket.close();
         return;
     }
 
@@ -135,9 +132,9 @@ void HttpServerRequest::onReadyRead()
     }
 
     if (priv->parser.upgrade) {
-        disconnect(priv->socket, SIGNAL(readyRead()),
+        disconnect(&priv->socket, SIGNAL(readyRead()),
                    this, SLOT(onReadyRead()));
-        disconnect(priv->socket, SIGNAL(disconnected()), this, SIGNAL(close()));
+        disconnect(&priv->socket, SIGNAL(disconnected()), this, SIGNAL(close()));
         disconnect(&priv->timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
 
         QByteArray b(priv->buffer);
@@ -148,7 +145,7 @@ void HttpServerRequest::onReadyRead()
 
 void HttpServerRequest::onTimeout()
 {
-    priv->socket->close();
+    priv->socket.close();
 }
 
 inline void HttpServerRequest::clearBuffer()
@@ -318,16 +315,15 @@ int HttpServerRequest::Priv::on_headers_complete(http_parser *parser)
                 request->priv->httpVersion = Tufao::HttpServerRequest::HTTP_1_1;
                 break;
             default:
-                request->priv->socket->write(errorMessage,
-                                             sizeof(errorMessage) - 1);
+                request->priv->socket.write(errorMessage,
+                                            sizeof(errorMessage) - 1);
                 request->clearBuffer();
                 request->clearRequest();
                 return -1;
             }
             break;
         default:
-            request->priv->socket->write(errorMessage,
-                                         sizeof(errorMessage) - 1);
+            request->priv->socket.write(errorMessage, sizeof(errorMessage) - 1);
             request->clearBuffer();
             request->clearRequest();
             return -1;

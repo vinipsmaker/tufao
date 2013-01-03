@@ -140,6 +140,9 @@ Version 1.0
    * Constructor's options argument is optional now
    * setOptions method added
    * Constructor takes a reference to a QIODevice instead a pointer
+  * HttpServerRequest
+   * Constructor takes a reference to a QAbstractSocket instead a pointer
+   * socket method returns a reference instead a pointer
 
 Version 0.4:
   * Using CMake build system

@@ -157,7 +157,7 @@ bool WebSocket::startServerHandshake(const HttpServerRequest *request,
                                      const QByteArray &head,
                                      const Headers &extraHeaders)
 {
-    QAbstractSocket *socket = request->socket();
+    QAbstractSocket *socket = &request->socket();
     Headers headers = request->headers();
     if (!hasValueCaseInsensitively(headers.values("Upgrade"), "websocket")) {
         WRITE_STRING(socket->write,
