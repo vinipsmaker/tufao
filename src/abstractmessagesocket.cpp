@@ -24,8 +24,10 @@ AbstractMessageSocket::AbstractMessageSocket(QObject *parent) :
     QObject(parent),
     connected_(false)
 {
-    connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
-    connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    connect(this, &AbstractMessageSocket::connected,
+            this, &AbstractMessageSocket::onConnected);
+    connect(this, &AbstractMessageSocket::disconnected,
+            this, &AbstractMessageSocket::onDisconnected);
 }
 
 bool AbstractMessageSocket::isConnected() const

@@ -27,7 +27,8 @@ SimpleSessionStore::SimpleSessionStore(const SessionSettings &settings,
     priv(new Priv)
 {
     priv->timer.setInterval(DEFAULT_REFRESH_INTERVAL);
-    connect(&priv->timer, SIGNAL(timeout()), this, SLOT(onTimer()));
+    connect(&priv->timer, &QTimer::timeout,
+            this, &SimpleSessionStore::onTimer);
     priv->timer.start();
 }
 
