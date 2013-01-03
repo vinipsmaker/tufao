@@ -143,6 +143,7 @@ Version 1.0
   * HttpServerRequest
    * Constructor takes a reference to a QAbstractSocket instead a pointer
    * socket method returns a reference instead a pointer
+  * HttpServer uses reference instead of pointers in several places
 
 Version 0.4:
   * Using CMake build system

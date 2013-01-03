@@ -139,6 +139,9 @@ signals:
       \param request An instance of Tufao::HttpServerRequest
 
       \param response An instance of Tufao::HttpServerResponse
+
+      \since
+      1.0
       */
     void requestReady(Tufao::HttpServerRequest &request,
                       Tufao::HttpServerResponse &response);
@@ -186,6 +189,9 @@ protected:
       Don't delete the request or the response object, they will be deleted when
       the connection closes. If you need delete them before, just close the
       connection or call the QObject::deleteLater.
+
+      \since
+      1.0
       */
     virtual void checkContinue(HttpServerRequest &request,
                                HttpServerResponse &response);
@@ -207,6 +213,9 @@ protected:
       (Tufao::HttpServerRequest::socket) will be deleted when disconnected. If
       you need to delete it sooner, just call QIODevice::close or
       QObject::deleteLater.
+
+      \since
+      1.0
       */
     virtual void upgrade(HttpServerRequest &request, const QByteArray &head);
 

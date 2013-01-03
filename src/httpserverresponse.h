@@ -176,6 +176,9 @@ public:
       \note
       if \p options doesn't contain HTTP_1_0 or HTTP_1_1 set, the behaviour is
       undefined. If you set both flags, the behaviour is undefined also.
+
+      \since
+      1.0
       */
     explicit HttpServerResponse(QIODevice &device,
                                 Options options = Options(),
