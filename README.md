@@ -138,6 +138,7 @@ Version 1.0
   * HttpServerResponse
    * Constructor's options argument is optional now
    * setOptions method added
+   * Constructor takes a reference to a QIODevice instead a pointer
 
 Version 0.4:
   * Using CMake build system

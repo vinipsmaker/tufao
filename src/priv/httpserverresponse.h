@@ -37,14 +37,13 @@ struct HttpServerResponse::Priv
         END
     };
 
-    Priv(QIODevice *device,
-                       Tufao::HttpServerResponse::Options options) :
+    Priv(QIODevice &device, Tufao::HttpServerResponse::Options options) :
         device(device),
         formattingState(STATUS_LINE),
         options(options)
     {}
 
-    QIODevice *device;
+    QIODevice &device;
     HttpResponseFormattingState formattingState;
     Tufao::HttpServerResponse::Options options;
     Headers headers;

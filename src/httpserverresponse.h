@@ -171,13 +171,13 @@ public:
       \param options It controls some aspects of the response.
 
       \param device The socket used by Tufao::HttpServerResponse to write a HTTP
-      response message. If you pass NULL, the object will do nothing.
+      response message.
 
       \note
       if \p options doesn't contain HTTP_1_0 or HTTP_1_1 set, the behaviour is
       undefined. If you set both flags, the behaviour is undefined also.
       */
-    explicit HttpServerResponse(QIODevice *device,
+    explicit HttpServerResponse(QIODevice &device,
                                 Options options = Options(),
                                 QObject *parent = 0);
 

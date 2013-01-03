@@ -117,7 +117,7 @@ void HttpServer::onRequestReady()
 
     QAbstractSocket *socket = request->socket();
     HttpServerResponse *response
-            = new HttpServerResponse(socket, request->responseOptions(), this);
+            = new HttpServerResponse(*socket, request->responseOptions(), this);
 
     connect(socket, SIGNAL(disconnected()), response, SLOT(deleteLater()));
     connect(response, SIGNAL(finished()), response, SLOT(deleteLater()));
