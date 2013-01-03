@@ -207,8 +207,9 @@ bool WebSocket::startServerHandshake(const HttpServerRequest *request,
 
     WRITE_STRING(socket->write, "\r\n\r\n");
 
-    connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-    connect(socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    connect(socket, &QAbstractSocket::readyRead, this, &WebSocket::onReadyRead);
+    connect(socket, &QAbstractSocket::disconnected,
+            this, &WebSocket::onDisconnected);
 
     emit connected();
 
@@ -478,7 +479,8 @@ void WebSocket::onConnected()
         disconnect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
     }
 
-    connect(priv->socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    connect(priv->socket, &QAbstractSocket::disconnected,
+            this, &WebSocket::onDisconnected);
 
     priv->clientNode->headers.clear();
     priv->clientNode->resource.clear();
@@ -520,9 +522,13 @@ void WebSocket::connectToHost(QAbstractSocket *socket,
         connect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
     }
 
-    connect(priv->socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-    connect(priv->socket, SIGNAL(error(QAbstractSocket::SocketError)),
-            this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+    connect(priv->socket, &QAbstractSocket::readyRead,
+            this, &WebSocket::onReadyRead);
+    {
+        void(QAbstractSocket::*errorSignal)(QAbstractSocket::SocketError)
+                = &QAbstractSocket::error;
+        connect(priv->socket, errorSignal, this, &WebSocket::onSocketError);
+    }
 }
 
 inline bool WebSocket::isResponseOkay()
