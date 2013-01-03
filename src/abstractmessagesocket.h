@@ -102,7 +102,7 @@ private slots:
     void onDisconnected();
 
 private:
-    bool _connected;
+    bool connected_;
 };
 
 } // namespace Tufao
