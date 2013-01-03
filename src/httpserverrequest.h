@@ -188,15 +188,6 @@ public:
 
 signals:
     /*!
-      \deprecated
-
-      It'll be removed in 1.0 version.
-
-      Use ready().
-      */
-    void ready(Tufao::HttpServerResponse::Options);
-
-    /*!
       This signal is emitted when most of the data about the request is
       available.
 

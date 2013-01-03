@@ -133,6 +133,7 @@ You can also see Tufão documentation integrated in QtAssistant.
 ## NEWS
 
 Version 1.0
+  * Deprecated API was removed
   * Url and QueryString removed in favor of QUrl
   * Headers refactored to inherit from QMultiHash instead of QMultiMap
   * HttpServerResponse

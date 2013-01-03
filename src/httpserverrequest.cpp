@@ -116,8 +116,6 @@ void HttpServerRequest::onReadyRead()
 
     if (priv->whatEmit.testFlag(Priv::READY)) {
         priv->whatEmit &= ~Priv::Signals(Priv::READY);
-        // TODO: remove on version 1.0
-        emit ready(priv->responseOptions);
         emit ready();
     }
 
