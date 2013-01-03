@@ -78,10 +78,10 @@ void HttpServer::incomingConnection(qintptr socketDescriptor)
     handleConnection(socket);
 }
 
-void HttpServer::checkContinue(HttpServerRequest *request,
-                               HttpServerResponse *response)
+void HttpServer::checkContinue(HttpServerRequest &request,
+                               HttpServerResponse &response)
 {
-    response->writeContinue();
+    response.writeContinue();
     emit requestReady(request, response);
 }
 
@@ -100,9 +100,9 @@ void HttpServer::handleConnection(QAbstractSocket *socket)
     connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
 }
 
-void HttpServer::upgrade(HttpServerRequest *request, const QByteArray &)
+void HttpServer::upgrade(HttpServerRequest &request, const QByteArray &)
 {
-    request->socket().close();
+    request.socket().close();
 }
 
 void HttpServer::onNewConnection(qintptr socketDescriptor)
@@ -123,9 +123,9 @@ void HttpServer::onRequestReady()
     connect(response, SIGNAL(finished()), response, SLOT(deleteLater()));
 
     if (request->headers().contains("Expect", "100-continue"))
-        checkContinue(request, response);
+        checkContinue(*request, *response);
     else
-        emit requestReady(request, response);
+        emit requestReady(*request, *response);
 }
 
 void HttpServer::onUpgrade(const QByteArray &head)
@@ -133,7 +133,7 @@ void HttpServer::onUpgrade(const QByteArray &head)
     HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
     Q_ASSERT(request);
 
-    upgrade(request, head);
+    upgrade(*request, head);
     delete request;
 }
 

@@ -140,8 +140,8 @@ signals:
 
       \param response An instance of Tufao::HttpServerResponse
       */
-    void requestReady(Tufao::HttpServerRequest *request,
-                      Tufao::HttpServerResponse *response);
+    void requestReady(Tufao::HttpServerRequest &request,
+                      Tufao::HttpServerResponse &response);
 
 public slots:
     /*!
@@ -187,8 +187,8 @@ protected:
       the connection closes. If you need delete them before, just close the
       connection or call the QObject::deleteLater.
       */
-    virtual void checkContinue(HttpServerRequest *request,
-                               HttpServerResponse *response);
+    virtual void checkContinue(HttpServerRequest &request,
+                               HttpServerResponse &response);
 
     /*!
       This virtual function is called by HttpServer when a client requests a
@@ -208,7 +208,7 @@ protected:
       you need to delete it sooner, just call QIODevice::close or
       QObject::deleteLater.
       */
-    virtual void upgrade(HttpServerRequest *request, const QByteArray &head);
+    virtual void upgrade(HttpServerRequest &request, const QByteArray &head);
 
 private slots:
     void onNewConnection(qintptr socketDescriptor);
