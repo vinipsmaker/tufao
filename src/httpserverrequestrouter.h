@@ -153,9 +153,12 @@ public slots:
 
       \return
       Returns true if one handler able to respond the request is found.
+
+      \since
+      1.0
       */
-    bool handleRequest(Tufao::HttpServerRequest *request,
-                       Tufao::HttpServerResponse *response,
+    bool handleRequest(Tufao::HttpServerRequest &request,
+                       Tufao::HttpServerResponse &response,
                        const QStringList &args = QStringList()) override;
 
 private:

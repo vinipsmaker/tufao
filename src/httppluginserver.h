@@ -91,9 +91,12 @@ public:
 public slots:
     /*!
       Handle the request using the loaded plugins and rules.
+
+      \since
+      1.0
       */
-    bool handleRequest(Tufao::HttpServerRequest *request,
-                       Tufao::HttpServerResponse *response,
+    bool handleRequest(Tufao::HttpServerRequest &request,
+                       Tufao::HttpServerResponse &response,
                        const QStringList &args = QStringList()) override;
 
     /*!

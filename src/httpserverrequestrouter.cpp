@@ -125,18 +125,18 @@ void HttpServerRequestRouter::clear()
 }
 
 // TODO: Implement cache
-bool HttpServerRequestRouter::handleRequest(HttpServerRequest *request,
-                                            HttpServerResponse *response,
+bool HttpServerRequestRouter::handleRequest(HttpServerRequest &request,
+                                            HttpServerResponse &response,
                                             const QStringList &args)
 {
-    QString path(QUrl::fromEncoded(request->url(), QUrl::StrictMode)
+    QString path(QUrl::fromEncoded(request.url(), QUrl::StrictMode)
                  .path(QUrl::FullyDecoded));
 
-    if (priv->methods.contains(request->method())) {
-        for (int i = 0;i != priv->methods[request->method()].size();++i) {
-            QRegExp rx(priv->methods[request->method()][i].first);
+    if (priv->methods.contains(request.method())) {
+        for (int i = 0;i != priv->methods[request.method()].size();++i) {
+            QRegExp rx(priv->methods[request.method()][i].first);
             if (rx.indexIn(path) != -1) {
-                if (priv->methods[request->method()][i].second->handleRequest
+                if (priv->methods[request.method()][i].second->handleRequest
                         (request, response, args + rx.capturedTexts().mid(1))) {
                     return true;
                 }

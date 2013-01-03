@@ -105,16 +105,17 @@ HttpFileServer::~HttpFileServer()
 
 // split method in check and transmit phases
 // also, how the hell will this work with 404-responses?
-void HttpFileServer::serveFile(const QString &fileName, HttpServerRequest *request,
-                               HttpServerResponse *response)
+void HttpFileServer::serveFile(const QString &fileName,
+                               HttpServerRequest &request,
+                               HttpServerResponse &response)
 {
     // Check if method is alright
     {
-        const QByteArray method(request->method());
+        const QByteArray method(request.method());
         if (method != "GET" && method != "HEAD") {
-            response->writeHead(HttpServerResponse::METHOD_NOT_ALLOWED);
-            response->headers().insert("Allow", "GET, HEAD");
-            response->end();
+            response.writeHead(HttpServerResponse::METHOD_NOT_ALLOWED);
+            response.headers().insert("Allow", "GET, HEAD");
+            response.end();
             return;
         }
     }
@@ -122,48 +123,48 @@ void HttpFileServer::serveFile(const QString &fileName, HttpServerRequest *reque
     QFileInfo fileInfo(fileName);
 
     if (!fileInfo.exists()) {
-        response->writeHead(HttpServerResponse::NOT_FOUND);
-        response->end();
+        response.writeHead(HttpServerResponse::NOT_FOUND);
+        response.end();
         return;
     }
 
     // Check "If-Modified-Since" header
-    if (request->headers().contains("If-Modified-Since")) {
+    if (request.headers().contains("If-Modified-Since")) {
         foreach (const QByteArray &value,
-                 request->headers().values("If-Modified-Since")) {
+                 request.headers().values("If-Modified-Since")) {
             QDateTime date(Headers::toDateTime(value));
 
             // Ignore invalid values
             if (fileInfo.lastModified() < date || !date.isValid()) {
                 continue;
             } else if (fileInfo.lastModified() == date) {
-                response->writeHead(Tufao::HttpServerResponse::NOT_MODIFIED);
-                response->end();
+                response.writeHead(Tufao::HttpServerResponse::NOT_MODIFIED);
+                response.end();
             }
         }
     }
 
     // Check "If-Unmodified-Since" header
-    if (request->headers().contains("If-Unmodified-Since")) {
+    if (request.headers().contains("If-Unmodified-Since")) {
         foreach (const QByteArray &value,
-                 request->headers().values("If-Unmodified-Since")) {
+                 request.headers().values("If-Unmodified-Since")) {
             QDateTime date(Headers::toDateTime(value));
 
             // Ignore invalid values
             if (fileInfo.lastModified() < date || !date.isValid()) {
                 continue;
             } else if (fileInfo.lastModified() > date) {
-                response->writeHead(Tufao::HttpServerResponse
-                                    ::PRECONDITION_FAILED);
-                response->end();
+                response.writeHead(Tufao::HttpServerResponse
+                                   ::PRECONDITION_FAILED);
+                response.end();
             }
         }
     }
 
     // Check If-Range header
-    if (request->headers().contains("If-Range")
-            && request->headers().contains("Range")) {
-        foreach (QByteArray value, request->headers().values("If-Range")) {
+    if (request.headers().contains("If-Range")
+            && request.headers().contains("Range")) {
+        foreach (QByteArray value, request.headers().values("If-Range")) {
             // Ignore ETags
             int strSize = value.size();
             if ((strSize > 0 && value[0] == '"')
@@ -177,7 +178,7 @@ void HttpFileServer::serveFile(const QString &fileName, HttpServerRequest *reque
                     continue;
                 } else if (fileInfo.lastModified() > date) {
                     // Return the entire entity using a 200 response
-                    request->headers().remove("Range");
+                    request.headers().remove("Range");
                     break;
                 }
             }
@@ -186,15 +187,15 @@ void HttpFileServer::serveFile(const QString &fileName, HttpServerRequest *reque
 
     // All conditionals were okay, continue...
 
-    response->headers().insert("Accept-Ranges", "bytes");
-    response->headers().insert("Date", Headers
-                               ::fromDateTime(QDateTime::currentDateTime()));
-    response->headers().insert("Last-Modified", Headers
-                               ::fromDateTime(fileInfo.lastModified()));
+    response.headers().insert("Accept-Ranges", "bytes");
+    response.headers().insert("Date", Headers
+                              ::fromDateTime(QDateTime::currentDateTime()));
+    response.headers().insert("Last-Modified", Headers
+                              ::fromDateTime(fileInfo.lastModified()));
 
-    if (request->method() == "HEAD") {
-        response->writeHead(HttpServerResponse::OK);
-        response->end();
+    if (request.method() == "HEAD") {
+        response.writeHead(HttpServerResponse::OK);
+        response.end();
         return;
     }
 
@@ -202,104 +203,104 @@ void HttpFileServer::serveFile(const QString &fileName, HttpServerRequest *reque
     file.open(QIODevice::ReadOnly);
 
     QList< QPair<qulonglong, qulonglong> >
-            ranges(::ranges(request->headers(), fileInfo.size()));
+            ranges(::ranges(request.headers(), fileInfo.size()));
 
     // Not a byterange request
     if (!ranges.size()) {
         // Not a _satisfiable_ byterange request
-        if (request->headers().contains("Range")) {
+        if (request.headers().contains("Range")) {
             static const QByteArray bytesUnit("bytes */");
 
-            response->writeHead(HttpServerResponse
-                                ::REQUESTED_RANGE_NOT_SATISFIABLE);
-            response->headers().insert("Content-Range", bytesUnit
-                                       + QByteArray::number(fileInfo.size()));
-            response->end();
+            response.writeHead(HttpServerResponse
+                               ::REQUESTED_RANGE_NOT_SATISFIABLE);
+            response.headers().insert("Content-Range", bytesUnit
+                                      + QByteArray::number(fileInfo.size()));
+            response.end();
             return;
         }
 
         // Just send the entity
-        response->writeHead(HttpServerResponse::OK);
+        response.writeHead(HttpServerResponse::OK);
 
         while (!file.atEnd()) {
-            (*response) << file.read(::bufferSize);
-            request->socket().flush();
+            response << file.read(::bufferSize);
+            request.socket().flush();
         }
 
-        response->end();
+        response.end();
     } else if (ranges.size() == 1) {
         // ONE range
         static const QByteArray bytesUnit("bytes ");
 
-        response->writeHead(HttpServerResponse::OK);
+        response.writeHead(HttpServerResponse::OK);
         QPair<qulonglong, qulonglong> &range(ranges[0]);
-        response->headers().insert("Content-Range", bytesUnit
-                                   + QByteArray::number(range.first)
-                                   + '-'
-                                   + QByteArray::number(range.second)
-                                   + '/'
-                                   + QByteArray::number(fileInfo.size()));
+        response.headers().insert("Content-Range", bytesUnit
+                                  + QByteArray::number(range.first)
+                                  + '-'
+                                  + QByteArray::number(range.second)
+                                  + '/'
+                                  + QByteArray::number(fileInfo.size()));
         file.seek(range.first);
 
         qint64 remaining = 1 + range.second - range.first;
         while (remaining) {
             QByteArray chunk(file.read(qMin(remaining, ::bufferSize)));
-            (*response) << chunk;
-            request->socket().flush();
+            response << chunk;
+            request.socket().flush();
             remaining -= chunk.size();
         }
 
-        response->end();
+        response.end();
     } else {
         // MULTIPLE ranges
-        QByteArray contentType(response->headers().value("Content-Type"));
-        response->headers().replace("Content-Type", "multipart/byteranges;"
-                                    " boundary=THIS_STRING_SEPARATES");
+        QByteArray contentType(response.headers().value("Content-Type"));
+        response.headers().replace("Content-Type", "multipart/byteranges;"
+                                   " boundary=THIS_STRING_SEPARATES");
 
         for (int i = 0;i != ranges.size();++i) {
             QPair<qulonglong, qulonglong> &range(ranges[i]);
-            (*response) << "--THIS_STRING_SEPARATES\r\n";
+            response << "--THIS_STRING_SEPARATES\r\n";
             if (!contentType.isEmpty())
-                (*response) << "Content-type: " << contentType << "\r\n";
+                response << "Content-type: " << contentType << "\r\n";
 
-            (*response) << QByteArray("Content-range: bytes")
-                        << QByteArray::number(range.first) << QByteArray(1, '-')
-                        << QByteArray::number(range.second)
-                        << QByteArray(1, '/')
-                        << QByteArray::number(fileInfo.size()) << "\r\n"
-                        << QByteArray("\r\n");
+            response << QByteArray("Content-range: bytes")
+                     << QByteArray::number(range.first) << QByteArray(1, '-')
+                     << QByteArray::number(range.second)
+                     << QByteArray(1, '/')
+                     << QByteArray::number(fileInfo.size()) << "\r\n"
+                     << QByteArray("\r\n");
 
             file.seek(range.first);
 
             qint64 remaining = 1 + range.second - range.first;
             while (remaining) {
                 QByteArray chunk(file.read(qMin(remaining, ::bufferSize)));
-                (*response) << chunk;
-                request->socket().flush();
+                response << chunk;
+                request.socket().flush();
                 remaining -= chunk.size();
             }
         }
-        response->end("--THIS_STRING_SEPARATES--\r\n");
+        response.end("--THIS_STRING_SEPARATES--\r\n");
     }
 }
 
 bool HttpFileServer::serveFile(const QString &fileName,
-                               HttpServerResponse *response, int statusCode)
+                               HttpServerResponse &response, int statusCode)
 {
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly))
         return false;
 
-    response->writeHead(statusCode);
+    response.writeHead(statusCode);
 
     qint64 remaining = file.size();
     while (remaining) {
         QByteArray chunk(file.read(qMin(remaining, ::bufferSize)));
-        (*response) << chunk;
-        response->flush();
+        response << chunk;
+        response.flush();
         remaining -= chunk.size();
     }
-    response->end();
+    response.end();
 
     return true;
 }
@@ -317,11 +318,11 @@ void HttpFileServer::setBufferSize(qint64 size)
     ::bufferSize = size;
 }
 
-bool HttpFileServer::handleRequest(HttpServerRequest *request,
-                                   HttpServerResponse *response,
+bool HttpFileServer::handleRequest(HttpServerRequest &request,
+                                   HttpServerResponse &response,
                                    const QStringList &)
 {
-    QString resource(QUrl::fromEncoded(request->url(), QUrl::StrictMode)
+    QString resource(QUrl::fromEncoded(request.url(), QUrl::StrictMode)
                      .path(QUrl::FullyDecoded));
     QString fileName(QDir::cleanPath(priv->rootDir
                                      + QDir::toNativeSeparators(resource)));

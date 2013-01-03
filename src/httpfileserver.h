@@ -91,16 +91,22 @@ public:
 
     /*!
       Analyze the \p request and serve the file pointed by \p filename.
+
+      \since
+      1.0
       */
-    static void serveFile(const QString &fileName, HttpServerRequest *request,
-                          HttpServerResponse *response);
+    static void serveFile(const QString &fileName, HttpServerRequest &request,
+                          HttpServerResponse &response);
 
     /*!
       This member function doesn't serve any file, just set the response body to
       the contents in the file pointed by \p filename. It's useful in some
       scenarios, like serving 404-pages.
+
+      \since
+      1.0
       */
-    static bool serveFile(const QString &fileName, HttpServerResponse *response,
+    static bool serveFile(const QString &fileName, HttpServerResponse &response,
                           int statusCode);
 
     /*!
@@ -131,9 +137,12 @@ public slots:
       \note
       This method won't let requests access files outside the root dir folder
       and should be prefered over self-made implementations, as its safer.
+
+      \since
+      1.0
       */
-    bool handleRequest(Tufao::HttpServerRequest *request,
-                       Tufao::HttpServerResponse *response,
+    bool handleRequest(Tufao::HttpServerRequest &request,
+                       Tufao::HttpServerResponse &response,
                        const QStringList & = QStringList()) override;
 
 private:

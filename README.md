@@ -144,6 +144,12 @@ Version 1.0
    * Constructor takes a reference to a QAbstractSocket instead a pointer
    * socket method returns a reference instead a pointer
   * HttpServer uses reference instead of pointers in several places
+  * AbstractHttpServerRequestHandler::handleRequest uses references instead
+    pointers
+  * LESS POINTERS and MORE REFERENCES
+   * This change exposes a model more predictive and natural
+   * I'm caring less about Qt style and more about C++ style
+    * But don't worry, I'll maintain a balance
 
 Version 0.4:
   * Using CMake build system
