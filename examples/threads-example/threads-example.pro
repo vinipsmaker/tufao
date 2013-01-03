@@ -7,10 +7,10 @@ QT -= gui
 SOURCES += main.cpp \
     mainhandler.cpp \
     tcpserver.cpp \
-    thread.cpp \
-    handlerfactory.cpp
+    handlerfactory.cpp \
+    worker.cpp
 
 HEADERS += mainhandler.h \
     tcpserver.h \
-    thread.h \
-    handlerfactory.h
+    handlerfactory.h \
+    worker.h

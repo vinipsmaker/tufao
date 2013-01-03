@@ -21,7 +21,11 @@
   */
 
 #include "tcpserver.h"
-#include "thread.h"
+#include "worker.h"
+
+#include <QThread>
+
+using namespace Tufao;
 
 TcpServer::TcpServer(QObject *parent) :
     QTcpServer(parent),
@@ -29,31 +33,23 @@ TcpServer::TcpServer(QObject *parent) :
 {
 }
 
-TcpServer::~TcpServer()
-{
-    // the thread can't have a parent then...
-    foreach (Thread* t, threads) {
-        t->quit();
-    }
-    foreach (Thread* t, threads) {
-        t->wait();
-        delete t;
-    }
-}
-
 void TcpServer::run(int threadsNumber, int port,
-                    Tufao::AbstractHttpServerRequestHandlerFactory *handlerFactory)
+                    AbstractHttpServerRequestHandlerFactory *handlerFactory)
 {
-    threads.reserve(threadsNumber);
+    workers.reserve(threadsNumber);
     for (int i = 0;i != threadsNumber;++i) {
-        threads.push_back(new Thread(handlerFactory->createHandler(this),
-                                     this));
-        threads[i]->start();
+        Worker *worker = new Worker(handlerFactory);
+        QThread *workerThread = new QThread(this);
+
+        worker->moveToThread(workerThread);
+        workerThread->start();
+
+        workers.push_back(worker);
     }
     listen(QHostAddress::Any, port);
 }
 
 void TcpServer::incomingConnection(int handle)
 {
-    threads[(i++) % threads.size()]->addConnection(handle);
+    workers[(i++) % workers.size()]->addConnection(handle);
 }

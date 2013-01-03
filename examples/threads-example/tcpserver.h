@@ -24,18 +24,17 @@
 #define TCPSERVER_H
 
 #include <QTcpServer>
-#include <QList>
+#include <QVector>
 
 #include <Tufao/AbstractHttpServerRequestHandlerFactory>
 
-class Thread;
+class Worker;
 
 class TcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
     explicit TcpServer(QObject *parent = 0);
-    virtual ~TcpServer();
 
     void run(int threadsNumber, int port,
              Tufao::AbstractHttpServerRequestHandlerFactory *handlerFactory);
@@ -47,7 +46,7 @@ protected:
     void incomingConnection(int handle);
 
 private:
-    QList<Thread*> threads;
+    QVector<Worker*> workers;
     int i;
 };
 
