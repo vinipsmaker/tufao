@@ -340,8 +340,11 @@ public:
       \note
       If the handshake fail, the method will write the appropriate message to
       the socket and return false.
+
+      \since
+      1.0
       */
-    bool startServerHandshake(const HttpServerRequest *request,
+    bool startServerHandshake(const HttpServerRequest &request,
                               const QByteArray &head,
                               const Headers &headers = Headers());
 

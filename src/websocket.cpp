@@ -153,12 +153,12 @@ bool WebSocket::connectToHostEncrypted(const QHostAddress &address,
     return connectToHostEncrypted(address, 443, resource, headers);
 }
 
-bool WebSocket::startServerHandshake(const HttpServerRequest *request,
+bool WebSocket::startServerHandshake(const HttpServerRequest &request,
                                      const QByteArray &head,
                                      const Headers &extraHeaders)
 {
-    QAbstractSocket *socket = &request->socket();
-    Headers headers = request->headers();
+    QAbstractSocket *socket = &request.socket();
+    Headers headers = request.headers();
     if (!hasValueCaseInsensitively(headers.values("Upgrade"), "websocket")) {
         WRITE_STRING(socket->write,
                      "HTTP/1.1 400 Bad Request\r\n"

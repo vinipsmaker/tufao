@@ -146,6 +146,8 @@ Version 1.0
   * HttpServer uses reference instead of pointers in several places
   * AbstractHttpServerRequestHandler::handleRequest uses references instead
     pointers
+  * WebSocket
+   * startServerHandshake is taking references instead pointers
   * LESS POINTERS and MORE REFERENCES
    * This change exposes a model more predictive and natural
    * I'm caring less about Qt style and more about C++ style
