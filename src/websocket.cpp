@@ -470,9 +470,13 @@ void WebSocket::onConnected()
     }
     WRITE_STRING(priv->socket->write, "\r\n\r\n");
 
-    disconnect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
-    disconnect(priv->socket, SIGNAL(error(QAbstractSocket::SocketError)),
-               this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+    if (qobject_cast<QSslSocket*>(priv->socket)) {
+        disconnect(priv->socket, SIGNAL(encrypted()), this, SLOT(onConnected()));
+        disconnect(priv->socket, SIGNAL(error(QAbstractSocket::SocketError)),
+                   this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+    } else {
+        disconnect(priv->socket, SIGNAL(connected()), this, SLOT(onConnected()));
+    }
 
     connect(priv->socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 
