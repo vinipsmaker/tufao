@@ -52,11 +52,10 @@ QString HttpPluginServer::config() const
 }
 
 bool HttpPluginServer::handleRequest(HttpServerRequest &request,
-                                     HttpServerResponse &response,
-                                     const QStringList &args)
+                                     HttpServerResponse &response)
 {
     try {
-        return priv->router.handleRequest(request, response, args);
+        return priv->router.handleRequest(request, response);
     } catch (...) {
         qWarning("One plugin is throwing an unhandled exception");
         response.writeHead(HttpServerResponse::INTERNAL_SERVER_ERROR);

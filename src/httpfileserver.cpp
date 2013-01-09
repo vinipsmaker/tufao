@@ -319,8 +319,7 @@ void HttpFileServer::setBufferSize(qint64 size)
 }
 
 bool HttpFileServer::handleRequest(HttpServerRequest &request,
-                                   HttpServerResponse &response,
-                                   const QStringList &)
+                                   HttpServerResponse &response)
 {
     QString resource(QUrl::fromEncoded(request.url(), QUrl::StrictMode)
                      .path(QUrl::FullyDecoded));

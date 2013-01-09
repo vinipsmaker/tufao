@@ -147,9 +147,23 @@ public slots:
       It will route the request to the right handler. To route the request,
       it'll percent decode the path component from the url.
 
-      The \p args object is prepend in the list of captured texts by the regular
-      expression and then passed to the handler. My advice is to don't overuse
-      this feature or you will get a code difficult to understand.
+      The handler will have access to the list of captured texts by the regular
+      expression using HttpServerRequest::customData. See example below:
+
+      \include custom_data.cpp
+
+      If there is already an object set for this request, the router will do the
+      following steps:
+
+      1. If the object is not a QVariantMap, override it
+      2. If the object already has a item with the key "args", but the value is
+         not a QStringList, override the item
+      3. Append the list of captured texts in the object["args"]
+
+      \note
+      The request's custom data is copied at the beginning and is used to
+      restore the custom data state before call every handler. The state will
+      also be restored if no handlers are capable of handle the request.
 
       \return
       Returns true if one handler able to respond the request is found.
@@ -158,8 +172,7 @@ public slots:
       1.0
       */
     bool handleRequest(Tufao::HttpServerRequest &request,
-                       Tufao::HttpServerResponse &response,
-                       const QStringList &args = QStringList()) override;
+                       Tufao::HttpServerResponse &response) override;
 
 private:
     struct Priv;

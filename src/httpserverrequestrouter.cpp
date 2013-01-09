@@ -22,6 +22,7 @@
 #include <QtCore/QVector>
 #include <QtCore/QStringList>
 #include <QtCore/QUrl>
+#include <QtCore/QVariant>
 
 namespace Tufao {
 
@@ -126,33 +127,39 @@ void HttpServerRequestRouter::clear()
 
 // TODO: Implement cache
 bool HttpServerRequestRouter::handleRequest(HttpServerRequest &request,
-                                            HttpServerResponse &response,
-                                            const QStringList &args)
+                                            HttpServerResponse &response)
 {
     QString path(QUrl::fromEncoded(request.url(), QUrl::StrictMode)
                  .path(QUrl::FullyDecoded));
+    auto handle = [&](QRegExp rx,
+                      AbstractHttpServerRequestHandler *handler) -> bool {
+        if (rx.indexIn(path) == -1)
+            return false;
 
-    if (priv->methods.contains(request.method())) {
-        for (int i = 0;i != priv->methods[request.method()].size();++i) {
-            QRegExp rx(priv->methods[request.method()][i].first);
-            if (rx.indexIn(path) != -1) {
-                if (priv->methods[request.method()][i].second->handleRequest
-                        (request, response, args + rx.capturedTexts().mid(1))) {
-                    return true;
-                }
-            }
+        QStringList args{rx.capturedTexts().mid(1)};
+
+        QVariant backup{request.customData()};
+        {
+            QVariantMap options{backup.toMap()};
+            options["args"] = options["args"].toStringList() + args;
+            request.setCustomData(options);
         }
+
+        auto ret = handler->handleRequest(request, response);
+        if (!ret)
+            request.setCustomData(backup);
+
+        return ret;
+    };
+
+    for (auto handler: priv->methods.value(request.method())) {
+        if (handle(handler.first, handler.second))
+            return true;
     }
 
-    for (int i = 0;i != priv->general.size();++i) {
-        QRegExp rx(priv->general[i].first);
-        if (rx.indexIn(path) != -1) {
-            if (priv->general[i].second->handleRequest(request, response, args
-                                                       + rx.capturedTexts()
-                                                       .mid(1))) {
-                return true;
-            }
-        }
+    for (auto handler: priv->general) {
+        if (handle(handler.first, handler.second))
+            return true;
     }
 
     return false;

@@ -76,8 +76,7 @@ public slots:
       1.0
       */
     virtual bool handleRequest(Tufao::HttpServerRequest &request,
-                               Tufao::HttpServerResponse &response,
-                               const QStringList &args = QStringList()) = 0;
+                               Tufao::HttpServerResponse &response) = 0;
 };
 
 } // namespace Tufao

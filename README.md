@@ -143,9 +143,13 @@ Version 1.0
   * HttpServerRequest
    * Constructor takes a reference to a QAbstractSocket instead a pointer
    * socket method returns a reference instead a pointer
+   * setCustomData and customData methods added
+    * Now HttpServerRequestRouter use these methods to pass the list of captured
+      texts
   * HttpServer uses reference instead of pointers in several places
-  * AbstractHttpServerRequestHandler::handleRequest uses references instead
-    pointers
+  * AbstractHttpServerRequestHandler::handleRequest
+   * It uses references instead pointers
+   * It receives 2 arguments instead of 3
   * WebSocket
    * startServerHandshake is taking references instead pointers
   * LESS POINTERS and MORE REFERENCES
