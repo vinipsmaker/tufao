@@ -45,7 +45,7 @@ QByteArray HttpServerRequest::method() const
     return priv->method;
 }
 
-QByteArray HttpServerRequest::url() const
+QUrl HttpServerRequest::url() const
 {
     return priv->url;
 }
@@ -161,6 +161,7 @@ void HttpServerRequest::onTimeout()
 inline void HttpServerRequest::clearBuffer()
 {
     priv->buffer.clear();
+    priv->urlData.clear();
     priv->lastHeader.clear();
     priv->lastWasValue = true;
     priv->useTrailers = false;
@@ -208,7 +209,7 @@ int HttpServerRequest::Priv::on_url(http_parser *parser, const char *at,
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
     Q_ASSERT(request);
-    request->priv->url.append(at, length);
+    request->priv->urlData.append(at, length);
     return 0;
 }
 
@@ -265,6 +266,9 @@ int HttpServerRequest::Priv::on_headers_complete(http_parser *parser)
     Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
             (parser->data);
     Q_ASSERT(request);
+
+    request->priv->url = request->priv->urlData;
+    request->priv->urlData.clear();
 
     request->priv->lastHeader.clear();
     request->priv->lastWasValue = true;

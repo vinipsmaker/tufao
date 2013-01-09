@@ -143,6 +143,7 @@ Version 1.0
   * HttpServerRequest
    * Constructor takes a reference to a QAbstractSocket instead a pointer
    * socket method returns a reference instead a pointer
+   * url returns a QUrl
    * setCustomData and customData methods added
     * Now HttpServerRequestRouter use these methods to pass the list of captured
       texts

@@ -129,11 +129,9 @@ void HttpServerRequestRouter::clear()
 bool HttpServerRequestRouter::handleRequest(HttpServerRequest &request,
                                             HttpServerResponse &response)
 {
-    QString path(QUrl::fromEncoded(request.url(), QUrl::StrictMode)
-                 .path(QUrl::FullyDecoded));
     auto handle = [&](QRegExp rx,
                       AbstractHttpServerRequestHandler *handler) -> bool {
-        if (rx.indexIn(path) == -1)
+        if (rx.indexIn(request.url().path(QUrl::FullyDecoded)) == -1)
             return false;
 
         QStringList args{rx.capturedTexts().mid(1)};

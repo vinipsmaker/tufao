@@ -26,6 +26,7 @@
 #include "httpserverresponse.h"
 
 class QAbstractSocket;
+class QUrl;
 
 namespace Tufao {
 
@@ -115,12 +116,13 @@ public:
           Accept: text/plain\r\n
           \r\n
 
-      Then Tufao::HttpServerRequest::url() will be "/login?username=tux"
+      Then Tufao::HttpServerRequest::url() will be constructed with
+      "/login?username=tux".
 
-      \sa
-      Tufao::Url
+      \since
+      1.0
       */
-    QByteArray url() const;
+    QUrl url() const;
 
     /*!
       The HTTP headers sent by the client. These headers are fully populated

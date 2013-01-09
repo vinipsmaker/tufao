@@ -31,6 +31,7 @@
 
 #include <QtNetwork/QAbstractSocket>
 #include <QtCore/QTimer>
+#include <QtCore/QUrl>
 
 namespace Tufao {
 
@@ -69,6 +70,7 @@ struct HttpServerRequest::Priv
     QAbstractSocket &socket;
     QByteArray buffer;
     http_parser parser;
+    QByteArray urlData;
     QByteArray lastHeader;
     bool lastWasValue;
     bool useTrailers;
@@ -76,7 +78,7 @@ struct HttpServerRequest::Priv
     QByteArray body;
 
     QByteArray method;
-    QByteArray url;
+    QUrl url;
     Tufao::HttpServerRequest::HttpVersion httpVersion;
     Headers headers;
     Headers trailers;

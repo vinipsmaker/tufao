@@ -321,10 +321,10 @@ void HttpFileServer::setBufferSize(qint64 size)
 bool HttpFileServer::handleRequest(HttpServerRequest &request,
                                    HttpServerResponse &response)
 {
-    QString resource(QUrl::fromEncoded(request.url(), QUrl::StrictMode)
-                     .path(QUrl::FullyDecoded));
-    QString fileName(QDir::cleanPath(priv->rootDir
-                                     + QDir::toNativeSeparators(resource)));
+    QString fileName{
+        QDir::cleanPath(priv->rootDir
+                        + QDir::toNativeSeparators(request.url()
+                                                   .path(QUrl::FullyDecoded)))};
     if (!fileName.startsWith(priv->rootDir + QDir::separator()))
         return false;
 
