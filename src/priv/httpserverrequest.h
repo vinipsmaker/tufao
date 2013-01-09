@@ -81,6 +81,7 @@ struct HttpServerRequest::Priv
     Headers headers;
     Headers trailers;
     Tufao::HttpServerResponse::Options responseOptions;
+    QVariant customData;
 
     int timeout;
     QTimer timer;

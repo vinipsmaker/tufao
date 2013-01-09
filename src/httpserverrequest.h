@@ -192,6 +192,34 @@ public:
       */
     Tufao::HttpServerResponse::Options responseOptions() const;
 
+    /*!
+      Returns the user data as set in setCustomData.
+
+      \note
+      This data will be erased upon a new request.
+
+      \sa
+      setCustomData
+
+      \since 1.0
+     */
+    QVariant customData() const;
+
+    /*!
+      Sets the custom data to \p data.
+
+      The custom data is a convenience method to allow users of
+      HttpServerRequest to store some data in some requests. It's used in
+      Tufao::HttpServerRequestRouter to pass the list of captured texts in the
+      url to the subsequent handlers.
+
+      \note
+      This data will be erased upon a new request.
+
+      \since 1.0
+     */
+    void setCustomData(const QVariant &data);
+
 signals:
     /*!
       This signal is emitted when most of the data about the request is

@@ -95,6 +95,16 @@ HttpServerResponse::Options HttpServerRequest::responseOptions() const
     return priv->responseOptions;
 }
 
+QVariant HttpServerRequest::customData() const
+{
+    return priv->customData;
+}
+
+void HttpServerRequest::setCustomData(const QVariant &data)
+{
+    priv->customData = data;
+}
+
 void HttpServerRequest::onReadyRead()
 {
     if (priv->timeout)
@@ -162,6 +172,7 @@ inline void HttpServerRequest::clearRequest()
     priv->url.clear();
     priv->headers.clear();
     priv->trailers.clear();
+    priv->customData.clear();
 }
 
 http_parser_settings HttpServerRequest::Priv::httpSettings()
