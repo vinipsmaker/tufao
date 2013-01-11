@@ -20,8 +20,8 @@
   SOFTWARE.
   */
 
-#ifndef HTTPSERVERREQUEST_H
-#define HTTPSERVERREQUEST_H
+#ifndef TUFAO_HTTPSERVERREQUEST_H
+#define TUFAO_HTTPSERVERREQUEST_H
 
 #include "httpserverresponse.h"
 
@@ -305,4 +305,4 @@ private:
 
 } // namespace Tufao
 
-#endif // HTTPSERVERREQUEST_H
+#endif // TUFAO_HTTPSERVERREQUEST_H
