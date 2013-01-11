@@ -20,8 +20,8 @@
   SOFTWARE.
   */
 
-#ifndef HTTPSERVERRESPONSE_H
-#define HTTPSERVERRESPONSE_H
+#ifndef TUFAO_HTTPSERVERRESPONSE_H
+#define TUFAO_HTTPSERVERRESPONSE_H
 
 #include <QtCore/QObject>
 #include "tufao_global.h"
@@ -403,4 +403,4 @@ HttpServerResponse &HttpServerResponse::operator <<(const QByteArray &chunk)
 
 } // namespace Tufao
 
-#endif // HTTPSERVERRESPONSE_H
+#endif // TUFAO_HTTPSERVERRESPONSE_H
