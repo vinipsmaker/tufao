@@ -60,10 +60,6 @@ public slots:
     /*!
       Handles the \p request using the \p response object.
 
-      \param args A list of options that may be used by the handler. The
-      HttpServerRequestRouter class uses this argument to send the captured
-      texts in the regex pattern.
-
       \retval true
       If the handler has responded to the request.
 
