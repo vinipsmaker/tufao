@@ -148,6 +148,11 @@ public:
     /*!
       The HTTP trailers (if present). Only populated after the
       Tufao::HttpServerRequest::end signal.
+
+      Trailers are headers sent after the body. Some headers can't be computed
+      before the full body is generated. The solution to decrease the network
+      latency is send the body before the associated metadata using the trailers
+      technique.
       */
     Headers trailers() const;
 
@@ -155,6 +160,28 @@ public:
       Returns the HTTP protocol version used in the request.
       */
     HttpVersion httpVersion() const;
+
+    /*!
+      Read the request's body.
+
+      \return
+      This request's object will buffer every piece of body received. After call
+      this function, the buffered content is returned and the buffer is cleared.
+
+      \note
+      If you only call this function after end() signal, the returned object
+      will be the entire body of the request. Call this function when the data()
+      signal is emitted and save the body to disk if you expect to receive
+      requests with bodies larger than available RAM.
+
+      \sa
+      data()
+      end()
+
+      \since
+      1.0
+     */
+    QByteArray readBody();
 
     /*!
       The QAbstractSocket object associated with the connection.
@@ -250,6 +277,8 @@ signals:
     /*!
       This signal is emitted each time a piece of the message body is received.
 
+      Use readBody() to consume the data.
+
       \note
       It's not safe delete this object after this signal is emitted unless you
       use a queued connection. If you want to delete this object after this
@@ -257,11 +286,17 @@ signals:
         - Wait until a safe signal is emitted (end or close)
         - Close the connection (only works if you are using Tufao::HttpServer)
         - Call QObject::deleteLater()
+
+      \since
+      1.0
       */
-    void data(QByteArray data);
+    void data();
 
     /*!
       This signal is emitted exactly once for each request.
+
+      Use readBody() to access the request's body and trailers() to access the
+      headers sent after the body.
 
       After that, no more data signals will be emitted for this session. A new
       session (if any) will be only initiated after you respond the request.

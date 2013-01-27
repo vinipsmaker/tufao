@@ -70,6 +70,13 @@ HttpServerRequest::HttpVersion HttpServerRequest::httpVersion() const
     return priv->httpVersion;
 }
 
+QByteArray HttpServerRequest::readBody()
+{
+    QByteArray body;
+    body.swap(priv->body);
+    return body;
+}
+
 QAbstractSocket &HttpServerRequest::socket() const
 {
     return priv->socket;
@@ -128,9 +135,7 @@ void HttpServerRequest::onReadyRead()
 
     if (priv->whatEmit.testFlag(Priv::DATA)) {
         priv->whatEmit &= ~Priv::Signals(Priv::DATA);
-        QByteArray body(priv->body);
-        priv->body.clear();
-        emit data(body);
+        emit data();
     }
 
     priv->buffer.remove(0, nparsed);
