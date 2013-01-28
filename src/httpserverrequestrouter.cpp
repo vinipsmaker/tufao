@@ -19,18 +19,26 @@
 #include "priv/httpserverrequestrouter.h"
 #include "httpserverrequest.h"
 
-#include <QtCore/QVector>
 #include <QtCore/QStringList>
 #include <QtCore/QUrl>
 #include <QtCore/QVariant>
 
+#include <algorithm>
+
 namespace Tufao {
 
-typedef AbstractHttpServerRequestHandler Handler;
+using MappingList = std::initializer_list<HttpServerRequestRouter::Mapping>;
 
 HttpServerRequestRouter::HttpServerRequestRouter(QObject *parent) :
     AbstractHttpServerRequestHandler(parent),
     priv(new Priv)
+{
+}
+
+HttpServerRequestRouter::HttpServerRequestRouter(MappingList mappings,
+                                                 QObject *parent) :
+    AbstractHttpServerRequestHandler(parent),
+    priv(new Priv{mappings})
 {
 }
 
@@ -39,125 +47,55 @@ HttpServerRequestRouter::~HttpServerRequestRouter()
     delete priv;
 }
 
-HttpServerRequestRouter &HttpServerRequestRouter::map(const QRegExp &path,
-                                                      Handler *handler)
+int HttpServerRequestRouter::map(Mapping map)
 {
-    priv->general.push_back(QPair<QRegExp, Handler*>(path, handler));
-    return *this;
+    int i = priv->mappings.size();
+    priv->mappings.push_back(map);
+    return i;
 }
 
-HttpServerRequestRouter &HttpServerRequestRouter::map(const QRegExp &path,
-                                                      const QByteArray &method,
-                                                      Handler *handler)
+int HttpServerRequestRouter::map(std::initializer_list<Mapping> map)
 {
-    priv->methods[method].push_back(QPair<QRegExp, Handler*>(path, handler));
-    return *this;
+    int i = priv->mappings.size();
+    std::copy(std::begin(map), std::end(map), std::end(priv->mappings));
+    return i;
 }
 
-HttpServerRequestRouter &HttpServerRequestRouter::unmap(const QRegExp &path,
-                                                        Handler *handler)
+void HttpServerRequestRouter::unmap(int index)
 {
-    priv->general.removeAll(QPair<QRegExp, Handler*>(path, handler));
-    return *this;
-}
-
-HttpServerRequestRouter
-&HttpServerRequestRouter::unmap(const QRegExp &path, const QByteArray &method,
-                                Handler *handler)
-{
-    priv->methods[method].removeAll(QPair<QRegExp, Handler*>(path, handler));
-    return *this;
-}
-
-HttpServerRequestRouter &HttpServerRequestRouter::unmap(const QRegExp &path)
-{
-    for (int i = priv->general.size() - 1;i >= 0;--i) {
-        if (priv->general[i].first == path)
-            priv->general.removeAt(i);
-    }
-
-    QList<QByteArray> methods(priv->methods.keys());
-    foreach (const QByteArray &method, methods) {
-        for (int i = priv->methods[method].size() - 1;i >= 0;--i) {
-            if (priv->methods[method][i].first == path)
-                priv->methods[method].removeAt(i);
-        }
-    }
-
-    return *this;
-}
-
-HttpServerRequestRouter
-&HttpServerRequestRouter::unmap(const QRegExp &path, const QByteArray &method)
-{
-    if (!priv->methods.contains(method))
-        return *this;
-
-    for (int i = priv->methods[method].size() - 1;i >= 0;--i) {
-        if (priv->methods[method][i].first == path)
-            priv->methods[method].removeAt(i);
-    }
-
-    return *this;
-}
-
-HttpServerRequestRouter &HttpServerRequestRouter::unmap(Handler *handler)
-{
-    for (int i = priv->general.size() - 1;i >= 0;--i) {
-        if (priv->general[i].second == handler)
-            priv->general.removeAt(i);
-    }
-
-    QList<QByteArray> methods(priv->methods.keys());
-    foreach (const QByteArray &method, methods) {
-        for (int i = priv->methods[method].size() - 1;i >= 0;--i) {
-            if (priv->methods[method][i].second == handler)
-                priv->methods[method].removeAt(i);
-        }
-    }
-
-    return *this;
+    priv->mappings.remove(index);
 }
 
 void HttpServerRequestRouter::clear()
 {
-    priv->general.clear();
-    priv->methods.clear();
+    priv->mappings.clear();
 }
 
-// TODO: Implement cache
+// TODO: Implement cache and use a tree to improve speed
 bool HttpServerRequestRouter::handleRequest(HttpServerRequest &request,
                                             HttpServerResponse &response)
 {
-    auto handle = [&](QRegExp rx,
-                      AbstractHttpServerRequestHandler *handler) -> bool {
-        if (rx.indexIn(request.url().path(QUrl::FullyDecoded)) == -1)
-            return false;
+    const QString path{request.url().path()};
 
-        QStringList args{rx.capturedTexts().mid(1)};
+    for (const auto &mapping: priv->mappings) {
+        QRegularExpressionMatch match{mapping.path.match(path)};
 
-        QVariant backup{request.customData()};
-        {
-            QVariantMap options{backup.toMap()};
-            options["args"] = options["args"].toStringList() + args;
-            request.setCustomData(options);
+        if (match.hasMatch()) {
+            QStringList args{match.capturedTexts()};
+            QVariant backup{request.customData()};
+
+            if (args.size()) {
+                QVariantMap options{backup.toMap()};
+                options["args"] = options["ags"].toStringList() + args;
+                request.setCustomData(options);
+            }
+
+            if (mapping.handler(request, response))
+                return true;
+
+            if (args.size())
+                request.setCustomData(backup);
         }
-
-        auto ret = handler->handleRequest(request, response);
-        if (!ret)
-            request.setCustomData(backup);
-
-        return ret;
-    };
-
-    for (auto handler: priv->methods.value(request.method())) {
-        if (handle(handler.first, handler.second))
-            return true;
-    }
-
-    for (auto handler: priv->general) {
-        if (handle(handler.first, handler.second))
-            return true;
     }
 
     return false;
