@@ -63,6 +63,16 @@ class TUFAO_EXPORT HttpServerRequestRouter:
     Q_OBJECT
 public:
     /*!
+     It's a simple typedef for the type of handler accepted by the
+     HttpServerRequestRouter.
+
+     \since
+     1.0
+     */
+    typedef std::function<bool(HttpServerRequest&, HttpServerResponse&)>
+    Handler;
+
+    /*!
       This class describes a request handler and a filter.
 
       The filter is very basic and only can select requests based on the url's
@@ -82,18 +92,14 @@ public:
           Constructs a Mapping object using \p path as filter and \p handler as
           handler.
          */
-        Mapping(QRegularExpression path,
-                std::function<bool(HttpServerRequest&,HttpServerResponse&)>
-                handler) :
+        Mapping(QRegularExpression path, Handler handler) :
             path(path), handler(handler)
         {}
         /*!
           Constructs a Mapping object using \p path and \p method as filters and
           \p handler as handler.
          */
-        Mapping(QRegularExpression path, QByteArray method,
-                std::function<bool(HttpServerRequest&,HttpServerResponse&)>
-                handler) :
+        Mapping(QRegularExpression path, QByteArray method, Handler handler) :
             path(path), method(method), handler(handler)
         {}
 
@@ -116,7 +122,7 @@ public:
           If this attribute is left null, it won't be used by the filter.
          */
         QByteArray method;
-        std::function<bool(HttpServerRequest&,HttpServerResponse&)> handler;
+        Handler handler;
     };
 
     /*!
