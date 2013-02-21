@@ -8,6 +8,20 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
 find_package(CXX11 REQUIRED)
 
+get_target_property(QMAKE_EXECUTABLE Qt5::qmake LOCATION)
+function(QUERY_QMAKE VAR RESULT)
+    exec_program("${QMAKE_EXECUTABLE}" ARGS "-query ${VAR}" RETURN_VALUE return_code OUTPUT_VARIABLE output)
+    if(NOT return_code)
+        file(TO_CMAKE_PATH "${output}" output)
+        set(${RESULT} ${output} PARENT_SCOPE)
+    endif(NOT return_code)
+endfunction(QUERY_QMAKE)
+
+query_qmake(QT_INSTALL_PLUGINS QT_PLUGINS_DIR)
+query_qmake(QT_HOST_DATA QT_DATA_DIR)
+
+set(QT_MKSPECS_DIR ${QT_DATA_DIR}/mkspecs)
+
 # Configure options
 option(GENERATE_DOC
     "Use Doxygen to generate the project documentation" OFF
