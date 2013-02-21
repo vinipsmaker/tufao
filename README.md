@@ -144,13 +144,18 @@ Version 1.0
    * Constructor takes a reference to a QAbstractSocket instead a pointer
    * socket method returns a reference instead a pointer
    * url returns a QUrl
+   * data signal was changed and you must use readBody method to access body's content.
    * setCustomData and customData methods added
     * Now HttpServerRequestRouter use these methods to pass the list of captured
       texts
   * HttpServer uses reference instead of pointers in several places
+  * AbstractHttpServerRequestRouter refactored to explore lambdas features.
+  * Tufão's plugin system fully refactored
+   * It's using JSON files as configuration
   * AbstractHttpServerRequestHandler::handleRequest
    * It uses references instead pointers
    * It receives 2 arguments instead of 3
+  * One more abstraction to sessions created to explore lambdas
   * WebSocket
    * startServerHandshake is taking references instead pointers
   * LESS POINTERS and MORE REFERENCES
