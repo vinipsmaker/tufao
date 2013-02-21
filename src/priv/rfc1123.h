@@ -19,88 +19,79 @@
 #ifndef TUFAO_PRIV_RFC1123_H
 #define TUFAO_PRIV_RFC1123_H
 
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
+#include <QtCore/QRegularExpressionMatch>
 #include <QtCore/QDateTime>
+#include <QtCore/QStringList>
 
 namespace Tufao {
 
 class Rfc1123
 {
 public:
-    Rfc1123(const QByteArray &headerValue);
+    Rfc1123(const QString &headerValue);
 
-    operator bool();
+    explicit operator bool();
 
     QDateTime operator ()();
 
 private:
-    static const QRegExp rfc1123;
+    static const QRegularExpression rfc1123;
+    static const QStringList months;
 
-    const QByteArray &headerValue;
-    QRegExp regexp;
+    QDateTime dateTime;
+    bool valid;
 };
 
-inline Rfc1123::Rfc1123(const QByteArray &headerValue) :
-    headerValue(headerValue),
-    regexp(rfc1123)
-{}
-
-inline Rfc1123::operator bool()
+inline Rfc1123::Rfc1123(const QString &headerValue) :
+    valid(true)
 {
-    return regexp.indexIn(headerValue) != -1;
-}
-
-inline QDateTime Rfc1123::operator ()()
-{
-    if (!regexp.captureCount())
-        return QDateTime();
-
-    int year, month = 1, day = regexp.cap(1).toInt();
-    {
-        QString monthStr(regexp.cap(2));
-        if (monthStr == "Jan")
-            month = 1;
-        else if (monthStr == "Feb")
-            month = 2;
-        else if (monthStr == "Mar")
-            month = 3;
-        else if (monthStr == "Apr")
-            month = 4;
-        else if (monthStr == "May")
-            month = 5;
-        else if (monthStr == "Jun")
-            month = 6;
-        else if (monthStr == "Jul")
-            month = 7;
-        else if (monthStr == "Aug")
-            month = 8;
-        else if (monthStr == "Sep")
-            month = 9;
-        else if (monthStr == "Oct")
-            month = 10;
-        else if (monthStr == "Nov")
-            month = 11;
-        else if (monthStr == "Dec")
-            month = 12;
+    QRegularExpressionMatch match{rfc1123.match(headerValue)};
+    if (!match.hasMatch()) {
+        valid = false;
+        return;
     }
+
+    int year;
     {
-        QString yearStr(regexp.cap(3));
+        QString yearStr = match.captured(3);
         if (yearStr.size() == 2)
             year = yearStr.toInt() + 1900;
         else
             year = yearStr.toInt();
     }
 
-    int hours = regexp.cap(4).toInt(), minutes = regexp.cap(5).toInt(),
-            seconds = 0;
+    int month = months.indexOf(match.captured(2));
+    if (month == -1) {
+        valid = false;
+        return;
+    } else {
+        ++month;
+    }
+
+    int day = match.captured(1).toInt();
+    int hours = match.captured(4).toInt();
+    int minutes = match.captured(5).toInt();
+    int seconds = 0;
     {
-        QString secondsStr(regexp.cap(6));
+        QString secondsStr(match.captured(6));
         if (!secondsStr.isEmpty())
             seconds = secondsStr.toInt();
     }
 
-    return QDateTime(QDate(year, month, day), QTime(hours, minutes, seconds),
-                     Qt::UTC);
+    dateTime = QDateTime(QDate(year, month, day),
+                         QTime(hours, minutes, seconds),
+                         Qt::UTC);
+}
+
+inline Rfc1123::operator bool()
+{
+    return valid;
+}
+
+inline QDateTime Rfc1123::operator ()()
+{
+    return dateTime;
 }
 
 } // namespace Tufao

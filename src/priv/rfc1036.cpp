@@ -20,14 +20,29 @@
 
 namespace Tufao {
 
-const QRegExp Rfc1036::rfc1036("(?:\\w{3}\\s*,\\s*)" // day
-                               "(\\d{1,2})\\s+" // day-1
-                               "(\\w{3})\\s+" // month-2
-                               "(\\d{2})\\s+" // year-3
-                               "(\\d{2}):" // hour-4
-                               "(\\d{2}):" // minutes-5
-                               "(\\d{2})\\s+" // seconds-6
-                               "GMT"
+const QRegularExpression Rfc1036::rfc1036(R"re((?:\w{3}\s*,\s*)" // day
+                               "(\d{1,2})\s+" // day-1
+                               "(\w{3})\s+" // month-2
+                               "(\d{2})\s+" // year-3
+                               "(\d{2}):" // hour-4
+                               "(\d{2}):" // minutes-5
+                               "(\d{2})\s+" // seconds-6
+                               "GMT)re"
                                );
+
+const QStringList Rfc1036::months{
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+};
 
 } // namespace Tufao

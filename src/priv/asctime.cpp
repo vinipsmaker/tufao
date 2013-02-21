@@ -20,13 +20,28 @@
 
 namespace Tufao {
 
-const QRegExp Asctime::asctime("(?:\\w{3})\\s+" // day
-                               "(\\w{3})\\s+" // month-1
-                               "(\\d{1,2})\\s+" // day-2
-                               "(\\d{2}):" // hour-3
-                               "(\\d{2}):" // minutes-4
-                               "(\\d{2})\\s+" // seconds-5
-                               "(\\d{4})" // year-6
-                               );
+const QRegularExpression Asctime::asctime(R"re((?:\w{3})\s+" // day
+                                          "(\w{3})\s+" // month-1
+                                          "(\d{1,2})\s+" // day-2
+                                          "(\d{2}):" // hour-3
+                                          "(\d{2}):" // minutes-4
+                                          "(\d{2})\s+" // seconds-5
+                                          "(\d{4}))re" // year-6
+                                          );
+
+const QStringList Asctime::months{
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+};
 
 } // namespace Tufao
