@@ -7,6 +7,6 @@ Name: tufao
 Description: An asynchronous web framework for C++ built on top of Qt
 URL: https://github.com/vinipsmaker/tufao
 Version: @TUFAO_VERSION@
-Requires: QtCore QtNetwork
+Requires: Qt5Core Qt5Network
 Libs: -L${libdir} -ltufao
 Cflags: -I${includedir}
