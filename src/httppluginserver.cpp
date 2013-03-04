@@ -161,10 +161,13 @@ inline void HttpPluginServer::reloadConfig()
     }
 
     for (const auto &r: priv->configContent.requests()) {
-        if (!priv->handlers.contains(r.plugin))
+        if (!priv->handlers.contains(r.plugin)) {
+            qWarning("Tufao::HttpPluginServer: Plugin not loaded: \"%s\"",
+                     qPrintable(r.plugin));
             continue;
+        }
 
-        const auto &path = QRegularExpression{r.path};
+        auto path = QRegularExpression{r.path};
         const auto &handler = priv->handlers[r.plugin].handler;
 
         if (r.method.size())
