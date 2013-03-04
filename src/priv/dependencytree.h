@@ -19,7 +19,7 @@ public:
     DependencyTree(const DependencyTree &) = delete;
     DependencyTree &operator =(const DependencyTree &) = delete;
 
-    bool addNode(const T &value, const Container &dependencies)
+    bool addNode(const T &value, const Container &dependencies = QStringList{})
     {
         QSet<T> uniqueDependencies;
 

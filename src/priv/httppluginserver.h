@@ -51,7 +51,8 @@ public:
             return false;
 
         // clean old resources
-        watcher_.removePath(file_);
+        if (file_.size())
+            watcher_.removePath(file_);
 
         // use new resources
         watcher_.addPath(file);
@@ -253,7 +254,7 @@ private:
                         return false;
 
                     QStringList currentDependencies;
-                    for (auto &&dependency: value.toArray()) {
+                    for (const auto &dependency: value.toArray()) {
                         if (!dependency.isString())
                             return false;
 
@@ -268,6 +269,9 @@ private:
                                               currentDependencies)) {
                         return false;
                     }
+                } else {
+                    if (!dependencies.addNode(obj["name"].toString()))
+                        return false;
                 }
             }
 
