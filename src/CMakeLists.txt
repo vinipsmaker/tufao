@@ -19,6 +19,7 @@ set(tufao_SRC
     priv/asctime.cpp
     sessionstore.cpp
     simplesessionstore.cpp
+    notfoundhandler.cpp
 )
 
 add_definitions(-DTUFAO_LIBRARY
