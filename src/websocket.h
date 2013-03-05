@@ -377,6 +377,26 @@ public:
     QString errorString() const;
 
     /*!
+      Returns the address of the connected peer.
+
+      \retval QHostAddress::Null if the socket is **not** in ConnectedState.
+
+      \since
+      0.5
+     */
+    QHostAddress peerAddress() const;
+
+    /*!
+      Returns the port of the connected peer.
+
+      \retval 0 if the socket is **not** in ConnectedState.
+
+      \since
+      0.5
+     */
+    quint16 peerPort() const;
+
+    /*!
       It reads the supported sub-protocols from the appropriate fields and
       return them.
       */
