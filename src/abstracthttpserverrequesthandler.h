@@ -23,9 +23,12 @@
 #ifndef TUFAO_ABSTRACTHTTPSERVERREQUESTHANDLER_H
 #define TUFAO_ABSTRACTHTTPSERVERREQUESTHANDLER_H
 
-#include "tufao_global.h"
+#include <functional>
+
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
+
+#include "tufao_global.h"
 
 namespace Tufao {
 
@@ -56,6 +59,14 @@ public:
       */
     explicit AbstractHttpServerRequestHandler(QObject *parent = 0);
 
+    /*!
+      Implicit conversion operator to std::function functor object.
+
+      \since
+      1.0
+     */
+    operator std::function<bool(HttpServerRequest&, HttpServerResponse&)>();
+
 public slots:
     /*!
       Handles the \p request using the \p response object.
@@ -74,6 +85,14 @@ public slots:
     virtual bool handleRequest(Tufao::HttpServerRequest &request,
                                Tufao::HttpServerResponse &response) = 0;
 };
+
+inline AbstractHttpServerRequestHandler::operator
+std::function<bool(HttpServerRequest&, HttpServerResponse&)>()
+{
+    return [this](HttpServerRequest &req, HttpServerResponse &res) {
+        return this->handleRequest(req, res);
+    };
+}
 
 } // namespace Tufao
 
