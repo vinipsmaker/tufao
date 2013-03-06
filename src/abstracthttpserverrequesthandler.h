@@ -62,6 +62,10 @@ public:
     /*!
       Implicit conversion operator to std::function functor object.
 
+      \warning
+      You shall not use the returned object after the AbstractHttpServerRequest
+      object is destroyed.
+
       \since
       1.0
      */
