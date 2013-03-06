@@ -65,7 +65,7 @@ Headers HttpServerRequest::trailers() const
     return priv->trailers;
 }
 
-HttpServerRequest::HttpVersion HttpServerRequest::httpVersion() const
+HttpVersion HttpServerRequest::httpVersion() const
 {
     return priv->httpVersion;
 }
@@ -329,10 +329,10 @@ int HttpServerRequest::Priv::on_headers_complete(http_parser *parser)
         case 1:
             switch (parser->http_minor) {
             case 0:
-                request->priv->httpVersion = Tufao::HttpServerRequest::HTTP_1_0;
+                request->priv->httpVersion = HttpVersion::HTTP_1_0;
                 break;
             case 1:
-                request->priv->httpVersion = Tufao::HttpServerRequest::HTTP_1_1;
+                request->priv->httpVersion = HttpVersion::HTTP_1_1;
                 break;
             default:
                 request->priv->socket.write(errorMessage,

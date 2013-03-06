@@ -32,6 +32,12 @@ namespace Tufao {
 
 struct Headers;
 
+enum class HttpVersion
+{
+    HTTP_1_0,
+    HTTP_1_1
+};
+
 /*!
   The Tufao::HttpServer represents a HTTP request received by Tufao::HttpServer.
 
@@ -49,11 +55,6 @@ class TUFAO_EXPORT HttpServerRequest : public QObject
 {
     Q_OBJECT
 public:
-    enum HttpVersion
-    {
-        HTTP_1_0,
-        HTTP_1_1
-    };
 
     /*!
       Constructs a Tufao::HttpServerRequest object.

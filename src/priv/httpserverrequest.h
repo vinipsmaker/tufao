@@ -79,7 +79,7 @@ struct HttpServerRequest::Priv
 
     QByteArray method;
     QUrl url;
-    Tufao::HttpServerRequest::HttpVersion httpVersion;
+    Tufao::HttpVersion httpVersion;
     Headers headers;
     Headers trailers;
     Tufao::HttpServerResponse::Options responseOptions;
