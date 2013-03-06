@@ -1,5 +1,0 @@
-Testing HttpServer
-If are bugs in HttpServerRequest or HttpServerResponse, then this test will warn
-too, so I think this is not just a test for HttpServer.
-NOTE: This test is problematic and can warn if you are running it from a slow
-computer even if Tufão is working correctly.
