@@ -173,6 +173,24 @@ enum class WebSocketError
 };
 
 /*!
+  This enum represents the possible message's types that WebSocket supports.
+
+  \since
+  1.0
+*/
+enum class WebSocketMessageType
+{
+    /*!
+      UTF8 messages.
+    */
+    TEXT_MESSAGE,
+    /*!
+      Binary messages.
+    */
+    BINARY_MESSAGE
+};
+
+/*!
   This class represents a WebSocket connection.
 
   WebSocket is a protocol designed to allow HTTP user agents and servers
@@ -188,21 +206,6 @@ class TUFAO_EXPORT WebSocket : public AbstractMessageSocket
 {
     Q_OBJECT
 public:
-    /*!
-      This enum represents the possible message's types that WebSocket supports.
-      */
-    enum MessageType
-    {
-        /*!
-          UTF8 messages.
-          */
-        TEXT_MESSAGE,
-        /*!
-          Binary messages.
-          */
-        BINARY_MESSAGE
-    };
-
     /*!
       Constructs a Tufao::WebSocket object.
 
@@ -361,7 +364,7 @@ public:
       \note
       The default value is BINARY_MESSAGE
       */
-    void setMessagesType(MessageType type);
+    void setMessagesType(WebSocketMessageType type);
 
     /*!
       Return the current type of messages what will be sent through
@@ -370,7 +373,7 @@ public:
       \sa
       Tufao::WebSocket::setMessagesType
       */
-    MessageType messagesType() const;
+    WebSocketMessageType messagesType() const;
 
     /*!
       Returns the type of last error that occurred.

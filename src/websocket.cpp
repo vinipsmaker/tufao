@@ -219,12 +219,12 @@ bool WebSocket::startServerHandshake(const HttpServerRequest &request,
     return true;
 }
 
-void WebSocket::setMessagesType(WebSocket::MessageType type)
+void WebSocket::setMessagesType(WebSocketMessageType type)
 {
     priv->messageType = type;
 }
 
-WebSocket::MessageType WebSocket::messagesType() const
+WebSocketMessageType WebSocket::messagesType() const
 {
     return priv->messageType;
 }
@@ -319,9 +319,9 @@ void WebSocket::close()
 bool WebSocket::sendMessage(const QByteArray &msg)
 {
     switch (priv->messageType) {
-    case BINARY_MESSAGE:
+    case WebSocketMessageType::BINARY_MESSAGE:
         return sendBinaryMessage(msg);
-    case TEXT_MESSAGE:
+    case WebSocketMessageType::TEXT_MESSAGE:
         return sendUtf8Message(msg);
     default:
         qWarning("Tufao::WebSocket::sendMessage: Invalid message type to send");
