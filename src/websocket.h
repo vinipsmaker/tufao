@@ -35,6 +35,144 @@ namespace Tufao {
 class HttpServerRequest;
 
 /*!
+  This enum describes the possible erros tha can occur.
+
+  \since
+  1.0
+*/
+enum class WebSocketError
+{
+    /*!
+      No error
+    */
+    NO_ERROR = 0,
+    /*!
+      See QAbstractSocket::ConnectionRefusedError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    CONNECTION_REFUSED,
+    /*!
+      See QAbstractSocket::RemoteHostClosedError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    REMOTE_HOST_CLOSED,
+    /*!
+      See QAbstractSocket::HostNotFoundError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    HOST_NOT_FOUND,
+    /*!
+      See QAbstractSocket::SocketAccessError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    ACCESS_ERROR,
+    /*!
+      See QAbstractSocket::SocketResourceError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    OUT_OF_RESOURCES,
+    /*!
+      See QAbstractSocket::SocketTimeoutError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    SOCKET_TIMEOUT,
+    /*!
+      See QAbstractSocket::NetworkError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    NETWORK_ERROR,
+    /*!
+      See QAbstractSocket::UnsupportedSocketOperationError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    UNSUPPORTED_SOCKET_OPERATION,
+    /*!
+      See QAbstractSocket::ProxyAuthenticationRequiredError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    PROXY_AUTHENTICATION_REQUIRED,
+    /*!
+      See QAbstractSocket::SslHandshakeFailedError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    SSL_HANDSHAKE_FAILED,
+    /*!
+      See QAbstractSocket::ProxyConnectionRefusedError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    PROXY_CONNECTION_REFUSED,
+    /*!
+      See QAbstractSocket::ProxyConnectionClosedError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    PROXY_CONNECTION_CLOSED,
+    /*!
+      See QAbstractSocket::ProxyConnectionTimeoutError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    PROXY_CONNECTION_TIMEOUT,
+    /*!
+      See QAbstractSocket::ProxyNotFoundError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    PROXY_NOT_FOUND,
+    /*!
+      See QAbstractSocket::ProxyProtocolError.
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    PROXY_PROTOCOL_ERROR,
+    /*!
+      It occurs when the server doesn't support WebSocket for the resource
+      asked for (or for any resource at all).
+
+      It can happen during the opening handshake (only when acting as
+      client).
+    */
+    WEBSOCKET_HANDSHAKE_FAILED,
+    /*!
+      It occurs when the remote peer (or an intermediary) violates the
+      WebSocket protocol.
+    */
+    WEBSOCKET_PROTOCOL_ERROR,
+    /*!
+      Uknown error.
+
+      You found the chaos.
+    */
+    UNKNOWN_ERROR
+};
+
+/*!
   This class represents a WebSocket connection.
 
   WebSocket is a protocol designed to allow HTTP user agents and servers
@@ -50,141 +188,6 @@ class TUFAO_EXPORT WebSocket : public AbstractMessageSocket
 {
     Q_OBJECT
 public:
-    /*!
-      This enum describes the possible erros tha can occur.
-      */
-    enum Error
-    {
-        /*!
-          No error
-          */
-        NO_ERROR = 0,
-        /*!
-          See QAbstractSocket::ConnectionRefusedError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        CONNECTION_REFUSED,
-        /*!
-          See QAbstractSocket::RemoteHostClosedError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        REMOTE_HOST_CLOSED,
-        /*!
-          See QAbstractSocket::HostNotFoundError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        HOST_NOT_FOUND,
-        /*!
-          See QAbstractSocket::SocketAccessError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        ACCESS_ERROR,
-        /*!
-          See QAbstractSocket::SocketResourceError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        OUT_OF_RESOURCES,
-        /*!
-          See QAbstractSocket::SocketTimeoutError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        SOCKET_TIMEOUT,
-        /*!
-          See QAbstractSocket::NetworkError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        NETWORK_ERROR,
-        /*!
-          See QAbstractSocket::UnsupportedSocketOperationError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        UNSUPPORTED_SOCKET_OPERATION,
-        /*!
-          See QAbstractSocket::ProxyAuthenticationRequiredError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        PROXY_AUTHENTICATION_REQUIRED,
-        /*!
-          See QAbstractSocket::SslHandshakeFailedError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        SSL_HANDSHAKE_FAILED,
-        /*!
-          See QAbstractSocket::ProxyConnectionRefusedError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        PROXY_CONNECTION_REFUSED,
-        /*!
-          See QAbstractSocket::ProxyConnectionClosedError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        PROXY_CONNECTION_CLOSED,
-        /*!
-          See QAbstractSocket::ProxyConnectionTimeoutError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        PROXY_CONNECTION_TIMEOUT,
-        /*!
-          See QAbstractSocket::ProxyNotFoundError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        PROXY_NOT_FOUND,
-        /*!
-          See QAbstractSocket::ProxyProtocolError.
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        PROXY_PROTOCOL_ERROR,
-        /*!
-          It occurs when the server doesn't support WebSocket for the resource
-          asked for (or for any resource at all).
-
-          It can happen during the opening handshake (only when acting as
-          client).
-          */
-        WEBSOCKET_HANDSHAKE_FAILED,
-        /*!
-          It occurs when the remote peer (or an intermediary) violates the
-          WebSocket protocol.
-          */
-        WEBSOCKET_PROTOCOL_ERROR,
-        /*!
-          Uknown error.
-
-          You found the chaos.
-          */
-        UNKNOWN_ERROR
-    };
-
     /*!
       This enum represents the possible message's types that WebSocket supports.
       */
@@ -372,7 +375,7 @@ public:
     /*!
       Returns the type of last error that occurred.
       */
-    Error error() const;
+    WebSocketError error() const;
 
     /*!
       Returns a human-readable description of the last error that occurred.

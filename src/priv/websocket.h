@@ -284,7 +284,7 @@ struct WebSocket::Priv
 
     Priv() :
         messageType(Tufao::WebSocket::BINARY_MESSAGE),
-        lastError(Tufao::WebSocket::NO_ERROR),
+        lastError(WebSocketError::NO_ERROR),
         state(CLOSED),
         parsingState(PARSING_FRAME),
         clientNode(NULL)
@@ -297,7 +297,7 @@ struct WebSocket::Priv
     }
 
     Tufao::WebSocket::MessageType messageType;
-    Tufao::WebSocket::Error lastError;
+    Tufao::WebSocketError lastError;
 
     QAbstractSocket *socket;
     QByteArray buffer;
