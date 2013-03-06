@@ -17,9 +17,10 @@
 */
 
 #include "notfoundhandler.h"
-#include "httpserverresponse.h"
 
 namespace Tufao {
+
+const QByteArray NotFoundHandler::body{"Not found"};
 
 NotFoundHandler::NotFoundHandler(QObject *parent) :
     AbstractHttpServerRequestHandler(parent)
@@ -29,7 +30,6 @@ NotFoundHandler::NotFoundHandler(QObject *parent) :
 bool NotFoundHandler::handleRequest(HttpServerRequest &,
                                     HttpServerResponse &response)
 {
-    static const QByteArray body{"Not found"};
     response.writeHead(HttpServerResponse::NOT_FOUND);
     response.end(body);
     return true;

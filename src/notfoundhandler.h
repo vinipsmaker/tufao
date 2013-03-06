@@ -24,6 +24,7 @@
 #define TUFAO_NOTFOUNDHANDLER_H
 
 #include "abstracthttpserverrequesthandler.h"
+#include "httpserverresponse.h"
 
 namespace Tufao {
 
@@ -46,13 +47,35 @@ public:
       */
     explicit NotFoundHandler(QObject *parent = 0);
 
+    /*!
+      Returns a handler that don't depends on another object. The purpose of
+      this alternative handler is to free you of the worry of maintain the
+      NotFoundHandler's object (lifetime) while the functor object is being
+      used.
+     */
+    static std::function<bool(HttpServerRequest&, HttpServerResponse&)>
+    handler();
+
 public slots:
     /*!
       It responds to the request with a not found message.
       */
     bool handleRequest(Tufao::HttpServerRequest &request,
                        Tufao::HttpServerResponse &response) override;
+
+private:
+    static const QByteArray body;
 };
+
+inline std::function<bool(HttpServerRequest&, HttpServerResponse&)>
+NotFoundHandler::handler()
+{
+    return [](HttpServerRequest&, HttpServerResponse &response) {
+        response.writeHead(HttpServerResponse::NOT_FOUND);
+        response.end(body);
+        return true;
+    };
+}
 
 } // namespace Tufao
 
