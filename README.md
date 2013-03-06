@@ -162,6 +162,12 @@ Version 1.0
    * This change exposes a model more predictive and natural
    * I'm caring less about Qt style and more about C++ style
     * But don't worry, I'll maintain a balance
+  * Using scoped enums
+
+Version 0.5:
+  * WebSocket
+   * peerAddress() method added
+   * peerSocket() method added
 
 Version 0.4:
   * Using CMake build system

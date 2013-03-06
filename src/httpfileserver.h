@@ -107,7 +107,7 @@ public:
       1.0
       */
     static bool serveFile(const QString &fileName, HttpServerResponse &response,
-                          int statusCode);
+                          HttpResponseStatusCode statusCode);
 
     /*!
       Return the buffer size used.

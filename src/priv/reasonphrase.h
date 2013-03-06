@@ -19,11 +19,11 @@
 #ifndef TUFAO_PRIV_REASONPHRASE_H
 #define TUFAO_PRIV_REASONPHRASE_H
 
-#include "../tufao_global.h"
+#include "../httpserverresponse.h"
 
 namespace Tufao {
 
-QByteArray reasonPhrase(int statusCode);
+QByteArray reasonPhrase(HttpResponseStatusCode statusCode);
 
 } // namespace Tufao
 

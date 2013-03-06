@@ -108,12 +108,12 @@ inline Phrases::Phrases()
 
 static Phrases phrases;
 
-QByteArray reasonPhrase(int statusCode)
+QByteArray reasonPhrase(HttpResponseStatusCode statusCode)
 {
-    if (!phrases.map.contains(statusCode))
+    if (!phrases.map.contains(int(statusCode)))
         return QByteArray();
 
-    return phrases.map[statusCode];
+    return phrases.map[int(statusCode)];
 }
 
 } // namespace Tufao

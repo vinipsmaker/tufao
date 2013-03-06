@@ -30,7 +30,7 @@ NotFoundHandler::NotFoundHandler(QObject *parent) :
 bool NotFoundHandler::handleRequest(HttpServerRequest &,
                                     HttpServerResponse &response)
 {
-    response.writeHead(HttpServerResponse::NOT_FOUND);
+    response.writeHead(HttpResponseStatusCode::NOT_FOUND);
     response.end(body);
     return true;
 }

@@ -113,7 +113,7 @@ void HttpFileServer::serveFile(const QString &fileName,
     {
         const QByteArray method(request.method());
         if (method != "GET" && method != "HEAD") {
-            response.writeHead(HttpServerResponse::METHOD_NOT_ALLOWED);
+            response.writeHead(HttpResponseStatusCode::METHOD_NOT_ALLOWED);
             response.headers().insert("Allow", "GET, HEAD");
             response.end();
             return;
@@ -123,7 +123,7 @@ void HttpFileServer::serveFile(const QString &fileName,
     QFileInfo fileInfo(fileName);
 
     if (!fileInfo.exists()) {
-        response.writeHead(HttpServerResponse::NOT_FOUND);
+        response.writeHead(HttpResponseStatusCode::NOT_FOUND);
         response.end();
         return;
     }
@@ -138,7 +138,7 @@ void HttpFileServer::serveFile(const QString &fileName,
             if (fileInfo.lastModified() < date || !date.isValid()) {
                 continue;
             } else if (fileInfo.lastModified() == date) {
-                response.writeHead(Tufao::HttpServerResponse::NOT_MODIFIED);
+                response.writeHead(HttpResponseStatusCode::NOT_MODIFIED);
                 response.end();
             }
         }
@@ -154,8 +154,7 @@ void HttpFileServer::serveFile(const QString &fileName,
             if (fileInfo.lastModified() < date || !date.isValid()) {
                 continue;
             } else if (fileInfo.lastModified() > date) {
-                response.writeHead(Tufao::HttpServerResponse
-                                   ::PRECONDITION_FAILED);
+                response.writeHead(HttpResponseStatusCode::PRECONDITION_FAILED);
                 response.end();
             }
         }
@@ -194,7 +193,7 @@ void HttpFileServer::serveFile(const QString &fileName,
                               ::fromDateTime(fileInfo.lastModified()));
 
     if (request.method() == "HEAD") {
-        response.writeHead(HttpServerResponse::OK);
+        response.writeHead(HttpResponseStatusCode::OK);
         response.end();
         return;
     }
@@ -211,7 +210,7 @@ void HttpFileServer::serveFile(const QString &fileName,
         if (request.headers().contains("Range")) {
             static const QByteArray bytesUnit("bytes */");
 
-            response.writeHead(HttpServerResponse
+            response.writeHead(HttpResponseStatusCode
                                ::REQUESTED_RANGE_NOT_SATISFIABLE);
             response.headers().insert("Content-Range", bytesUnit
                                       + QByteArray::number(fileInfo.size()));
@@ -220,7 +219,7 @@ void HttpFileServer::serveFile(const QString &fileName,
         }
 
         // Just send the entity
-        response.writeHead(HttpServerResponse::OK);
+        response.writeHead(HttpResponseStatusCode::OK);
 
         while (!file.atEnd()) {
             response << file.read(::bufferSize);
@@ -232,7 +231,7 @@ void HttpFileServer::serveFile(const QString &fileName,
         // ONE range
         static const QByteArray bytesUnit("bytes ");
 
-        response.writeHead(HttpServerResponse::OK);
+        response.writeHead(HttpResponseStatusCode::OK);
         QPair<qulonglong, qulonglong> &range(ranges[0]);
         response.headers().insert("Content-Range", bytesUnit
                                   + QByteArray::number(range.first)
@@ -285,7 +284,8 @@ void HttpFileServer::serveFile(const QString &fileName,
 }
 
 bool HttpFileServer::serveFile(const QString &fileName,
-                               HttpServerResponse &response, int statusCode)
+                               HttpServerResponse &response,
+                               HttpResponseStatusCode statusCode)
 {
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly))

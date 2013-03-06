@@ -142,7 +142,21 @@ bool HttpServerResponse::writeHead(int statusCode, const QByteArray &reasonPhras
     return true;
 }
 
-bool HttpServerResponse::writeHead(int statusCode, const Headers &headers)
+bool HttpServerResponse::writeHead(HttpResponseStatusCode statusCode,
+                                   const QByteArray &reasonPhrase,
+                                   const Headers &headers)
+{
+    return writeHead(int(statusCode), reasonPhrase, headers);
+}
+
+bool HttpServerResponse::writeHead(HttpResponseStatusCode statusCode,
+                                   const QByteArray &reasonPhrase)
+{
+    return writeHead(int(statusCode), reasonPhrase);
+}
+
+bool HttpServerResponse::writeHead(HttpResponseStatusCode statusCode,
+                                   const Headers &headers)
 {
     if (priv->formattingState != Priv::STATUS_LINE)
         return false;
@@ -155,7 +169,7 @@ bool HttpServerResponse::writeHead(int statusCode, const Headers &headers)
         priv->device.write(chunk, sizeof(chunk) - 1);
     }
 
-    priv->device.write(QByteArray::number(statusCode));
+    priv->device.write(QByteArray::number(int(statusCode)));
     priv->device.write(" ", 1);
     priv->device.write(reasonPhrase(statusCode));
     priv->device.write(CRLF);
@@ -171,7 +185,7 @@ bool HttpServerResponse::writeHead(int statusCode, const Headers &headers)
     return true;
 }
 
-bool HttpServerResponse::writeHead(int statusCode)
+bool HttpServerResponse::writeHead(HttpResponseStatusCode statusCode)
 {
     if (priv->formattingState != Priv::STATUS_LINE)
         return false;
@@ -184,7 +198,7 @@ bool HttpServerResponse::writeHead(int statusCode)
         priv->device.write(chunk, sizeof(chunk) - 1);
     }
 
-    priv->device.write(QByteArray::number(statusCode));
+    priv->device.write(QByteArray::number(int(statusCode)));
     priv->device.write(" ", 1);
     priv->device.write(reasonPhrase(statusCode));
     priv->device.write(CRLF);
