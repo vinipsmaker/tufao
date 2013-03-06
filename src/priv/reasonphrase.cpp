@@ -17,103 +17,98 @@
 */
 
 #include "reasonphrase.h"
-#include <QtCore/QMap>
 #include <QtCore/QByteArray>
+#include <map>
 
 namespace Tufao {
 
-struct Phrases
-{
-    Phrases();
-
-    QMap<int, QByteArray> map;
-};
-
-inline Phrases::Phrases()
-{
+std::map<HttpResponseStatusCode, QByteArray> phrases {
     // 1xx Informational
-    map[100] = "Continue";
-    map[101] = "Switching Protocols";
-    map[102] = "Processing";
-    map[103] = "Checkpoint";
+    {HttpResponseStatusCode::CONTINUE, "Continue"},
+    {HttpResponseStatusCode::SWITCHING_PROTOCOLS, "Switching Protocols"},
+    {HttpResponseStatusCode::PROCESSING, "Processing"},
+    {HttpResponseStatusCode::CHECKPOINT, "Checkpoint"},
 
     // 2xx Successful
-    map[200] = "OK";
-    map[201] = "Created";
-    map[202] = "Accepted";
-    map[203] = "Non-Authoritative Information";
-    map[204] = "No Content";
-    map[205] = "Reset Content";
-    map[206] = "Partial Content";
-    map[207] = "Multi-Status";
-    map[208] = "Already Reported";
-    map[226] = "IM Used";
+    {HttpResponseStatusCode::OK, "OK"},
+    {HttpResponseStatusCode::CREATED, "Created"},
+    {HttpResponseStatusCode::ACCEPTED, "Accepted"},
+    {HttpResponseStatusCode::NON_AUTHORITATIVE_INFORMATION,
+                "Non-Authoritative Information"},
+    {HttpResponseStatusCode::NO_CONTENT, "No Content"},
+    {HttpResponseStatusCode::RESET_CONTENT, "Reset Content"},
+    {HttpResponseStatusCode::PARTIAL_CONTENT, "Partial Content"},
+    {HttpResponseStatusCode::MULTI_STATUS, "Multi-Status"},
+    {HttpResponseStatusCode::ALREADY_REPORTED, "Already Reported"},
+    {HttpResponseStatusCode::IM_USED, "IM Used"},
 
     // 3xx Redirection
-    map[300] = "Multiple Choices";
-    map[301] = "Moved Permanently";
-    map[302] = "Found";
-    map[303] = "See Other";
-    map[304] = "Not Modified";
-    map[305] = "Use Proxy";
-    map[306] = "Switch Proxy";
-    map[307] = "Temporary Redirect";
-    map[308] = "Resume Incomplete";
+    {HttpResponseStatusCode::MULTIPLE_CHOICES, "Multiple Choices"},
+    {HttpResponseStatusCode::MOVED_PERMANENTLY, "Moved Permanently"},
+    {HttpResponseStatusCode::FOUND, "Found"},
+    {HttpResponseStatusCode::SEE_OTHER, "See Other"},
+    {HttpResponseStatusCode::NOT_MODIFIED, "Not Modified"},
+    {HttpResponseStatusCode::USE_PROXY, "Use Proxy"},
+    {HttpResponseStatusCode::SWITCH_PROXY, "Switch Proxy"},
+    {HttpResponseStatusCode::TEMPORARY_REDIRECT, "Temporary Redirect"},
+    {HttpResponseStatusCode::RESUME_INCOMPLETE, "Resume Incomplete"},
 
     // 4xx Client Error
-    map[400] = "Bad Request";
-    map[401] = "Unauthorized";
-    map[402] = "Payment Required";
-    map[403] = "Forbidden";
-    map[404] = "Not Found";
-    map[405] = "Method Not Allowed";
-    map[406] = "Not Acceptable";
-    map[407] = "Proxy Authentication Required";
-    map[408] = "Request Timeout";
-    map[409] = "Conflict";
-    map[410] = "Gone";
-    map[411] = "Length Required";
-    map[412] = "Precondition Failed";
-    map[413] = "Request Entity Too Large";
-    map[414] = "Request-URI Too Long";
-    map[415] = "Unsupported Media Type";
-    map[416] = "Requested Range Not Satisfiable";
-    map[417] = "Expectation Failed";
-    map[418] = "I'm a teapot";
-    map[422] = "Unprocessable Entity";
-    map[423] = "Locked";
-    map[424] = "Failed Dependency";
-    map[425] = "Unordered Collection";
-    map[426] = "Upgrade Required";
-    map[428] = "Precondition Required";
-    map[429] = "Too Many Requests";
-    map[431] = "Request Header Fields Too Large";
-    map[444] = "No Response";
-    map[449] = "Retry With";
-    map[499] = "Client Closed Request";
+    {HttpResponseStatusCode::BAD_REQUEST, "Bad Request"},
+    {HttpResponseStatusCode::UNAUTHORIZED, "Unauthorized"},
+    {HttpResponseStatusCode::PAYMENT_REQUIRED, "Payment Required"},
+    {HttpResponseStatusCode::FORBIDDEN, "Forbidden"},
+    {HttpResponseStatusCode::NOT_FOUND, "Not Found"},
+    {HttpResponseStatusCode::METHOD_NOT_ALLOWED, "Method Not Allowed"},
+    {HttpResponseStatusCode::NOT_ACCEPTABLE, "Not Acceptable"},
+    {HttpResponseStatusCode::PROXY_AUTHENTICATION_REQUIRED,
+                "Proxy Authentication Required"},
+    {HttpResponseStatusCode::REQUEST_TIMEOUT, "Request Timeout"},
+    {HttpResponseStatusCode::CONFLICT, "Conflict"},
+    {HttpResponseStatusCode::GONE, "Gone"},
+    {HttpResponseStatusCode::LENGTH_REQUIRED, "Length Required"},
+    {HttpResponseStatusCode::PRECONDITION_FAILED, "Precondition Failed"},
+    {HttpResponseStatusCode::REQUEST_ENTITY_TOO_LARGE,
+                "Request Entity Too Large"},
+    {HttpResponseStatusCode::REQUEST_URI_TOO_LONG, "Request-URI Too Long"},
+    {HttpResponseStatusCode::UNSUPPORTED_MEDIA_TYPE, "Unsupported Media Type"},
+    {HttpResponseStatusCode::REQUESTED_RANGE_NOT_SATISFIABLE,
+                "Requested Range Not Satisfiable"},
+    {HttpResponseStatusCode::EXPECTATION_FAILED, "Expectation Failed"},
+    {HttpResponseStatusCode::I_AM_A_TEAPOT, "I'm a teapot"},
+    {HttpResponseStatusCode::UNPROCESSABLE_ENTITY, "Unprocessable Entity"},
+    {HttpResponseStatusCode::LOCKED, "Locked"},
+    {HttpResponseStatusCode::FAILED_DEPENDENCY, "Failed Dependency"},
+    {HttpResponseStatusCode::UNORDERED_COLLECTION, "Unordered Collection"},
+    {HttpResponseStatusCode::UPGRADE_REQUIRED, "Upgrade Required"},
+    {HttpResponseStatusCode::PRECONDITION_REQUIRED, "Precondition Required"},
+    {HttpResponseStatusCode::TOO_MANY_REQUESTS, "Too Many Requests"},
+    {HttpResponseStatusCode::REQUEST_HEADER_FIELDS_TOO_LARGE,
+                "Request Header Fields Too Large"},
+    {HttpResponseStatusCode::NO_RESPONSE, "No Response"},
+    {HttpResponseStatusCode::RETRY_WITH, "Retry With"},
+    {HttpResponseStatusCode::CLIENT_CLOSED_REQUEST, "Client Closed Request"},
 
     // 5xx Internal Server Error
-    map[500] = "Internal Server Error";
-    map[501] = "Not Implemented";
-    map[502] = "Bad Gateway";
-    map[503] = "Service Unavailable";
-    map[504] = "Gateway Timeout";
-    map[505] = "HTTP Version Not Supported";
-    map[506] = "Variant Also Negotiates";
-    map[507] = "Insufficient Storage";
-    map[508] = "Loop Detected";
-    map[509] = "Bandwidth Limit Exceeded";
-    map[510] = "Not Extended";
-}
-
-static Phrases phrases;
+    {HttpResponseStatusCode::INTERNAL_SERVER_ERROR, "Internal Server Error"},
+    {HttpResponseStatusCode::NOT_IMPLEMENTED, "Not Implemented"},
+    {HttpResponseStatusCode::BAD_GATEWAY, "Bad Gateway"},
+    {HttpResponseStatusCode::SERVICE_UNAVAILABLE, "Service Unavailable"},
+    {HttpResponseStatusCode::GATEWAY_TIMEOUT, "Gateway Timeout"},
+    {HttpResponseStatusCode::HTTP_VERSION_NOT_SUPPORTED,
+                "HTTP Version Not Supported"},
+    {HttpResponseStatusCode::VARIANT_ALSO_NEGOTIATES,
+                "Variant Also Negotiates"},
+    {HttpResponseStatusCode::INSUFFICIENT_STORAGE, "Insufficient Storage"},
+    {HttpResponseStatusCode::LOOP_DETECTED, "Loop Detected"},
+    {HttpResponseStatusCode::BANDWIDTH_LIMIT_EXCEEDED,
+                "Bandwidth Limit Exceeded"},
+    {HttpResponseStatusCode::NOT_EXTENDED, "Not Extended"}
+};
 
 QByteArray reasonPhrase(HttpResponseStatusCode statusCode)
 {
-    if (!phrases.map.contains(int(statusCode)))
-        return QByteArray();
-
-    return phrases.map[int(statusCode)];
+    return phrases[statusCode];
 }
 
 } // namespace Tufao
