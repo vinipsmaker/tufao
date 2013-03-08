@@ -103,8 +103,6 @@ HttpFileServer::~HttpFileServer()
     delete priv;
 }
 
-// split method in check and transmit phases
-// also, how the hell will this work with 404-responses?
 void HttpFileServer::serveFile(const QString &fileName,
                                HttpServerRequest &request,
                                HttpServerResponse &response)
