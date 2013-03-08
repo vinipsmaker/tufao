@@ -324,14 +324,29 @@ void HttpFileServer::setBufferSize(qint64 size)
     ::bufferSize = size;
 }
 
+std::function<bool(HttpServerRequest&, HttpServerResponse&)>
+HttpFileServer::handler(const QString &rootDir)
+{
+    return [rootDir](HttpServerRequest &request, HttpServerResponse &response) {
+        return handleRequest(request, response, rootDir);
+    };
+}
+
 bool HttpFileServer::handleRequest(HttpServerRequest &request,
                                    HttpServerResponse &response)
 {
+    return handleRequest(request, response, priv->rootDir);
+}
+
+inline bool HttpFileServer::handleRequest(HttpServerRequest &request,
+                                          HttpServerResponse &response,
+                                          const QString &rootDir)
+{
     QString fileName{
-        QDir::cleanPath(priv->rootDir
+        QDir::cleanPath(rootDir
                         + QDir::toNativeSeparators(request.url()
                                                    .path(QUrl::FullyDecoded)))};
-    if (!fileName.startsWith(priv->rootDir + QDir::separator()))
+    if (!fileName.startsWith(rootDir + QDir::separator()))
         return false;
 
     {

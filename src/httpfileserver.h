@@ -128,6 +128,19 @@ public:
       */
     static void setBufferSize(qint64 size);
 
+    /*!
+      Returns a handler that don't depends on another object. The purpose of
+      this alternative handler is to free you of the worry of maintain the
+      HttpFileServer's object (lifetime) while the functor object is being used.
+
+      \param rootDir The root dir to serve files.
+
+      \since
+      1.0
+     */
+    static std::function<bool(HttpServerRequest&, HttpServerResponse&)>
+    handler(const QString &rootDir);
+
 public slots:
     /*!
       It searchs for the file requested in the root dir and respond to the
@@ -144,6 +157,10 @@ public slots:
                        Tufao::HttpServerResponse &response) override;
 
 private:
+    static bool handleRequest(HttpServerRequest &request,
+                              HttpServerResponse &response,
+                              const QString &rootDir);
+
     struct Priv;
     Priv *priv;
 };
