@@ -12,8 +12,8 @@ system (signals & slots). It features:
    * WebSocket
   * HTTPS support
   * Flexible request router
-  * Static file server with support for conditional requests and partial
-    download
+  * Static file server with support for conditional requests, partial download
+    and automatic mime detection
   * Plugin-based server to allow change the running code without restart the
     application
   * Flexible and secure session support
@@ -163,6 +163,7 @@ Version 1.0
    * I'm caring less about Qt style and more about C++ style
     * But don't worry, I'll maintain a balance
   * Using scoped enums
+  * HttpFileServer uses/sends mime info
 
 Version 0.5:
   * WebSocket

@@ -46,14 +46,13 @@ namespace Tufao {
     - If-Unmodified-Since
     - If-Range
     - Range
+    - Content-Type through QMimeDatabase (_Since version 1.0_)
 
   It won't handle:
     - ETag (If-Match and If-None-Match headers)
     - Cache-Control response header: Useful for set cache max age
     - Content-Disposition response header
     - Content-MD5 response header
-    - Content-Type response header. This header is used to inform the mime type
-      of the file to the client.
 
   \since
   0.3

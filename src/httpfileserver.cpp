@@ -23,12 +23,14 @@
 #include <QtCore/QPair>
 #include <QtCore/QDir>
 #include <QtCore/QUrl>
+#include <QtCore/QMimeDatabase>
 
 #include <QtNetwork/QAbstractSocket>
 
 #include "httpserverrequest.h"
 
 static qint64 bufferSize = BUFFER_SIZE;
+static const QMimeDatabase mimes;
 
 inline static QList< QPair<qulonglong, qulonglong> >
 ranges(const Tufao::Headers &headers, qulonglong fileSize)
@@ -189,6 +191,12 @@ void HttpFileServer::serveFile(const QString &fileName,
                               ::fromDateTime(QDateTime::currentDateTime()));
     response.headers().insert("Last-Modified", Headers
                               ::fromDateTime(fileInfo.lastModified()));
+
+    {
+        QByteArray mime = mimes.mimeTypeForFile(fileInfo).name().toUtf8();
+        if (mime.size())
+            response.headers().insert("Content-Type", mime);
+    }
 
     if (request.method() == "HEAD") {
         response.writeHead(HttpResponseStatusCode::OK);
