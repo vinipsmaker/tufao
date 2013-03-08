@@ -17,7 +17,6 @@
 */
 
 #include "priv/httpserver.h"
-#include "httpserverrequest.h"
 #include <QtNetwork/QTcpSocket>
 #include "headers.h"
 
@@ -61,6 +60,19 @@ int HttpServer::timeout() const
     return priv->timeout;
 }
 
+void HttpServer::setUpgradeHandler(HttpServer::UpgradeHandler functor)
+{
+    if (!functor)
+        return;
+
+    priv->upgradeHandler = functor;
+}
+
+HttpServer::UpgradeHandler HttpServer::defaultUpgradeHandler()
+{
+    return Priv::defaultUpgradeHandler;
+}
+
 void HttpServer::close()
 {
     priv->tcpServer.close();
@@ -102,11 +114,6 @@ void HttpServer::handleConnection(QAbstractSocket *socket)
             socket, &QObject::deleteLater);
 }
 
-void HttpServer::upgrade(HttpServerRequest &request, const QByteArray &)
-{
-    request.socket().close();
-}
-
 void HttpServer::onNewConnection(qintptr socketDescriptor)
 {
     incomingConnection(socketDescriptor);
@@ -137,7 +144,7 @@ void HttpServer::onUpgrade(const QByteArray &head)
     HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
     Q_ASSERT(request);
 
-    upgrade(*request, head);
+    priv->upgradeHandler(*request, head);
     delete request;
 }
 
