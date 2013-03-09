@@ -20,8 +20,23 @@
   SOFTWARE.
   */
 
+/*!
+  \file httpserverplugin.h
+ */
+
 #ifndef TUFAO_HTTPSERVERPLUGIN_H
 #define TUFAO_HTTPSERVERPLUGIN_H
+
+/*!
+  This definition stores the Tufao::HttpServerPlugin interface IID.
+
+  When you define a plugin, you'll use this macro as the IID argument of
+  Q_PLUGIN_METADATA macro to tell the class is implementing the
+  Tufao::HttpServerPlugin interface. Example:
+
+  \include plugin.h
+ */
+#define TUFAO_HTTPSERVERPLUGIN_IID "Tufao::HttpServerPlugin/1.0"
 
 #include <QtCore/QVariant>
 #include <QtCore/QObject>
@@ -45,6 +60,9 @@ class HttpServerResponse;
 
   \include plugin.cpp
 
+  \sa
+  TUFAO_HTTPSERVERPLUGIN_IID
+
   \since
   1.0
   */
@@ -67,6 +85,6 @@ public:
 
 } // namespace Tufao
 
-Q_DECLARE_INTERFACE(Tufao::HttpServerPlugin, "Tufao::HttpServerPlugin/1.0")
+Q_DECLARE_INTERFACE(Tufao::HttpServerPlugin, TUFAO_HTTPSERVERPLUGIN_IID)
 
 #endif // TUFAO_HTTPSERVERPLUGIN_H
