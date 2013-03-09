@@ -1,50 +1,32 @@
-#include <QtCore/QCoreApplication>
+#include <QCoreApplication>
 
-#include <Tufao/HttpServer>
+#include <Tufao/HttpPluginServer>
+#include <Tufao/HttpFileServer>
+#include <Tufao/NotFoundHandler>
 
 #include <Tufao/HttpServerRequestRouter>
-#include <Tufao/HttpFileServer>
-#include <Tufao/HttpPluginServer>
+#include <Tufao/HttpServer>
 
-#include "notfound.h"
-#include "pluginreloader.h"
+using namespace Tufao;
 
 int main(int argc, char *argv[])
 {
-    Q_INIT_RESOURCE(static);
-    // First we create the event loop and the server objects
     QCoreApplication a(argc, argv);
-    Tufao::HttpServer server;
-    
-    // Then we create a request router and configure it...
-    Tufao::HttpServerRequestRouter router;
-    
-    //   ...using some handlers
-    
-    // to allow you change the running code without restart the application
-    Tufao::HttpPluginServer pluginServer("routes.conf");
-    // do a request to http://localhost:8080/reload to reload the plugins
-    PluginReloader pluginReloader(&pluginServer);
-    // to server static files under public folder
-    Tufao::HttpFileServer fileServer("public");
-    // to respond the remaining requests with a "404 - not found"
-    NotFoundHandler handler404;
-    
-    // you should also create handlers to:
-    //   - "/" (maybe redirecting to some other path)
-    //   - "/favicon.ico" (to serve the page's icon)
-    router.map(QRegExp(""), &pluginServer)
-            .map(QRegExp("^/reload$"), &pluginReloader)
-            .map(QRegExp(""), &fileServer)
-            .map(QRegExp(""), &handler404);
-    
-    // We set the router as the global request handler
-    QObject::connect(&server, SIGNAL(requestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)),
-                     &router, SLOT(handleRequest(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)));
-    
-    // Last, we run our server...
+
+    HttpPluginServer plugins{"routes.json"};
+
+    HttpServerRequestRouter router{
+        {QRegularExpression{""}, plugins},
+        {QRegularExpression{""}, HttpFileServer::handler("public")},
+        {QRegularExpression{""}, NotFoundHandler::handler()}
+    };
+
+    HttpServer server;
+
+    QObject::connect(&server, &HttpServer::requestReady,
+                     &router, &HttpServerRequestRouter::handleRequest);
+
     server.listen(QHostAddress::Any, 8080);
 
-    //   ...and start the event loop    
     return a.exec();
 }

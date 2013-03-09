@@ -37,8 +37,8 @@
      - WebSocket
     - HTTPS support
     - Flexible request router
-    - Static file server with support for conditional requests and partial
-      download
+    - Static file server with support for conditional requests, partial download
+      and automatic mime detection
     - Plugin-based server to allow change the running code without restart the
       application
     - Flexible and secure session support
@@ -52,9 +52,57 @@
   \section tufao-introduction Creating a Tufão-based application
 
   In this section, I assume that you already have installed Tufão libraries and
-  tools (tufao-routes-editor, QtCreator's plugin, ...).
+  tools (QtCreator's plugin, ...). If you have any trouble following the
+  [build/install steps](https://github.com/vinipsmaker/tufao#build),
+  [click here](https://github.com/vinipsmaker/tufao/wiki/Support).
 
   \subsection tufao-hello Hello World!
+
+  Let's start by examining a _Hello World_ application:
+
+  \includelineno main.cpp
+
+  The code shown above is what you need to create a program that will respond
+  with Hello World to every request. It depends on QtCore, QtNetwork and Tufão.
+
+  In the lines 1-4, we import all definitions we need to this code work and in
+  line 6, we import names from the _Tufao_ namespace into global namespace.
+
+  In the function main, we declare our event loop (line 10) that allow us to
+  handle the server's connections asynchronously and in line 22, we start it.
+
+  In line 12, we declare the server object, responsible for manage HTTP
+  messages. We can access the HTTP requests through the requestReady signal,
+  as shown in lines 14 to 18. Then, we tell the server to listen for incoming
+  connections on port 8080 (line 20) and our application is ready to serve HTTP
+  clients.
+
+  All you need to handle a HTTP session is the pair of HttpServerRequest and
+  HttpServerResponse objects. The HttpServerRequest exports the input of the
+  session and the HttpServerResponse is the output, from the point of view of
+  your application server.
+
+  Every HTTP response is made of three parts:
+
+    - A status-line
+    - Some meta-data with key-value pairs (the headers)
+    - A body (anything from text to binary-based data)
+
+  In every response, you **must** call all these methods, in this order:
+
+    1. writeHead* to write the status-line
+    2. end* to close the HTTP session
+
+  The headers are optional and you can set them before do any call to write or
+  -- obviously -- end. See Tufao::HttpServerResponse for more details.
+
+  The handler used as parameter in QObject::connect function is a C++11 lambda,
+  but you can use whatever QObject::connect accepts. In our handler, we just
+  write a simple "Hello World" message.
+
+  \subsection tufao-revisiting-hello Revisiting Hello World!
+
+  Now that you got warm, let's see an example more complicated.
 
   ![](get_started_1.png "QtCreator's Tufão plugin")
 
@@ -76,10 +124,8 @@
 
   \includelineno applicationdefaultmain.cpp
 
-  A main file with 50 lines of code. It's a bunch of code, but if you delete the
-  comments and includes, you'll have only 30 lines remaining. It's possible to
-  create Tufão applications with fewer yet lines, but I'll use this code to
-  explain important Tufão features. They'll prove their value.
+  A main file with 32 lines of code. It's a bunch of code, but they'll prove
+  their value.
 
   Tufão provides a web framework and has its own HTTP server (based on Ryan
   Dahl's HTTP parser). This design give you greater control over the
@@ -93,9 +139,9 @@
   But you need to promisse that you'll use Tufão facilities and read the
   documentation.
 
-  To use the Tufão HTTP server, we instantiate, as show in the line 17, a
-  Tufao::HttpServer, put it to listen on port 8080, as show in the line 46, and
-  start a event loop, as show in the line 49. This server will expose all we
+  To use the Tufão HTTP server, we instantiate, as show in the line 24, a
+  Tufao::HttpServer, put it to listen on port 8080, as show in the line 29, and
+  start a event loop, as show in the line 31. This server will expose all we
   need to this introduction.
 
   The Tufao::HttpServer will emit the Tufao::HttpServer::requestReady signal
@@ -105,46 +151,39 @@
 
   > [Divide and conquer](https://en.wikipedia.org/wiki/Divide_and_conquer)
 
+  What I mean is that every request **IS** differente and every on needs a
+  different handler. The convention is to serve different content under
+  different paths. This is what we'll do.
+
   We could decompose our slot into some functions to do the job. But we won't
   do that, because Tufão already has a better abstraction for the problem,
   Tufao::HttpServerRequestRouter.
 
-  The idea behind Tufao::HttpServerRequestRouter is have a chain of request
+  The idea behind Tufao::HttpServerRequestRouter is to glue a chain of request
   handlers and mapped paths to them. If a request comes to a handler unable to
   handle it, the request is delegated to another handler in the chain.
 
-  In the code, we have one router (line 20) and four handlers (lines 25, 27, 29
-  and 31). In the lines 36 to 39 we bind the router and the handlers and in the
-  line 42 we bind the router and the server. The handlers, in order, are:
+  In the code, we have one router (line 18) and three handlers (lines 16/19, 20
+  and 21). In line 26-27, we bind the router and the server. The handlers, in
+  order, are:
 
     - Tufao::HttpPluginServer: Uses plugins to handle the requests. A plugin
       mechanism is what allows you to change the running code without restart
-      the application. In this code, we use the file routes.conf (editable with
-      the tufao-routes-editor tool) to configure the plugins.
-    - PluginReloader: A custom class (defined in the files _pluginreloader.h_
-      and _pluginreloader.cpp_) that instructs the pluginServer to refresh the
-      list of plugins. For security reasons, it'll only accept requests
-      originated from local host.
+      the application. In this code, we use the file routes.json to configure
+      the plugins.
     - Tufao::HttpFileServer: Serve static files. We use the folder _public_ as
       root dir.
-    - NotFoundHandler: A custom class (defined in the files _notfound.h_ and
-      _notfound.cpp_) that responds to every request with a 404 status code. It
-      will use the file _notfound.html_ embedded in the binary (through the Qt
-      resource system) as message body of the responses. Line 14 init the
-      necessary resource.
+    - Tufao::NotFoundHandler: A handler that responds to every request with a
+      404 status code.
 
-  If you run this application, you see the error _Unsupported config file
-  version_. This is happening because you didn't prepare a _routes.conf_ file to
-  feed the plugin handler. See \ref pluginsystem to learn how to fix it and add
-  a plugin-based handler to the application. The file _routes.conf_ must be
-  placed in the working dir from where the application will run (or is running).
+  See \ref pluginsystem to learn how to create and attach plugins to the running
+  application.
 
   If you access http://localhost:8080/ you'll see a message telling you that the
   page wasn't found. Create a folder called public in the working dir of the
   executable and put a file called index.html there:
 
       <html>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <head><title>Hello World</title></head>
         <body>
           <h1>Congratulations,</h1>
@@ -164,14 +203,14 @@
 
   Once Tufão is correctly installed, you can use Tufão in your qmake-based
   applications appending the following line to your project file, where _x_
-  is the major version (0 for Tufão 0.x) you want to use:
+  is the major version (0 for Tufão 0.x and 1 for Tufão 1.x) you want to use:
 
       CONFIG += TUFAOx
 
   If you use CMake, just follow the common steps (require package and handle
   compile and link flags) in your CMakeLists.txt file:
 
-      find_package(Tufao 0.4 REQUIRED)
+      find_package(Tufao1 1.0 REQUIRED)
       include_directories("${TUFAO_INCLUDE_DIR}")
       target_link_libraries(foobar ${TUFAO_LIBRARIES})
 
@@ -182,7 +221,7 @@
 
   If you want to use autotools or another build system that has pkgconfig
   support, you can use the Tufão's pkgconfig module, where _x_ is the major
-  version (0 for Tufão 0.x) you want to use:
+  version (0 for Tufão 0.x and 1 for Tufão 1.x) you want to use:
 
       $ pkg-config tufaox
 

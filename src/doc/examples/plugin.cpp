@@ -1,15 +1,17 @@
 #include "plugin.h"
-#include "requesthandler.h"
 #include <QtCore/QtPlugin>
+#include <Tufao/HttpServerResponse>
 
-Plugin::Plugin(QObject *parent) :
-    QObject(parent)
+using namespace Tufao;
+
+std::function<bool(HttpServerRequest&, HttpServerResponse&)>
+Plugin::createHandler(const QHash<QString, HttpServerPlugin*> &,
+                      const QVariant &)
 {
+    return [](HttpServerRequest &, HttpServerResponse &res){
+        res.writeHead(HttpResponseStatusCode::OK);
+        res << "Responding from a evil plugin\n";
+        res.end();
+        return true;
+    };
 }
-
-Tufao::AbstractHttpServerRequestHandler *Plugin::createHandler(QObject *parent)
-{
-    return new RequestHandler(parent);
-}
-
-Q_EXPORT_PLUGIN2(PLUGIN, Plugin)
