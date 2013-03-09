@@ -91,6 +91,18 @@ struct HttpServerRequest::Priv
     static const http_parser_settings httpSettingsInstance;
 };
 
+struct RawData
+{
+    template<int N>
+    constexpr RawData(const char (&data)[N]) :
+        data(data),
+        size(N)
+    {}
+
+    const char *data;
+    int size;
+};
+
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_HTTPSERVERREQUEST_H
