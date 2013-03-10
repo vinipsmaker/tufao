@@ -105,6 +105,16 @@ HttpFileServer::~HttpFileServer()
     delete priv;
 }
 
+void HttpFileServer::setDir(const QString &dir)
+{
+    priv->rootDir = dir;
+}
+
+QString HttpFileServer::dir() const
+{
+    return priv->rootDir;
+}
+
 void HttpFileServer::serveFile(const QString &fileName,
                                HttpServerRequest &request,
                                HttpServerResponse &response)
