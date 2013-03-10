@@ -132,6 +132,11 @@ You can also see Tufão documentation integrated in QtAssistant.
 
 ## NEWS
 
+Version 0.5:
+  * WebSocket
+   * peerAddress() method added
+   * peerSocket() method added
+
 Version 0.4:
   * Using CMake build system
    * Changes to allow parallel Tufão installations (if major versions differs)
@@ -163,10 +168,10 @@ Version 0.2:
 
 Here is a small roadmap for Tufão:
 
-0.5:
+0.6:
   * Better (and easier) multi-thread support
 
-0.6:
+0.7:
   * RPC support
   * Service discovery and description support
 

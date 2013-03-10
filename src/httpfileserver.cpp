@@ -103,6 +103,16 @@ HttpFileServer::~HttpFileServer()
     delete priv;
 }
 
+void HttpFileServer::setDir(const QString &dir)
+{
+    priv->rootDir = dir;
+}
+
+QString HttpFileServer::dir() const
+{
+    return priv->rootDir;
+}
+
 // split method in check and transmit phases
 // also, how the hell will this work with 404-responses?
 void HttpFileServer::serveFile(const QString &fileName, HttpServerRequest *request,
