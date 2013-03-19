@@ -23,6 +23,7 @@ set(tufao_SRC
     priv/asctime.cpp
     sessionstore.cpp
     simplesessionstore.cpp
+    urlrewriterhandler.cpp
 )
 
 # MOC header files
