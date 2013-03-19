@@ -32,6 +32,7 @@ namespace Tufao {
 
 class HttpServerRequest;
 class HttpServerResponse;
+class HttpUpgradeRouter;
 
 /*!
   The Tufao::HttpServer class provides an implementation of the HTTP protocol.
@@ -117,6 +118,19 @@ public:
       */
     int timeout() const;
 
+    /*!
+      Sets the HttpUpgradeRouter used to handle HTTP upgrades.
+
+      The default behaviour is use none routers to handle HTTP upgrades. If you
+      add any router, then the default behaviour will be to use this router, but
+      the default behaviour still can be changed if you override the upgrade
+      method.
+
+      \since
+      0.6
+     */
+    void setHttpUpgradeRouter(HttpUpgradeRouter &router);
+
 signals:
     /*!
       This signal is emitted each time there is request.
@@ -198,7 +212,8 @@ protected:
       This virtual function is called by HttpServer when a client requests a
       http upgrade.
 
-      The base implementation closes the connection.
+      The base implementation closes the connection if no upgrade router is
+      configured or the upgrade router isn't able to handle the request.
 
       Reimplement this function to alter the server's behavior when a http
       upgrade is requested.

@@ -66,6 +66,11 @@ int HttpServer::timeout() const
     return priv->timeout;
 }
 
+void HttpServer::setHttpUpgradeRouter(HttpUpgradeRouter &router)
+{
+    priv->upgradeRouter = &router;
+}
+
 void HttpServer::close()
 {
     priv->tcpServer.close();
@@ -109,8 +114,13 @@ void HttpServer::handleConnection(QAbstractSocket *socket)
     connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
 }
 
-void HttpServer::upgrade(HttpServerRequest *request, const QByteArray &)
+void HttpServer::upgrade(HttpServerRequest *request, const QByteArray &head)
 {
+    if (priv->upgradeRouter
+        && priv->upgradeRouter->handleRequest(request, head)) {
+        return;
+    }
+
     request->socket()->close();
 }
 

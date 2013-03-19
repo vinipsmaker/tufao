@@ -20,6 +20,7 @@
 #define TUFAO_PRIV_HTTPSERVER_H
 
 #include "../httpserver.h"
+#include "../httpupgraderouter.h"
 #include "tcpserverwrapper.h"
 
 namespace Tufao {
@@ -30,10 +31,12 @@ struct HttpServer::Priv
 
     TcpServerWrapper tcpServer;
     int timeout;
+    HttpUpgradeRouter *upgradeRouter;
 };
 
 inline HttpServer::Priv::Priv() :
-    timeout(120000)
+    timeout(120000),
+    upgradeRouter(NULL)
 {}
 
 } // namespace Tufao
