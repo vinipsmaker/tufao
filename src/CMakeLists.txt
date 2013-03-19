@@ -24,6 +24,8 @@ set(tufao_SRC
     sessionstore.cpp
     simplesessionstore.cpp
     urlrewriterhandler.cpp
+    abstracthttpupgradehandler.cpp
+    httpupgraderouter.cpp
 )
 
 # MOC header files
