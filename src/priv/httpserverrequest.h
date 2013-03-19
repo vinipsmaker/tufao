@@ -94,7 +94,7 @@ struct RawData
     template<int N>
     RawData(const char (&data)[N]) :
         data(data),
-        size(N)
+        size(N - 1)
     {}
 
     const char *data;
