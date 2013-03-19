@@ -43,6 +43,9 @@ set(tufao_MOC_HDRS
     httppluginserver.h
     sessionstore.h
     simplesessionstore.h
+    urlrewriterhandler.h
+    abstracthttpupgradehandler.h
+    httpupgraderouter.h
 )
 
 # Build info
