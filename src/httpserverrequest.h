@@ -103,6 +103,17 @@ public:
     QByteArray method() const;
 
     /*!
+      Sets the request URL.
+
+      \sa
+      UrlRewriterHandler
+
+      \since
+      0.6
+     */
+    void setUrl(const QByteArray &url);
+
+    /*!
       The request URL.
 
       This contains only the URL that is present in the actual HTTP request.
