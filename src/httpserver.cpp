@@ -66,9 +66,9 @@ int HttpServer::timeout() const
     return priv->timeout;
 }
 
-void HttpServer::setHttpUpgradeRouter(HttpUpgradeRouter &router)
+void HttpServer::setHttpUpgradeRouter(HttpUpgradeRouter *router)
 {
-    priv->upgradeRouter = &router;
+    priv->upgradeRouter = router;
 }
 
 void HttpServer::close()

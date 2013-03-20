@@ -126,10 +126,14 @@ public:
       the default behaviour still can be changed if you override the upgrade
       method.
 
+      \note
+      If you pass NULL as argument, any previous configured router will be
+      forgotten and not used anymore.
+
       \since
       0.6
      */
-    void setHttpUpgradeRouter(HttpUpgradeRouter &router);
+    void setHttpUpgradeRouter(HttpUpgradeRouter *router);
 
 signals:
     /*!
