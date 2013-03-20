@@ -132,6 +132,13 @@ You can also see Tufão documentation integrated in QtAssistant.
 
 ## NEWS
 
+Version 0.6
+ * HttpServerRequest
+  * setUrl added
+ * UrlRewriterHandler added
+ * HttpUpgradeRouter added
+ * headers can be "streamed" to QDebug objects
+
 Version 0.5:
   * WebSocket
    * peerAddress() method added
@@ -168,10 +175,10 @@ Version 0.2:
 
 Here is a small roadmap for Tufão:
 
-0.6:
+0.7:
   * Better (and easier) multi-thread support
 
-0.7:
+0.8:
   * RPC support
   * Service discovery and description support
 

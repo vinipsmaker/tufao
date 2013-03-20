@@ -14,7 +14,7 @@ add_definitions(-DBUFFER_SIZE=${BUFFER_SIZE})
 
 # Install info
 set(TUFAO_VERSION_MAJOR 0)
-set(TUFAO_VERSION_MINOR 5)
+set(TUFAO_VERSION_MINOR 6)
 set(TUFAO_VERSION_PATCH 0)
 set(TUFAO_VERSION ${TUFAO_VERSION_MAJOR}.${TUFAO_VERSION_MINOR}.${TUFAO_VERSION_PATCH})
 set(TUFAO_BRIEF "An asynchronous web framework for C++ built on top of Qt")

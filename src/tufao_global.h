@@ -36,7 +36,7 @@
 #endif
 
 #ifndef TUFAO_VERSION_MINOR
-#  define TUFAO_VERSION_MINOR 5
+#  define TUFAO_VERSION_MINOR 6
 #endif
 
 #ifdef Q_MOC_RUN
