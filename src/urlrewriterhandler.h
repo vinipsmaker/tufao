@@ -29,9 +29,19 @@
 namespace Tufao {
 
 /*!
-  A handler that responds with "Not found" to every request.
+  This class provides a handler to internally (only seen by your application)
+  rewrite the URL.
 
-  Its purpose is to avoid boilerplate code.
+  \note
+  The handler does **NOT** redirects the HTTP client to another path. The new
+  URL can only be seen by the Tufão application itself and HTTP clients will
+  think they are receiving a response to the path they originally asked for.
+
+  One place where this technique is useful is when you want to use one file to
+  handle the root page of your site through HttpFileServer. This example is
+  illustrated in the image below:
+
+  ![](urlrewrite.png "Url rewrite example")
 
   \since
   0.6
