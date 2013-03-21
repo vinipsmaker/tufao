@@ -20,6 +20,7 @@ set(tufao_SRC
     sessionstore.cpp
     simplesessionstore.cpp
     notfoundhandler.cpp
+    urlrewriterhandler.cpp
 )
 
 add_definitions(-DTUFAO_LIBRARY
