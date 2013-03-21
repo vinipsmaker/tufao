@@ -45,6 +45,11 @@ QByteArray HttpServerRequest::method() const
     return priv->method;
 }
 
+void HttpServerRequest::setUrl(const QUrl &url)
+{
+    priv->url = url;
+}
+
 QUrl HttpServerRequest::url() const
 {
     return priv->url;
