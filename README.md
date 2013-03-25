@@ -31,6 +31,9 @@ is also experimental support for Qt compressed help files.
 The library is under the LGPLv2 and public header files, documentation and
 examples are under MIT license.
 
+The Tufão logo is licensed under [Creative Commons Attribution 3.0 Unported]
+(http://creativecommons.org/licenses/by/3.0/).
+
 The library is dynamic linked against Qt and include code from Ryan Dahl's HTTP
 parser. Qt library is licensed under LGPL and Ryan Dahl's HTTP parser is
 licensed under MIT license.
