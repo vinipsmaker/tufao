@@ -10,7 +10,6 @@ set(tufao_SRC
     websocket.cpp
     abstractmessagesocket.cpp
     httpfileserver.cpp
-    abstracthttpserverrequesthandler.cpp
     httpserverrequestrouter.cpp
     httppluginserver.cpp
     headers.cpp

@@ -32,6 +32,7 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
 #include <QtCore/QRegularExpression>
+#include <QtCore/QStringList>
 
 namespace Tufao {
 

@@ -36,7 +36,8 @@ namespace Tufao {
   \since
   1.0
   */
-class TUFAO_EXPORT NotFoundHandler: public AbstractHttpServerRequestHandler
+class TUFAO_EXPORT NotFoundHandler: public QObject,
+                                    public AbstractHttpServerRequestHandler
 {
     Q_OBJECT
 public:

@@ -23,6 +23,8 @@
 #ifndef TUFAO_HTTPPLUGINSERVER_H
 #define TUFAO_HTTPPLUGINSERVER_H
 
+#include <QtCore/QObject>
+
 #include "abstracthttpserverrequesthandler.h"
 
 namespace Tufao {
@@ -51,7 +53,8 @@ namespace Tufao {
   \since
   0.3
   */
-class TUFAO_EXPORT HttpPluginServer : public AbstractHttpServerRequestHandler
+class TUFAO_EXPORT HttpPluginServer : public QObject, 
+                                      public AbstractHttpServerRequestHandler
 {
     Q_OBJECT
 public:

@@ -23,7 +23,7 @@ namespace Tufao {
 const QByteArray NotFoundHandler::body{"Not found"};
 
 NotFoundHandler::NotFoundHandler(QObject *parent) :
-    AbstractHttpServerRequestHandler(parent)
+    QObject(parent)
 {
 }
 

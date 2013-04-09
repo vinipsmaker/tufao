@@ -30,14 +30,14 @@ namespace Tufao {
 using MappingList = std::initializer_list<HttpServerRequestRouter::Mapping>;
 
 HttpServerRequestRouter::HttpServerRequestRouter(QObject *parent) :
-    AbstractHttpServerRequestHandler(parent),
+    QObject(parent),
     priv(new Priv)
 {
 }
 
 HttpServerRequestRouter::HttpServerRequestRouter(MappingList mappings,
                                                  QObject *parent) :
-    AbstractHttpServerRequestHandler(parent),
+    QObject(parent),
     priv(new Priv{mappings})
 {
 }

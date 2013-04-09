@@ -25,7 +25,7 @@
 namespace Tufao {
 
 HttpPluginServer::HttpPluginServer(QObject *parent):
-    AbstractHttpServerRequestHandler(parent),
+    QObject(parent),
     priv(new Priv)
 {
     connect(&priv->configFile.watcher(), &QFileSystemWatcher::fileChanged,

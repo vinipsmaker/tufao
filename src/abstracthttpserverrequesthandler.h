@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2012 Vinícius dos Santos Oliveira
+  Copyright (c) 2012-2013 Vinícius dos Santos Oliveira
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,6 @@
 
 #include <functional>
 
-#include <QtCore/QObject>
-#include <QtCore/QStringList>
-
 #include "tufao_global.h"
 
 namespace Tufao {
@@ -50,14 +47,10 @@ class HttpServerResponse;
   \since
   0.3
   */
-class TUFAO_EXPORT AbstractHttpServerRequestHandler: public QObject
+class TUFAO_EXPORT AbstractHttpServerRequestHandler
 {
-    Q_OBJECT
 public:
-    /*!
-      Constructs an AbstractHttpServerRequestHandler object.
-      */
-    explicit AbstractHttpServerRequestHandler(QObject *parent = 0);
+    ~AbstractHttpServerRequestHandler() = default;
 
     /*!
       Implicit conversion operator to std::function functor object.
@@ -71,7 +64,6 @@ public:
      */
     operator std::function<bool(HttpServerRequest&, HttpServerResponse&)>();
 
-public slots:
     /*!
       Handles the \p request using the \p response object.
 

@@ -25,7 +25,10 @@
 
 #include <functional>
 #include <initializer_list>
+
 #include <QtCore/QRegularExpression>
+#include <QtCore/QObject>
+
 #include "abstracthttpserverrequesthandler.h"
 
 namespace Tufao {
@@ -57,8 +60,8 @@ namespace Tufao {
   \since
   0.3
   */
-class TUFAO_EXPORT HttpServerRequestRouter:
-        public AbstractHttpServerRequestHandler
+class TUFAO_EXPORT HttpServerRequestRouter: public QObject,
+                                            public AbstractHttpServerRequestHandler
 {
     Q_OBJECT
 public:

@@ -24,6 +24,7 @@
 #define TUFAO_URLREWRITERHANDLER_H
 
 #include "abstracthttpserverrequesthandler.h"
+#include <QtCore/QObject>
 #include <QtCore/QUrl>
 
 namespace Tufao {
@@ -46,7 +47,8 @@ namespace Tufao {
   \since
   0.6
   */
-class TUFAO_EXPORT UrlRewriterHandler: public AbstractHttpServerRequestHandler
+class TUFAO_EXPORT UrlRewriterHandler: public QObject,
+                                       public AbstractHttpServerRequestHandler
 {
     Q_OBJECT
 public:

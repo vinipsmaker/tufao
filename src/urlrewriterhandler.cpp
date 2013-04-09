@@ -22,7 +22,7 @@
 namespace Tufao {
 
 UrlRewriterHandler::UrlRewriterHandler(const QUrl &url, QObject *parent) :
-    AbstractHttpServerRequestHandler(parent),
+    QObject(parent),
     priv(new Priv(url))
 {
 }
