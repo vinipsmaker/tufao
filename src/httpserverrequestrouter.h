@@ -184,8 +184,7 @@ public:
 
 public slots:
     /*!
-      It will route the request to the right handler. To route the request,
-      it'll percent decode the path component from the url.
+      It will route the request to the right handler.
 
       The handler will have access to the list of captured texts by the regular
       expression using HttpServerRequest::customData. See example below:
