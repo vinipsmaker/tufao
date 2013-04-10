@@ -12,8 +12,8 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "priv/httpserverrequest.h"
@@ -154,12 +154,12 @@ void HttpServerRequest::onReadyRead()
     if (priv->parser.upgrade) {
         disconnect(&priv->socket, SIGNAL(readyRead()),
                    this, SLOT(onReadyRead()));
-        disconnect(&priv->socket, SIGNAL(disconnected()), this, SIGNAL(close()));
+        disconnect(&priv->socket, SIGNAL(disconnected()),
+                   this, SIGNAL(close()));
         disconnect(&priv->timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
 
-        QByteArray b(priv->buffer);
-        clearBuffer();
-        emit upgrade(b);
+        priv->body.swap(priv->buffer);
+        emit upgrade();
     }
 }
 
@@ -182,6 +182,7 @@ inline void HttpServerRequest::clearRequest()
     priv->method.clear();
     priv->url.clear();
     priv->headers.clear();
+    priv->body.clear();
     priv->trailers.clear();
     priv->customData.clear();
 }

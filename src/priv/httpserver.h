@@ -37,7 +37,7 @@ struct HttpServer::Priv
 };
 
 HttpServer::UpgradeHandler HttpServer::Priv::defaultUpgradeHandler{
-    [](HttpServerRequest &request, const QByteArray &head){
+    [](HttpServerRequest &request){
         request.socket().close();
     }
 };

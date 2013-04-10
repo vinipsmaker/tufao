@@ -355,6 +355,17 @@ public:
                               const Headers &headers = Headers());
 
     /*!
+      This is an overloaded functino.
+
+      It uses HttpServerRequest::readBody to figure out the _head_ argument.
+
+      \since
+      1.0
+     */
+    bool startServerHandshake(HttpServerRequest &request,
+                              const Headers &headers = Headers());
+
+    /*!
       Set the type of messages sent through WebSocket::sendMessage method.
 
       \note

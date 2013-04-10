@@ -64,8 +64,7 @@ public:
       \since
       1.0
      */
-    typedef std::function<void(HttpServerRequest &request,
-                               const QByteArray &head)> UpgradeHandler;
+    typedef std::function<void(HttpServerRequest &request)> UpgradeHandler;
 
     /*!
       Constructs a Tufao::HttpServer object.
@@ -243,7 +242,7 @@ protected:
 private slots:
     void onNewConnection(qintptr socketDescriptor);
     void onRequestReady();
-    void onUpgrade(const QByteArray &head);
+    void onUpgrade();
 
 private:
     struct Priv;

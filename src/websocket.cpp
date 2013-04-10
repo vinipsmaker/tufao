@@ -219,6 +219,12 @@ bool WebSocket::startServerHandshake(const HttpServerRequest &request,
     return true;
 }
 
+bool WebSocket::startServerHandshake(HttpServerRequest &request,
+                                     const Headers &extraHeaders)
+{
+    return startServerHandshake(request, request.readBody(), extraHeaders);
+}
+
 void WebSocket::setMessagesType(WebSocketMessageType type)
 {
     priv->messageType = type;

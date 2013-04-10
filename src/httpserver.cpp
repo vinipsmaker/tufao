@@ -139,12 +139,12 @@ void HttpServer::onRequestReady()
         emit requestReady(*request, *response);
 }
 
-void HttpServer::onUpgrade(const QByteArray &head)
+void HttpServer::onUpgrade()
 {
     HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
     Q_ASSERT(request);
 
-    priv->upgradeHandler(*request, head);
+    priv->upgradeHandler(*request);
     delete request;
 }
 

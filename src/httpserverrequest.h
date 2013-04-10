@@ -332,9 +332,13 @@ signals:
       HttpServerRequest::end and HttpServerRequest::close won't be
       emitted.
 
-      \param head The initial bytes from the new connection protocol.
+      The body is set to the initial bytes from the new connection session
+      (under the new protocol).
+
+      \since
+      1.0
       */
-    void upgrade(QByteArray head);
+    void upgrade();
 
 private slots:
     void onReadyRead();

@@ -148,6 +148,7 @@ Version 1.0
    * socket method returns a reference instead a pointer
    * url returns a QUrl
    * data signal was changed and you must use readBody method to access body's content.
+   * the upgrade's _head_ data is accessed from the request body from now on
    * setCustomData and customData methods added
     * Now HttpServerRequestRouter use these methods to pass the list of captured
       texts
