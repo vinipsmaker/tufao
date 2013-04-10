@@ -1,7 +1,7 @@
 TARGET = hello-session
 TEMPLATE = app
 
-CONFIG += TUFAO0
+CONFIG += C++11 TUFAO1
 
 SOURCES += main.cpp \
     mainhandler.cpp
