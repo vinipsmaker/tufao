@@ -23,18 +23,19 @@
 #ifndef MAINHANDLER_H
 #define MAINHANDLER_H
 
+#include <QtCore/QObject>
 #include <Tufao/AbstractHttpServerRequestHandler>
 
-class MainHandler : public Tufao::AbstractHttpServerRequestHandler
+class MainHandler : public QObject,
+                    public Tufao::AbstractHttpServerRequestHandler
 {
     Q_OBJECT
 public:
     explicit MainHandler(QObject *parent = 0);
 
 public slots:
-    bool handleRequest(Tufao::HttpServerRequest *request,
-                       Tufao::HttpServerResponse *response,
-                       const QStringList &args = QStringList());
+    bool handleRequest(Tufao::HttpServerRequest &request,
+                       Tufao::HttpServerResponse &response) override;
 };
 
 #endif // MAINHANDLER_H
