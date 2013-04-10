@@ -206,15 +206,13 @@ public:
     {
         QMap<QByteArray, QVariant> properties;
 
-        for (const auto &property: store.properties())
+        for (const auto &property: store.properties(request, response))
             properties[property] = store.property(request, response, property);
 
         f(properties);
 
-        for (const auto &property: properties) {
-            store.setProperty(request, response, property,
-                              properties[property]);
-        }
+        for (auto i = properties.begin();i != properties.end();++i)
+            store.setProperty(request, response, i.key(), i.value());
     }
 
 private:
