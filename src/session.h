@@ -186,8 +186,8 @@ public:
     /*!
       Takes a functor to access the session's properties.
 
-      \param f a functor that receives a QVariant object reference as an
-      argument.
+      \param f a functor that receives a QMap<QByteArray, QVariant> object
+      reference as an argument.
 
       \note After the functor returns, the property is updated.
 

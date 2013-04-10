@@ -1,8 +1,7 @@
 bool RequestHandler::handleRequest(Tufao::HttpServerRequest &request,
-                                   Tufao::HttpServerResponse &response,
-                                   const QStringList &)
+                                   Tufao::HttpServerResponse &response)
 {
-    response->writeHead(200);
+    response.writeHead(200, "OK");
 
     Tufao::Session::apply(store, "access", request, response,
                           [&response](QVariant &access) {
@@ -13,6 +12,6 @@ bool RequestHandler::handleRequest(Tufao::HttpServerRequest &request,
                  << " times";
     });
 
-    response->end();
+    response.end();
     return true;
 }

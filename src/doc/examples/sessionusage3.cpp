@@ -1,11 +1,10 @@
 bool RequestHandler::handleRequest(Tufao::HttpServerRequest &request,
-                                   Tufao::HttpServerResponse &response,
-                                   const QStringList &)
+                                   Tufao::HttpServerResponse &response)
 {
-    response->writeHead(200);
+    response.writeHead(200, "OK");
 
     Tufao::Session::apply(store, request, response,
-                          [&response](QVariant &properties) {
+                          [&response](QMap<QByteArray, QVariant> &properties) {
         properties["access"] = properties["access"].toInt() + 1;
 
         response << "You visited this page "
@@ -13,6 +12,6 @@ bool RequestHandler::handleRequest(Tufao::HttpServerRequest &request,
                  << " times";
     });
 
-    response->end();
+    response.end();
     return true;
 }

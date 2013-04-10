@@ -8,21 +8,16 @@ public:
         QObject(parent),
         httpServer(new Tufao::HttpServer(this))
     {
-        connect(httpServer,
-                SIGNAL(requestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*),
-                this,
-                SLOT(handleRequest(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)));
-        httpServer->listen(QHostAddress::Any, 8080);
-    }
+        using namespace Tufao;
+        connect(httpServer, &HttpServer::requestReady,
+                [](HttpServerRequest &request, HttpServerResponse &response) {
+                    response.writeHead(200, "OK");
+                    response.headers().insert("Content-Type", "text/plain");
+                    response.write("Hello World\n");
+                    response.end();
+        });
 
-private slots:
-    void handleRequest(Tufao::HttpServerRequest *request,
-                       Tufao::HttpServerResponse *response)
-    {
-        response->writeHead(200);
-        response->setHeader("Content-Type", "text/plain");
-        response->write("Hello World\n");
-        response->end();
+        httpServer->listen(QHostAddress::Any, 8080);
     }
 
 private:
