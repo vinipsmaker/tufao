@@ -21,6 +21,7 @@
   */
 
 #include "mainhandler.h"
+#include <QtCore/QUrl>
 #include <Tufao/HttpServerRequest>
 #include <Tufao/Headers>
 
@@ -29,10 +30,10 @@ MainHandler::MainHandler(QObject *parent) :
 {
 }
 
-void MainHandler::handleRequest(Tufao::HttpServerRequest *request,
-                                Tufao::HttpServerResponse *response)
+void MainHandler::handleRequest(Tufao::HttpServerRequest &request,
+                                Tufao::HttpServerResponse &response)
 {
-    response->writeHead(Tufao::HttpServerResponse::OK);
-    response->headers().replace("Content-Type", "text/plain");
-    response->end("Hello " + request->url());
+    response.writeHead(Tufao::HttpResponseStatusCode::OK);
+    response.headers().replace("Content-Type", "text/plain");
+    response.end("Hello " + request.url().path().toUtf8());
 }
