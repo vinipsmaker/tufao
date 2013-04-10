@@ -1,5 +1,5 @@
 /*  This file is part of the Tufão project
-    Copyright (C) 2011 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+    Copyright (C) 2013 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -16,37 +16,20 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUFAO_PRIV_HTTPSERVER_H
-#define TUFAO_PRIV_HTTPSERVER_H
+#ifndef TUFAO_PRIV_HTTPUPGRADEROUTER_H
+#define TUFAO_PRIV_HTTPUPGRADEROUTER_H
 
-#include "../httpserver.h"
-#include "../httpserverrequest.h"
-#include "tcpserverwrapper.h"
+#include "../httpupgraderouter.h"
+
+#include <QtCore/QVector>
 
 namespace Tufao {
 
-struct HttpServer::Priv
+struct HttpUpgradeRouter::Priv
 {
-    Priv();
-
-    TcpServerWrapper tcpServer;
-    int timeout;
-    UpgradeHandler upgradeHandler;
-
-    static UpgradeHandler defaultUpgradeHandler;
+    QVector<Mapping> mappings;
 };
-
-HttpServer::UpgradeHandler HttpServer::Priv::defaultUpgradeHandler{
-    [](HttpServerRequest &request, const QByteArray&){
-        request.socket().close();
-    }
-};
-
-inline HttpServer::Priv::Priv() :
-    timeout(120000),
-    upgradeHandler(defaultUpgradeHandler)
-{}
 
 } // namespace Tufao
 
-#endif // TUFAO_PRIV_HTTPSERVER_H
+#endif // TUFAO_PRIV_HTTPUPGRADEROUTER_H

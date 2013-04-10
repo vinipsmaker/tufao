@@ -59,12 +59,14 @@ public:
       A typedef to http upgrade request handler.
 
       \sa
+      AbstractHttpUpgradeHandler
       setUpgradeHandler
 
       \since
       1.0
      */
-    typedef std::function<void(HttpServerRequest &request)> UpgradeHandler;
+    typedef std::function<void(HttpServerRequest &request, const QByteArray&)>
+        UpgradeHandler;
 
     /*!
       Constructs a Tufao::HttpServer object.

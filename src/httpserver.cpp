@@ -144,7 +144,7 @@ void HttpServer::onUpgrade()
     HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
     Q_ASSERT(request);
 
-    priv->upgradeHandler(*request);
+    priv->upgradeHandler(*request, request->readBody());
     delete request;
 }
 

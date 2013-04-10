@@ -170,6 +170,8 @@ Version 1.0
   * HttpFileServer uses/sends mime info
   * Interfaces don't inherit from QObject anymore, so you can use multiple
     inheritance to make the same class implement many interfaces
+  * HttpUpgradeRouter introduced
+   * HttpServer::setUpgradeHandler also
 
 Version 0.5:
   * WebSocket
