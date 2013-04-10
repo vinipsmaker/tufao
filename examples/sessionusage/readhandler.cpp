@@ -25,42 +25,44 @@
 #include <Tufao/SimpleSessionStore>
 #include <Tufao/Session>
 
+#include <QtCore/QStringList>
+
 ReadHandler::ReadHandler(QObject *parent) :
-    Tufao::AbstractHttpServerRequestHandler(parent)
+    QObject(parent)
 {
 }
 
-bool ReadHandler::handleRequest(Tufao::HttpServerRequest *request,
-                                Tufao::HttpServerResponse *response,
-                                const QStringList &args)
+bool ReadHandler::handleRequest(Tufao::HttpServerRequest &request,
+                                Tufao::HttpServerResponse &response)
 {
-    response->writeHead(Tufao::HttpServerResponse::OK);
+    response.writeHead(Tufao::HttpResponseStatusCode::OK);
 
     Tufao::SimpleSessionStore &store(Tufao::SimpleSessionStore
                                      ::defaultInstance());
-    Tufao::Session session(store, *request, *response);
+    Tufao::Session session(store, request, response);
 
+    QStringList args = request.customData().toMap()["args"].toStringList();
     const QByteArray property(args.isEmpty()
                               ? QByteArray()
-                              : args.front().toUtf8());
+                              : args[1].toUtf8());
 
     if (property.isEmpty()) {
-        response->write("You have the following properties:\n");
+        response << "You have the following properties:\n";
 
-        QList<QByteArray> properties(store.properties(*request, *response));
+        QList<QByteArray> properties(store.properties(request, response));
         for (int i = 0;i != properties.size();++i)
-            response->write(properties[i] + '\n');
+            response << properties[i] + '\n';
 
-        response->end();
+        response.end();
         return true;
     }
 
     if (!session[property]) {
-        response->end("You don't have a property named " + property);
+        response.end("You don't have a property named " + property);
         return true;
     }
 
-    response->end("session[\"" + property + "\"] == "
-                  + session[property]().toByteArray());
+    response.end("session[\"" + property + "\"] == "
+                 + session[property]().toByteArray());
     return true;
 }

@@ -23,18 +23,19 @@
 #ifndef DELETEHANDLER_H
 #define DELETEHANDLER_H
 
+#include <QtCore/QObject>
 #include <Tufao/AbstractHttpServerRequestHandler>
 
-class UnsetHandler : public Tufao::AbstractHttpServerRequestHandler
+class UnsetHandler : public QObject,
+                     public Tufao::AbstractHttpServerRequestHandler
 {
     Q_OBJECT
 public:
     explicit UnsetHandler(QObject *parent = 0);
 
 public slots:
-    bool handleRequest(Tufao::HttpServerRequest *request,
-                       Tufao::HttpServerResponse *response,
-                       const QStringList &args);
+    bool handleRequest(Tufao::HttpServerRequest &request,
+                       Tufao::HttpServerResponse &response) override;
 };
 
 #endif // DELETEHANDLER_H

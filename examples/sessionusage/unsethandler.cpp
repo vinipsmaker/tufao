@@ -25,35 +25,37 @@
 #include <Tufao/SimpleSessionStore>
 #include <Tufao/Session>
 
+#include <QtCore/QStringList>
+
 UnsetHandler::UnsetHandler(QObject *parent) :
-    Tufao::AbstractHttpServerRequestHandler(parent)
+    QObject(parent)
 {
 }
 
-bool UnsetHandler::handleRequest(Tufao::HttpServerRequest *request,
-                                 Tufao::HttpServerResponse *response,
-                                 const QStringList &args)
+bool UnsetHandler::handleRequest(Tufao::HttpServerRequest &request,
+                                 Tufao::HttpServerResponse &response)
 {
     Tufao::SimpleSessionStore &store(Tufao::SimpleSessionStore
                                      ::defaultInstance());
-    Tufao::Session session(store, *request, *response);
+    Tufao::Session session(store, request, response);
 
+    QStringList args = request.customData().toMap()["args"].toStringList();
     const QByteArray property(args.isEmpty()
                               ? QByteArray()
-                              : args.front().toUtf8());
+                              : args[1].toUtf8());
 
     if (property.isEmpty())
         return false;
 
-    response->writeHead(Tufao::HttpServerResponse::OK);
+    response.writeHead(Tufao::HttpResponseStatusCode::OK);
 
     if (!session[property]) {
-        response->end("Property \"" + property + "\" doesn't exist");
+        response.end("Property \"" + property + "\" doesn't exist");
         return true;
     }
 
-    store.removeProperty(*request, *response, property);
+    store.removeProperty(request, response, property);
 
-    response->end("store.removeProperty(\"" + property + "\")");
+    response.end("store.removeProperty(\"" + property + "\")");
     return true;
 }

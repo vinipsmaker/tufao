@@ -23,18 +23,19 @@
 #ifndef READHANDLER_H
 #define READHANDLER_H
 
+#include <QtCore/QObject>
 #include <Tufao/AbstractHttpServerRequestHandler>
 
-class ReadHandler : public Tufao::AbstractHttpServerRequestHandler
+class ReadHandler : public QObject,
+                    public Tufao::AbstractHttpServerRequestHandler
 {
     Q_OBJECT
 public:
     explicit ReadHandler(QObject *parent = 0);
 
 public slots:
-    bool handleRequest(Tufao::HttpServerRequest *request,
-                       Tufao::HttpServerResponse *response,
-                       const QStringList &args);
+    bool handleRequest(Tufao::HttpServerRequest &request,
+                       Tufao::HttpServerResponse &response);
 };
 
 #endif // READHANDLER_H

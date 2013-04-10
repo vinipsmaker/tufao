@@ -24,41 +24,43 @@
 
 #include <Tufao/SimpleSessionStore>
 #include <Tufao/Session>
-#include <Tufao/Url>
-#include <Tufao/QueryString>
+
+#include <QtCore/QUrl>
+#include <QtCore/QUrlQuery>
+#include <QtCore/QStringList>
 
 SetHandler::SetHandler(QObject *parent) :
-    Tufao::AbstractHttpServerRequestHandler(parent)
+    QObject(parent)
 {
 }
 
-bool SetHandler::handleRequest(Tufao::HttpServerRequest *request,
-                               Tufao::HttpServerResponse *response,
-                               const QStringList &args)
+bool SetHandler::handleRequest(Tufao::HttpServerRequest &request,
+                               Tufao::HttpServerResponse &response)
 {
     Tufao::SimpleSessionStore &store(Tufao::SimpleSessionStore
                                      ::defaultInstance());
-    Tufao::Session session(store, *request, *response);
+    Tufao::Session session(store, request, response);
 
+    QStringList args = request.customData().toMap()["args"].toStringList();
     const QByteArray property(args.isEmpty()
                               ? QByteArray()
-                              : args.front().toUtf8());
+                              : args[1].toUtf8());
 
     if (property.isEmpty())
         return false;
 
-    response->writeHead(Tufao::HttpServerResponse::OK);
+    response.writeHead(Tufao::HttpResponseStatusCode::OK);
 
-    const QByteArray query(Tufao::Url(request->url()).query().toUtf8());
-    const QByteArray value(Tufao::QueryString::parse(query).value("value"));
+    const QByteArray value(QUrlQuery(request.url()).queryItemValue("value")
+                           .toUtf8());
 
     if (value.isEmpty()) {
-        response->end("Invalid value");
+        response.end("Invalid value");
         return true;
     }
 
     session[property] = value;
 
-    response->end("session[\"" + property + "\"] = " + value);
+    response.end("session[\"" + property + "\"] = " + value);
     return true;
 }

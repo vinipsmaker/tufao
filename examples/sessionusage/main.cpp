@@ -21,15 +21,16 @@
   */
 
 #include <QtCore/QCoreApplication>
+#include <QtCore/QUrl>
 
 #include <Tufao/HttpServer>
 
 #include <Tufao/HttpServerRequestRouter>
-//#include <Tufao/HttpFileServer>
+#include <Tufao/HttpFileServer>
 #include <Tufao/SimpleSessionStore>
+#include <Tufao/UrlRewriterHandler>
+#include <Tufao/NotFoundHandler>
 
-#include "roothandler.h"
-#include "notfound.h"
 #include "sethandler.h"
 #include "readhandler.h"
 #include "unsethandler.h"
@@ -40,25 +41,23 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     Tufao::HttpServer server;
 
-    Tufao::HttpServerRequestRouter router;
-
-//    Tufao::HttpFileServer fileServer("public");
-    RootHandler rootHandler;
-    NotFoundHandler handler404;
-
     SetHandler setHandler;
     ReadHandler readHandler;
     UnsetHandler unsetHandler;
 
-    router.map(QRegExp("^/$"), &rootHandler)
-            .map(QRegExp("^/set(?:/(\\w*))?$"), &setHandler)
-            .map(QRegExp("^/read(?:/(\\w*))?$"), &readHandler)
-            .map(QRegExp("^/unset(?:/(\\w*))?$"), &unsetHandler)
-            .map(QRegExp(""), &handler404);
+    Tufao::HttpServerRequestRouter router{
+        {QRegularExpression{"^/$"},
+            Tufao::UrlRewriterHandler::handler(QUrl("/index.html"))},
+        {QRegularExpression{""}, Tufao::HttpFileServer::handler(":/public")},
+        {QRegularExpression{"^/set(?:/(\\w*))?$"}, setHandler},
+        {QRegularExpression{"^/read(?:/(\\w*))?$"}, readHandler},
+        {QRegularExpression{"^/unset(?:/(\\w*))?$"}, unsetHandler},
+        {QRegularExpression{""}, Tufao::NotFoundHandler::handler()}
+    };
 
     // We set the router as the global request handler
-    QObject::connect(&server, SIGNAL(requestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)),
-                     &router, SLOT(handleRequest(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)));
+    QObject::connect(&server, &Tufao::HttpServer::requestReady,
+                     &router, &Tufao::HttpServerRequestRouter::handleRequest);
 
     // Last, we run our server
     server.listen(QHostAddress::Any, 8080);

@@ -1,22 +1,18 @@
 TARGET = sessionusage
 TEMPLATE = app
 
-CONFIG += TUFAO0
+CONFIG += C++11 TUFAO1
 QT -= gui
 
 SOURCES += main.cpp \
-    notfound.cpp \
     readhandler.cpp \
     sethandler.cpp \
-    unsethandler.cpp \
-    roothandler.cpp
+    unsethandler.cpp
 
 HEADERS += \
-    notfound.h \
     readhandler.h \
     sethandler.h \
-    unsethandler.h \
-    roothandler.h
+    unsethandler.h
 
 RESOURCES += \
     static.qrc
