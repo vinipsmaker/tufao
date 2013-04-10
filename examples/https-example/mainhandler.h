@@ -39,8 +39,8 @@ public:
     explicit MainHandler(QObject *parent = 0);
 
 public slots:
-    void handleRequest(Tufao::HttpServerRequest *request,
-                       Tufao::HttpServerResponse *response);
+    void handleRequest(Tufao::HttpServerRequest &request,
+                       Tufao::HttpServerResponse &response);
 };
 
 #endif // MAINHANDLER_H
