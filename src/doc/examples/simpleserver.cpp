@@ -20,7 +20,7 @@ private slots:
                        Tufao::HttpServerResponse *response)
     {
         response->writeHead(200);
-        response->setHeader("Content-Type", "text/plain");
+        response->headers().insert("Content-Type", "text/plain");
         response->write("Hello World\n");
         response->end();
     }
