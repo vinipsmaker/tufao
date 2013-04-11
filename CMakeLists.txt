@@ -1,6 +1,13 @@
 # Project Tufão
 project(tufao)
 
+# Metadata
+set(TUFAO_VERSION_MAJOR 1)
+set(TUFAO_VERSION_MINOR 0)
+set(TUFAO_VERSION_PATCH 0)
+set(TUFAO_VERSION ${TUFAO_VERSION_MAJOR}.${TUFAO_VERSION_MINOR}.${TUFAO_VERSION_PATCH})
+set(TUFAO_BRIEF "An asynchronous web framework for C++ built on top of Qt")
+
 # Dependencies
 cmake_minimum_required(VERSION 2.8.8)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
@@ -31,15 +38,13 @@ set(BUFFER_SIZE 128 CACHE STRING
     "The default buffer size (in bytes) used by Tufão")
 add_definitions(-DBUFFER_SIZE=${BUFFER_SIZE})
 
+# Build info
+set(TUFAO_LIBRARY "tufao${TUFAO_VERSION_MAJOR}")
+
 # Build options
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
 
 # Install info
-set(TUFAO_VERSION_MAJOR 1)
-set(TUFAO_VERSION_MINOR 0)
-set(TUFAO_VERSION_PATCH 0)
-set(TUFAO_VERSION ${TUFAO_VERSION_MAJOR}.${TUFAO_VERSION_MINOR}.${TUFAO_VERSION_PATCH})
-set(TUFAO_BRIEF "An asynchronous web framework for C++ built on top of Qt")
 set(includedir include/tufao-${TUFAO_VERSION_MAJOR})
 set(libdir lib)
 

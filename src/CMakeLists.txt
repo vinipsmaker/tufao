@@ -27,12 +27,12 @@ add_definitions(-DTUFAO_LIBRARY
     -Wall
 )
 
-add_library(tufao SHARED ${tufao_SRC})
+add_library("${TUFAO_LIBRARY}" SHARED ${tufao_SRC})
 
-qt5_use_modules(tufao Core Network)
+qt5_use_modules("${TUFAO_LIBRARY}" Core Network)
 
 set_target_properties(
-    tufao
+    "${TUFAO_LIBRARY}"
     PROPERTIES
     SOVERSION ${TUFAO_VERSION_MAJOR}
     VERSION ${TUFAO_VERSION}
@@ -41,7 +41,7 @@ set_target_properties(
 )
 
 # Install info
-install(TARGETS tufao
+install(TARGETS "${TUFAO_LIBRARY}"
     DESTINATION "${libdir}"
     COMPONENT runtime
 )

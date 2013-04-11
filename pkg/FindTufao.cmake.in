@@ -5,7 +5,7 @@
 #  TUFAO_VERSION_STRING
 
 find_library(TUFAO_LIBRARIES
-    NAMES tufao
+    NAMES @TUFAO_LIBRARY@
     PATHS "@CMAKE_INSTALL_PREFIX@/@libdir@"
 )
 

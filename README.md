@@ -19,6 +19,7 @@ system (signals & slots). It features:
   * Flexible and secure session support
   * QtCreator's plugin to allow create new applications rapidly
   * Timeout support
+  * C++11
 
 It uses Ryan Dahl's HTTP parser to provide good performance.
 
@@ -74,7 +75,8 @@ Example:
     $ make DESTDIR=pkg install
 
 NOTE:
-Qt 4.7 or later is required.
+Qt 5.0 or later is required for 1.x series. Qt 4.7 or later is required to 0.x
+series.
 
 To generate the documentation, just run doxygen using Doxyfile as configuration
 file and the documentation will be generated in the folder doc. The
@@ -122,14 +124,14 @@ To install to a different prefix, run:
 
 To use Tufão in your Qt projects, just edit your .pro file and add the line:
 
-> CONFIG += TUFAO0
+    CONFIG += TUFAO1
 
 You can find some examples in the examples folder.
 
-Tufão has PKG-CONFIG support also. Its module name is 'tufao0'.
+Tufão has PKG-CONFIG support also. Its module name is 'tufao1'.
 
 If you want use Tufão in other build system, just add the compiler option
--ltufao.
+-ltufao1.
 
 You can also see Tufão documentation integrated in QtAssistant.
 
