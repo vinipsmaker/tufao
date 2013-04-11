@@ -4,10 +4,8 @@
 #
 #-------------------------------------------------
 
-CONFIG   += TUFAO0
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+CONFIG   += C++11 TUFAO1
+QT       += core widgets
 
 TARGET = websocket-chat-client
 TEMPLATE = app
