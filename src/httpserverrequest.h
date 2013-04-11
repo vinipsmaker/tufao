@@ -269,10 +269,18 @@ signals:
       After this signal is emitted, you can safely interpret the request and the
       only missing parts may be (if any) the message body and the trailers.
 
+      \warning
+      Right before emit this signal, HttpServerRequest object will disconnect
+      any slot connected to the signals listed below. This behaviour was chosen
+      to allow you to think about the single HTTP session without worry about
+      the Tufão behaviour of reuse the same objects to the same connections.
+        - HttpServerRequest::data
+        - HttpServerRequest::end
+
       \note
       It's not safe delete this object after this signal is emitted unless you
       use a queued connection. If you want to delete this object after this
-      signal was emitted, you can: You should wait for the end or close signal
+      signal was emitted, you should do one of the following options:
         - Wait until a safe signal is emitted (end or close)
         - Close the connection (only works if you are using Tufao::HttpServer)
         - Call QObject::deleteLater()

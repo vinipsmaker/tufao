@@ -149,6 +149,7 @@ Version 1.0
    * url returns a QUrl
    * data signal was changed and you must use readBody method to access body's content.
    * the upgrade's _head_ data is accessed from the request body from now on
+   * now the object auto-disconnects slots from data and end signals right before emit ready
    * setCustomData and customData methods added
     * Now HttpServerRequestRouter use these methods to pass the list of captured
       texts

@@ -135,6 +135,8 @@ void HttpServerRequest::onReadyRead()
 
     if (priv->whatEmit.testFlag(Priv::READY)) {
         priv->whatEmit &= ~Priv::Signals(Priv::READY);
+        this->disconnect(SIGNAL(data()));
+        this->disconnect(SIGNAL(end()));
         emit ready();
     }
 
