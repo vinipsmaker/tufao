@@ -42,7 +42,7 @@ namespace Tufao {
   HttpUpgradeRouter
 
   \since
-  1.0
+  0.6
   */
 class TUFAO_EXPORT AbstractHttpUpgradeHandler
 {
@@ -55,6 +55,9 @@ public:
       \warning
       You shall not use the returned object after the AbstractHttpUpgradeHandler
       object is destroyed.
+
+      \since
+      1.0
      */
     operator std::function<bool(HttpServerRequest&, const QByteArray&)>();
 
@@ -68,6 +71,9 @@ public:
       \warning
       You shall not use the returned object after the AbstractHttpUpgradeHandler
       object is destroyed.
+
+      \since
+      1.0
      */
     operator std::function<void(HttpServerRequest&, const QByteArray&)>();
 
@@ -82,6 +88,9 @@ public:
       HTTP session should remain open (eg. a response message shouldn't be
       sent), leaving the response free to be used by other handlers in the
       chain.
+
+      \since
+      1.0
       */
     virtual bool handleUpgrade(Tufao::HttpServerRequest &request,
                                const QByteArray &head) = 0;
