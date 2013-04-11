@@ -3,13 +3,13 @@
 
 #include <QObject>
 
-#include <Tufao/AbstractHttpServerRequestHandlerFactory>
+#include "abstracthttpserverrequesthandlerfactory.h"
 
 class Worker : public QObject
 {
     Q_OBJECT
 public:
-    explicit Worker(Tufao::AbstractHttpServerRequestHandlerFactory *factory);
+    explicit Worker(AbstractHttpServerRequestHandlerFactory *factory);
 
     void addConnection(int socketDescriptor);
 
@@ -19,10 +19,10 @@ signals:
 private slots:
     void onNewConnection(int socketDescriptor);
     void onRequestReady();
-    void onUpgrade(const QByteArray &);
+    void onUpgrade();
 
 private:
-    Tufao::AbstractHttpServerRequestHandler *handler;
+    AbstractHttpServerRequestHandlerFactory::Handler handler;
 };
 
 #endif // WORKER_H

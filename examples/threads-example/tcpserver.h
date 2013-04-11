@@ -26,7 +26,7 @@
 #include <QTcpServer>
 #include <QVector>
 
-#include <Tufao/AbstractHttpServerRequestHandlerFactory>
+#include "abstracthttpserverrequesthandlerfactory.h"
 
 class Worker;
 
@@ -37,7 +37,7 @@ public:
     explicit TcpServer(QObject *parent = 0);
 
     void run(int threadsNumber, int port,
-             Tufao::AbstractHttpServerRequestHandlerFactory *handlerFactory);
+             AbstractHttpServerRequestHandlerFactory *handlerFactory);
 
 signals:
     void newConnection(int socketDescriptor);

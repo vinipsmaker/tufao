@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2012 Vinícius dos Santos Oliveira
+  Copyright (c) 2013 Vinícius dos Santos Oliveira
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -20,21 +20,23 @@
   SOFTWARE.
   */
 
-#ifndef MAINHANDLER_H
-#define MAINHANDLER_H
+#ifndef ABSTRACTHTTPSERVERREQUESTHANDLERFACTORY_H
+#define ABSTRACTHTTPSERVERREQUESTHANDLERFACTORY_H
 
-#include <Tufao/AbstractHttpServerRequestHandler>
+#include <functional>
 
-class MainHandler : public Tufao::AbstractHttpServerRequestHandler
+namespace Tufao {
+class HttpServerRequest;
+class HttpServerResponse;
+} // namespace Tufao
+
+class AbstractHttpServerRequestHandlerFactory
 {
-    Q_OBJECT
 public:
-    explicit MainHandler(QObject *parent = 0);
-
-public slots:
-    bool handleRequest(Tufao::HttpServerRequest *request,
-                       Tufao::HttpServerResponse *response,
-                       const QStringList &args);
+    typedef std::function<void(Tufao::HttpServerRequest&,
+                               Tufao::HttpServerResponse&)>
+    Handler;
+    virtual Handler createHandler() = 0;
 };
 
-#endif // MAINHANDLER_H
+#endif // ABSTRACTHTTPSERVERREQUESTHANDLERFACTORY_H

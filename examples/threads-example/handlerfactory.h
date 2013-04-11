@@ -23,12 +23,12 @@
 #ifndef HANDLERFACTORY_H
 #define HANDLERFACTORY_H
 
-#include <Tufao/AbstractHttpServerRequestHandlerFactory>
+#include "abstracthttpserverrequesthandlerfactory.h"
 
-class HandlerFactory : public Tufao::AbstractHttpServerRequestHandlerFactory
+class HandlerFactory : public AbstractHttpServerRequestHandlerFactory
 {
 public:
-    Tufao::AbstractHttpServerRequestHandler *createHandler(QObject *parent);
+     Handler createHandler();
 };
 
 #endif // HANDLERFACTORY_H

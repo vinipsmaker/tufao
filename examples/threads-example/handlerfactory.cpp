@@ -21,11 +21,18 @@
   */
 
 #include "handlerfactory.h"
-#include "mainhandler.h"
+#include <Tufao/HttpServerResponse>
+#include <Tufao/Headers>
 
-Tufao::AbstractHttpServerRequestHandler *
-HandlerFactory::createHandler(QObject *parent)
+using namespace Tufao;
+
+HandlerFactory::Handler HandlerFactory::createHandler()
 {
     // Returning a new handler for every thread avoid the need for locks
-    return new MainHandler(parent);
+    return [](HttpServerRequest &, HttpServerResponse &response) {
+        response.writeHead(Tufao::HttpResponseStatusCode::OK);
+        response.headers().insert("Content-Type", "text/plain");
+        response.end("Hello World\n");
+        return true;
+    };
 }

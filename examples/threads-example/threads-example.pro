@@ -1,16 +1,14 @@
 TARGET = threads-example
 TEMPLATE = app
 
-CONFIG += TUFAO0
+CONFIG += C++11 TUFAO1
 QT -= gui
 
 SOURCES += main.cpp \
-    mainhandler.cpp \
     tcpserver.cpp \
     handlerfactory.cpp \
     worker.cpp
 
-HEADERS += mainhandler.h \
-    tcpserver.h \
+HEADERS += tcpserver.h \
     handlerfactory.h \
     worker.h
