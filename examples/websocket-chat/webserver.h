@@ -3,7 +3,7 @@
 
 #include <Tufao/HttpServer>
 
-class WebServer : public Tufao::HttpServer
+class WebServer : public QObject
 {
     Q_OBJECT
 public:
@@ -12,12 +12,8 @@ public:
 signals:
     void newMessage(QByteArray msg);
 
-public slots:
-    void handleRequest(Tufao::HttpServerRequest *request,
-                       Tufao::HttpServerResponse *response);
-
-protected:
-    void upgrade(Tufao::HttpServerRequest *request, const QByteArray &head);
+private:
+    Tufao::HttpServer server;
 };
 
 #endif // MAINHANDLER_H

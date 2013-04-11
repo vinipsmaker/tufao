@@ -1,7 +1,7 @@
 TARGET = websocket-chat
 TEMPLATE = app
 
-CONFIG += TUFAO0
+CONFIG += C++11 TUFAO1
 QT -= gui
 
 SOURCES += main.cpp \

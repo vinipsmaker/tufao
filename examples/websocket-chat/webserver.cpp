@@ -5,51 +5,52 @@
 #include <Tufao/WebSocket>
 
 #include <QFile>
+#include <QUrl>
 
 WebServer::WebServer(QObject *parent) :
-    Tufao::HttpServer(parent)
+    QObject(parent)
 {
-    connect(this, SIGNAL(requestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)),
-            this, SLOT(handleRequest(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)));
-}
+    connect(&server, &Tufao::HttpServer::requestReady,
+            [](Tufao::HttpServerRequest &request,
+               Tufao::HttpServerResponse &response) {
+                if (request.url().path() == "/"
+                    || request.url().path() == "/index.html") {
+                    QFile indexFile(":/index.html");
+                    indexFile.open(QIODevice::ReadOnly);
 
-void WebServer::handleRequest(Tufao::HttpServerRequest *request,
-                                Tufao::HttpServerResponse *response)
-{
-    if (request->url() == "/"
-            || request->url() == "/index.html") {
-        QFile indexFile(":/index.html");
-        indexFile.open(QIODevice::ReadOnly);
+                    response.writeHead(Tufao::HttpResponseStatusCode::OK);
+                    response.headers().insert("Content-Type",
+                                              "text/html; charset=utf8");
+                    response.end(indexFile.readAll());
+                } else {
+                    response.writeHead(404, "NOT FOUND");
+                    response.end("Not found");
+                }
+            });
 
-        response->writeHead(Tufao::HttpServerResponse::OK);
-        response->headers().insert("Content-Type", "text/html; charset=utf8");
-        response->end(indexFile.readAll());
-    } else {
-        response->writeHead(404);
-        response->end("Not found");
-    }
-}
+    server.setUpgradeHandler([this](Tufao::HttpServerRequest &request,
+                                const QByteArray &head) {
+        if (request.url().path() != "/chat") {
+            Tufao::HttpServerResponse response(request.socket(),
+                                               request.responseOptions());
+            response.writeHead(404, "NOT FOUND");
+            response.end("Not found");
+            request.socket().close();
+            return;
+        }
 
-void WebServer::upgrade(Tufao::HttpServerRequest *request,
-                          const QByteArray &head)
-{
-    if (request->url() != "/chat") {
-        Tufao::HttpServerResponse response(request->socket(),
-                                           request->responseOptions());
-        response.writeHead(404);
-        response.end("Not found");
-        request->socket()->close();
-        return;
-    }
+        Tufao::WebSocket *socket = new Tufao::WebSocket(this);
+        socket->startServerHandshake(request, head);
+        socket->setMessagesType(Tufao::WebSocketMessageType::TEXT_MESSAGE);
 
-    Tufao::WebSocket *socket = new Tufao::WebSocket(this);
-    socket->startServerHandshake(request, head);
-    socket->setMessagesType(Tufao::WebSocket::TEXT_MESSAGE);
+        connect(socket, &Tufao::AbstractMessageSocket::disconnected,
+                socket, &QObject::deleteLater);
 
-    connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
+        connect(socket, &Tufao::AbstractMessageSocket::newMessage,
+                this, &WebServer::newMessage);
+        connect(this, &WebServer::newMessage,
+                socket, &Tufao::AbstractMessageSocket::sendMessage);
+    });
 
-    connect(socket, SIGNAL(newMessage(QByteArray)),
-            this, SIGNAL(newMessage(QByteArray)));
-    connect(this, SIGNAL(newMessage(QByteArray)),
-            socket, SLOT(sendMessage(QByteArray)));
+    server.listen(QHostAddress::Any, 8080);
 }
