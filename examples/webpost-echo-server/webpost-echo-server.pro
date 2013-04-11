@@ -1,15 +1,10 @@
 TARGET = webpost-echo-server
 TEMPLATE = app
 
-CONFIG += TUFAO0
+CONFIG += C++11 TUFAO1
 QT -= gui
 
-SOURCES += main.cpp \
-    mainhandler.cpp \
-    posthandler.cpp
-
-HEADERS += mainhandler.h \
-    posthandler.h
+SOURCES += main.cpp
 
 RESOURCES += \
     resources.qrc
