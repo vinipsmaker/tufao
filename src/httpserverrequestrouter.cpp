@@ -81,7 +81,7 @@ bool HttpServerRequestRouter::handleRequest(HttpServerRequest &request,
         QRegularExpressionMatch match{mapping.path.match(path)};
 
         if (match.hasMatch()) {
-            QStringList args{match.capturedTexts()};
+            QStringList args{match.capturedTexts().mid(1)};
             QVariant backup{request.customData()};
 
             if (args.size()) {
