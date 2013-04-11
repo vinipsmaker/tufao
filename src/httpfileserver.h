@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2012 Vinícius dos Santos Oliveira
+  Copyright (c) 2012, 2013 Vinícius dos Santos Oliveira
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -107,7 +107,7 @@ public:
       1.0
       */
     static bool serveFile(const QString &fileName, HttpServerResponse &response,
-                          HttpResponseStatusCode statusCode);
+                          HttpResponseStatus statusCode);
 
     /*!
       Return the buffer size used.

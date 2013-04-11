@@ -1,5 +1,5 @@
 /*  This file is part of the Tufão project
-    Copyright (C) 2012 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+    Copyright (C) 2012, 2013 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -123,7 +123,7 @@ void HttpFileServer::serveFile(const QString &fileName,
     {
         const QByteArray method(request.method());
         if (method != "GET" && method != "HEAD") {
-            response.writeHead(HttpResponseStatusCode::METHOD_NOT_ALLOWED);
+            response.writeHead(HttpResponseStatus::METHOD_NOT_ALLOWED);
             response.headers().insert("Allow", "GET, HEAD");
             response.end();
             return;
@@ -133,7 +133,7 @@ void HttpFileServer::serveFile(const QString &fileName,
     QFileInfo fileInfo(fileName);
 
     if (!fileInfo.exists()) {
-        response.writeHead(HttpResponseStatusCode::NOT_FOUND);
+        response.writeHead(HttpResponseStatus::NOT_FOUND);
         response.end();
         return;
     }
@@ -148,7 +148,7 @@ void HttpFileServer::serveFile(const QString &fileName,
             if (fileInfo.lastModified() < date || !date.isValid()) {
                 continue;
             } else if (fileInfo.lastModified() == date) {
-                response.writeHead(HttpResponseStatusCode::NOT_MODIFIED);
+                response.writeHead(HttpResponseStatus::NOT_MODIFIED);
                 response.end();
             }
         }
@@ -164,7 +164,7 @@ void HttpFileServer::serveFile(const QString &fileName,
             if (fileInfo.lastModified() < date || !date.isValid()) {
                 continue;
             } else if (fileInfo.lastModified() > date) {
-                response.writeHead(HttpResponseStatusCode::PRECONDITION_FAILED);
+                response.writeHead(HttpResponseStatus::PRECONDITION_FAILED);
                 response.end();
             }
         }
@@ -209,7 +209,7 @@ void HttpFileServer::serveFile(const QString &fileName,
     }
 
     if (request.method() == "HEAD") {
-        response.writeHead(HttpResponseStatusCode::OK);
+        response.writeHead(HttpResponseStatus::OK);
         response.end();
         return;
     }
@@ -226,7 +226,7 @@ void HttpFileServer::serveFile(const QString &fileName,
         if (request.headers().contains("Range")) {
             static const QByteArray bytesUnit("bytes */");
 
-            response.writeHead(HttpResponseStatusCode
+            response.writeHead(HttpResponseStatus
                                ::REQUESTED_RANGE_NOT_SATISFIABLE);
             response.headers().insert("Content-Range", bytesUnit
                                       + QByteArray::number(fileInfo.size()));
@@ -235,7 +235,7 @@ void HttpFileServer::serveFile(const QString &fileName,
         }
 
         // Just send the entity
-        response.writeHead(HttpResponseStatusCode::OK);
+        response.writeHead(HttpResponseStatus::OK);
 
         while (!file.atEnd()) {
             response << file.read(::bufferSize);
@@ -247,7 +247,7 @@ void HttpFileServer::serveFile(const QString &fileName,
         // ONE range
         static const QByteArray bytesUnit("bytes ");
 
-        response.writeHead(HttpResponseStatusCode::OK);
+        response.writeHead(HttpResponseStatus::OK);
         QPair<qulonglong, qulonglong> &range(ranges[0]);
         response.headers().insert("Content-Range", bytesUnit
                                   + QByteArray::number(range.first)
@@ -301,7 +301,7 @@ void HttpFileServer::serveFile(const QString &fileName,
 
 bool HttpFileServer::serveFile(const QString &fileName,
                                HttpServerResponse &response,
-                               HttpResponseStatusCode statusCode)
+                               HttpResponseStatus statusCode)
 {
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly))

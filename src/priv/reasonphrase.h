@@ -1,5 +1,5 @@
 /*  This file is part of the Tufão project
-    Copyright (C) 2011 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+    Copyright (C) 2011-2013 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@
 
 namespace Tufao {
 
-QByteArray reasonPhrase(HttpResponseStatusCode statusCode);
+QByteArray reasonPhrase(HttpResponseStatus statusCode);
 
 } // namespace Tufao
 

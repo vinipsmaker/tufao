@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
     QObject::connect(&server, &HttpServer::requestReady,
                      [](HttpServerRequest &req, HttpServerResponse &res) {
-                         res.writeHead(Tufao::HttpResponseStatusCode::OK);
+                         res.writeHead(Tufao::HttpResponseStatus::OK);
                          res.headers().replace("Content-Type", "text/plain");
                          res.end("Hello " + req.url().path().toUtf8());
                      });

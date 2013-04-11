@@ -72,7 +72,7 @@ inline std::function<bool(HttpServerRequest&, HttpServerResponse&)>
 NotFoundHandler::handler()
 {
     return [](HttpServerRequest&, HttpServerResponse &response) {
-        response.writeHead(HttpResponseStatusCode::NOT_FOUND);
+        response.writeHead(HttpResponseStatus::NOT_FOUND);
         response.end(body);
         return true;
     };

@@ -1,5 +1,5 @@
 /*  This file is part of the Tufão project
-    Copyright (C) 2011 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+    Copyright (C) 2011-2013 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -142,20 +142,20 @@ bool HttpServerResponse::writeHead(int statusCode, const QByteArray &reasonPhras
     return true;
 }
 
-bool HttpServerResponse::writeHead(HttpResponseStatusCode statusCode,
+bool HttpServerResponse::writeHead(HttpResponseStatus statusCode,
                                    const QByteArray &reasonPhrase,
                                    const Headers &headers)
 {
     return writeHead(int(statusCode), reasonPhrase, headers);
 }
 
-bool HttpServerResponse::writeHead(HttpResponseStatusCode statusCode,
+bool HttpServerResponse::writeHead(HttpResponseStatus statusCode,
                                    const QByteArray &reasonPhrase)
 {
     return writeHead(int(statusCode), reasonPhrase);
 }
 
-bool HttpServerResponse::writeHead(HttpResponseStatusCode statusCode,
+bool HttpServerResponse::writeHead(HttpResponseStatus statusCode,
                                    const Headers &headers)
 {
     if (priv->formattingState != Priv::STATUS_LINE)
@@ -185,7 +185,7 @@ bool HttpServerResponse::writeHead(HttpResponseStatusCode statusCode,
     return true;
 }
 
-bool HttpServerResponse::writeHead(HttpResponseStatusCode statusCode)
+bool HttpServerResponse::writeHead(HttpResponseStatus statusCode)
 {
     if (priv->formattingState != Priv::STATUS_LINE)
         return false;

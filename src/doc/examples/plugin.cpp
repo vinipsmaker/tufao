@@ -9,7 +9,7 @@ Plugin::createHandler(const QHash<QString, HttpServerPlugin*> &,
                       const QVariant &)
 {
     return [](HttpServerRequest &, HttpServerResponse &res){
-        res.writeHead(HttpResponseStatusCode::OK);
+        res.writeHead(HttpResponseStatus::OK);
         res << "Responding from a evil plugin\n";
         res.end();
         return true;

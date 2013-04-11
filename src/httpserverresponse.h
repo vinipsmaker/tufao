@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2012 Vinícius dos Santos Oliveira
+  Copyright (c) 2012, 2013 Vinícius dos Santos Oliveira
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,7 @@ struct Headers;
   \since
   1.0
 */
-enum class HttpResponseStatusCode
+enum class HttpResponseStatus
 {
     // 1xx Informational
     CONTINUE                        = 100,
@@ -316,7 +316,7 @@ public slots:
       \sa
       Tufao::HttpServerResponse::writeHead(int, const QByteArray&, const Headers&)
       */
-    bool writeHead(HttpResponseStatusCode statusCode,
+    bool writeHead(HttpResponseStatus statusCode,
                    const QByteArray &reasonPhrase, const Headers &headers);
 
     /*!
@@ -325,7 +325,8 @@ public slots:
       \sa
       Tufao::HttpServerResponse::writeHead(int, const QByteArray&, const Headers&)
       */
-    bool writeHead(HttpResponseStatusCode statusCode, const QByteArray &reasonPhrase);
+    bool writeHead(HttpResponseStatus statusCode,
+                   const QByteArray &reasonPhrase);
 
     /*!
       This is an overloaded function.
@@ -333,7 +334,7 @@ public slots:
       \sa
       Tufao::HttpServerResponse::writeHead(int, const QByteArray&, const Headers&)
       */
-    bool writeHead(HttpResponseStatusCode statusCode, const Headers &headers);
+    bool writeHead(HttpResponseStatus statusCode, const Headers &headers);
 
     /*!
       This is an overloaded function.
@@ -341,7 +342,7 @@ public slots:
       \sa
       Tufao::HttpServerResponse::writeHead(int, const QByteArray&, const Headers&)
       */
-    bool writeHead(HttpResponseStatusCode statusCode);
+    bool writeHead(HttpResponseStatus statusCode);
 
     /*!
       This sends a chunk of the response body. This method may be called

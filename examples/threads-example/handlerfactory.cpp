@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2012 Vinícius dos Santos Oliveira
+  Copyright (c) 2012, 2013 Vinícius dos Santos Oliveira
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ HandlerFactory::Handler HandlerFactory::createHandler()
 {
     // Returning a new handler for every thread avoid the need for locks
     return [](HttpServerRequest &, HttpServerResponse &response) {
-        response.writeHead(Tufao::HttpResponseStatusCode::OK);
+        response.writeHead(Tufao::HttpResponseStatus::OK);
         response.headers().insert("Content-Type", "text/plain");
         response.end("Hello World\n");
         return true;

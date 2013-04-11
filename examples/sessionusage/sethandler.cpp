@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2012 Vinícius dos Santos Oliveira
+  Copyright (c) 2012, 2013 Vinícius dos Santos Oliveira
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +49,7 @@ bool SetHandler::handleRequest(Tufao::HttpServerRequest &request,
     if (property.isEmpty())
         return false;
 
-    response.writeHead(Tufao::HttpResponseStatusCode::OK);
+    response.writeHead(Tufao::HttpResponseStatus::OK);
 
     const QByteArray value(QUrlQuery(request.url()).queryItemValue("value")
                            .toUtf8());

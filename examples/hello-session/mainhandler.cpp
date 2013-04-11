@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2012 Vinícius dos Santos Oliveira
+  Copyright (c) 2012, 2013 Vinícius dos Santos Oliveira
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -53,17 +53,17 @@ void MainHandler::handleRequest(Tufao::HttpServerRequest &request,
 
     if (action == "unset") {
         store.removeSession(request, response);
-        response.writeHead(Tufao::HttpResponseStatusCode::OK);
+        response.writeHead(Tufao::HttpResponseStatus::OK);
         response.headers().replace("Content-Type", "text/plain");
         response.end("Success!");
         return;
     } else if (action == "set") {
         store.setProperty(request, response, "what", url.path());
-        response.writeHead(Tufao::HttpResponseStatusCode::OK);
+        response.writeHead(Tufao::HttpResponseStatus::OK);
         response.headers().replace("Content-Type", "text/plain");
         response.end("Success!");
     } else if (action == "view") {
-        response.writeHead(Tufao::HttpResponseStatusCode::OK);
+        response.writeHead(Tufao::HttpResponseStatus::OK);
         response.headers().replace("Content-Type", "text/plain");
 
         if (!store.hasSession(request)) {
@@ -77,7 +77,7 @@ void MainHandler::handleRequest(Tufao::HttpServerRequest &request,
         return;
     }
 
-    response.writeHead(Tufao::HttpResponseStatusCode::OK);
+    response.writeHead(Tufao::HttpResponseStatus::OK);
     response.headers().replace("Content-Type", "text/plain");
     response.end(MANUAL);
 }

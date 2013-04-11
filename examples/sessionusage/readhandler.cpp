@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2012 Vinícius dos Santos Oliveira
+  Copyright (c) 2012, 2013 Vinícius dos Santos Oliveira
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ ReadHandler::ReadHandler(QObject *parent) :
 bool ReadHandler::handleRequest(Tufao::HttpServerRequest &request,
                                 Tufao::HttpServerResponse &response)
 {
-    response.writeHead(Tufao::HttpResponseStatusCode::OK);
+    response.writeHead(Tufao::HttpResponseStatus::OK);
 
     Tufao::SimpleSessionStore &store(Tufao::SimpleSessionStore
                                      ::defaultInstance());
