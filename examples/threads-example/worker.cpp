@@ -7,19 +7,36 @@
 
 using namespace Tufao;
 
-Worker::Worker(AbstractHttpServerRequestHandlerFactory *factory) :
-    handler(factory->createHandler())
+Worker::Worker()
 {
-    connect(this, SIGNAL(newConnection(int)), this, SLOT(onNewConnection(int)));
+    connect(this, SIGNAL(initReady()), this, SLOT(init()),
+            Qt::QueuedConnection);
+    connect(this, &Worker::newConnection/*SIGNAL(newConnection(qintptr))*/,
+            this, &Worker::onNewConnection/*SLOT(onNewConnection(qintptr))*/,
+            Qt::QueuedConnection);
 }
 
-void Worker::addConnection(int socketDescriptor)
+void Worker::setFactory(TcpServer::Factory factory)
+{
+    factoryMutex.lock();
+    this->factory = factory;
+    factoryMutex.unlock();
+    emit initReady();
+}
+
+void Worker::addConnection(qintptr socketDescriptor)
 {
     emit newConnection(socketDescriptor);
 }
 
+void Worker::init()
+{
+    factoryMutex.lock();
+    handler = factory();
+    factoryMutex.unlock();
+}
 
-void Worker::onNewConnection(int socketDescriptor)
+void Worker::onNewConnection(qintptr socketDescriptor)
 {
     QTcpSocket *socket = new QTcpSocket(this);
     if (!socket->setSocketDescriptor(socketDescriptor)) {

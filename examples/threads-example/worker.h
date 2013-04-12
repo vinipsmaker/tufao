@@ -2,27 +2,33 @@
 #define WORKER_H
 
 #include <QObject>
+#include <QMutex>
 
-#include "abstracthttpserverrequesthandlerfactory.h"
+#include "tcpserver.h"
 
 class Worker : public QObject
 {
     Q_OBJECT
 public:
-    explicit Worker(AbstractHttpServerRequestHandlerFactory *factory);
+    Worker();
 
-    void addConnection(int socketDescriptor);
+    void setFactory(TcpServer::Factory factory);
+    void addConnection(qintptr socketDescriptor);
 
 signals:
-    void newConnection(int socketDescriptor);
+    void newConnection(qintptr socketDescriptor);
+    void initReady();
 
 private slots:
-    void onNewConnection(int socketDescriptor);
+    void init();
+    void onNewConnection(qintptr socketDescriptor);
     void onRequestReady();
     void onUpgrade();
 
 private:
-    AbstractHttpServerRequestHandlerFactory::Handler handler;
+    TcpServer::Factory factory;
+    QMutex factoryMutex;
+    TcpServer::Handler handler;
 };
 
 #endif // WORKER_H

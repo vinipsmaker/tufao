@@ -33,23 +33,24 @@ TcpServer::TcpServer(QObject *parent) :
 {
 }
 
-void TcpServer::run(int threadsNumber, int port,
-                    AbstractHttpServerRequestHandlerFactory *handlerFactory)
+void TcpServer::run(int threadsNumber, int port, Factory factory)
 {
     workers.reserve(threadsNumber);
     for (int i = 0;i != threadsNumber;++i) {
-        Worker *worker = new Worker(handlerFactory);
+        Worker *worker = new Worker;
         QThread *workerThread = new QThread(this);
 
         worker->moveToThread(workerThread);
         workerThread->start();
+
+        worker->setFactory(factory);
 
         workers.push_back(worker);
     }
     listen(QHostAddress::Any, port);
 }
 
-void TcpServer::incomingConnection(int handle)
+void TcpServer::incomingConnection(qintptr handle)
 {
     workers[(i++) % workers.size()]->addConnection(handle);
 }
