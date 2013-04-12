@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2012 Vinícius dos Santos Oliveira
+  Copyright (c) 2012, 2013 Vinícius dos Santos Oliveira
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -215,12 +215,7 @@ signals:
       only missing parts may be (if any) the message body and the trailers.
 
       \note
-      It's not safe delete this object after this signal is emitted unless you
-      use a queued connection. If you want to delete this object after this
-      signal was emitted, you can: You should wait for the end or close signal
-        - Wait until a safe signal is emitted (end or close)
-        - Close the connection (only works if you are using Tufao::HttpServer)
-        - Call QObject::deleteLater()
+      **This signal is unsafe** (read this: \ref safe-signal)!
 
       \sa
       Tufao::HttpServerRequest::responseOptions
@@ -235,12 +230,7 @@ signals:
       This signal is emitted each time a piece of the message body is received.
 
       \note
-      It's not safe delete this object after this signal is emitted unless you
-      use a queued connection. If you want to delete this object after this
-      signal was emitted, you can: You should wait for the end or close signal
-        - Wait until a safe signal is emitted (end or close)
-        - Close the connection (only works if you are using Tufao::HttpServer)
-        - Call QObject::deleteLater()
+      **This signal is unsafe** (read this: \ref safe-signal)!
       */
     void data(QByteArray data);
 
