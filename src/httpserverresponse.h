@@ -236,17 +236,6 @@ public:
     Headers &headers();
 
     /*!
-      This overload allows you to use a HttpServerResponse object as a stream.
-
-      \note
-      You still need to call HttpServerResponse::end when done with the
-      connection and HttpServerResponse::writeHead before use this operator.
-
-      \since 0.2
-      */
-    HttpServerResponse &operator <<(const QByteArray &chunk);
-
-    /*!
       This method calls QAbstractSocket::flush for the object passed in the
       constructor.
 
@@ -365,6 +354,9 @@ public slots:
       limitation, Tufao::HttpServerResponse will buffer the chunks and send the
       full message at once. If you want a performance boost, treat HTTP/1.0
       clients diferently.
+
+      \sa
+      operator<<(HttpServerResponse&,const QByteArray&)
       */
     bool write(const QByteArray &chunk);
 
@@ -439,11 +431,21 @@ private:
     Priv *priv;
 };
 
-inline
-HttpServerResponse &HttpServerResponse::operator <<(const QByteArray &chunk)
+/*!
+  This overload allows you to use a HttpServerResponse object as a stream.
+
+  \note
+  You still need to call HttpServerResponse::end when done with the connection
+  and HttpServerResponse::writeHead before use this operator.
+
+  \since
+  1.0
+  */
+inline HttpServerResponse &operator <<(HttpServerResponse &response,
+                                       const QByteArray &chunk)
 {
-    write(chunk);
-    return *this;
+    response.write(chunk);
+    return response;
 }
 
 } // namespace Tufao
