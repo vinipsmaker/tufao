@@ -83,6 +83,13 @@ class ConfigContent
 public:
     struct Plugin
     {
+        Plugin() = default;
+
+        template<class T>
+        Plugin(T &&name, T &&path) :
+            name(std::forward<T>(name)), path(std::forward<T>(path))
+        {}
+
         bool operator ==(const Plugin &o) const
         {
             return name == o.name && path == o.path
@@ -103,6 +110,13 @@ public:
 
     struct Request
     {
+        Request() = default;
+
+        template<class T>
+        Request(T &&path, T &&plugin) :
+            path(std::forward<T>(path)), plugin(std::forward<T>(plugin))
+        {}
+
         QString path;
         QString plugin;
         QString method;

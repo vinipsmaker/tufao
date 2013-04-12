@@ -25,6 +25,9 @@ set(tufao_SRC
 
 add_definitions(-DTUFAO_LIBRARY
     -Wall
+    -Wextra
+#    -Wpedantic
+#    -Weffc++
 )
 
 add_library("${TUFAO_LIBRARY}" SHARED ${tufao_SRC})
