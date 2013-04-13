@@ -1,5 +1,5 @@
 /*  This file is part of the Tufão project
-    Copyright (C) 2012 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+    Copyright (C) 2012, 2013 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,9 @@ namespace Tufao {
 class TUFAO_EXPORT TufaoPlugin : public ExtensionSystem::IPlugin
 {
     Q_OBJECT
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    Q_PLUGIN_METADATA(IID "org.vinipsmaker.Tufao.TufaoPlugin")
+#endif
     
 public:
     TufaoPlugin();

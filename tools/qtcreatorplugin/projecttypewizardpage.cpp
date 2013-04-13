@@ -1,5 +1,5 @@
 /*  This file is part of the Tufão project
-    Copyright (C) 2012 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+    Copyright (C) 2012, 2013 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -27,12 +27,14 @@ ProjectTypeWizardPage::ProjectTypeWizardPage(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    registerField("type", ui->comboBox, "currentText",
+    registerField(QString::fromUtf8("type"), ui->comboBox, "currentText",
                   SIGNAL(currentIndexChanged(QString)));
 
-    QStringList projects = QDir(":/templates/metadata").entryList();
+    QStringList projects = QDir(QString::fromUtf8(":/templates/metadata"))
+            .entryList();
     for (QStringList::iterator i = projects.begin();i != projects.end();++i) {
-        QFile f(":/templates/metadata/" + *i + "/motd");
+        QFile f(QString::fromUtf8(":/templates/metadata/") + *i
+                + QString::fromUtf8("/motd"));
         f.open(QIODevice::ReadOnly);
         ui->comboBox->addItem(*i, QString::fromUtf8(f.readAll().constData()));
     }

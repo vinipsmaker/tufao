@@ -175,6 +175,7 @@ Version 1.0
     inheritance to make the same class implement many interfaces
   * HttpUpgradeRouter introduced
    * HttpServer::setUpgradeHandler also
+  * Updated QtCreator plugin to work with QtCreator 2.7.0 and Qt 5
 
 Version 0.5:
   * WebSocket

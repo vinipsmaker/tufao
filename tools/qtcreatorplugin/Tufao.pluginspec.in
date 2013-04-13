@@ -1,6 +1,6 @@
-<plugin name=\"Tufao\" version=\"0.1.0\" compatVersion=\"0.1.0\">
+<plugin name=\"Tufao\" version=\"0.2.0\" compatVersion=\"0.2.0\">
     <vendor>TufaoTeam</vendor>
-    <copyright>(C) Vinícius dos Santos Oliveira</copyright>
+    <copyright>(C) 2012, 2013 Vinícius dos Santos Oliveira</copyright>
     <license>                   GNU LESSER GENERAL PUBLIC LICENSE
     Version 3, 29 June 2007
 
@@ -111,7 +111,7 @@ Corresponding Source.
 
 1) Use a suitable shared library mechanism for linking with the
 Library.  A suitable mechanism is one that (a) uses at run time
-a copy of the Library already present on the user's computer
+a copy of the Library already present on the user\'s computer
 system, and (b) will operate properly with a modified version
 of the Library that is interface-compatible with the Linked
 Version.
@@ -163,13 +163,12 @@ General Public License ever published by the Free Software Foundation.
 
 If the Library as you received it specifies that a proxy can decide
 whether future versions of the GNU Lesser General Public License shall
-apply, that proxy's public statement of acceptance of any version is
+apply, that proxy\'s public statement of acceptance of any version is
 permanent authorization for you to choose that version for the
 Library.</license>
     <description>A helper plugin to work with Tufão framework.</description>
-    <url>http://tufao.googlecode.com/</url>
+    <url>https://github.com/vinipsmaker/tufao</url>
     <dependencyList>
         <dependency name=\"ProjectExplorer\" version=\"$$QTCREATOR_VERSION\"/>
     </dependencyList>
 </plugin>
-
