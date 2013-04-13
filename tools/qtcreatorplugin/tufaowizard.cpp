@@ -1,5 +1,5 @@
 /*  This file is part of the Tufão project
-    Copyright (C) 2012 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+    Copyright (C) 2012, 2013 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -69,34 +69,39 @@ Core::GeneratedFiles TufaoWizard::generateFiles(const QWizard *w,
     Q_UNUSED(errorMessage)
     const TufaoWizardDialog *wizard = qobject_cast<const TufaoWizardDialog*>(w);
 
-    QString projectType = wizard->field("type").toString();
+    QString projectType = wizard->field(QString::fromUtf8("type")).toString();
     QString projectName = wizard->projectName();
-    QString projectPath = wizard->path() + '/' + projectName + '/';
+    QString projectPath = wizard->path() + QString::fromUtf8("/") + projectName
+            + QString::fromUtf8("/");
 
     Core::GeneratedFiles ret;
 
     {
-        QFile t(":/templates/metadata/" + projectType + "/project.pro");
+        QFile t(QString::fromUtf8(":/templates/metadata/") + projectType
+                + QString::fromUtf8("/project.pro"));
         t.open(QIODevice::ReadOnly);
         QString content = QString::fromUtf8(t.readAll().constData())
                 .arg(projectName);
 
-        Core::GeneratedFile f(projectPath + projectName + ".pro");
+        Core::GeneratedFile f(projectPath + projectName
+                              + QString::fromUtf8(".pro"));
         f.setAttributes(Core::GeneratedFile::OpenProjectAttribute);
         f.setContents(content);
 
         ret.push_back(f);
     }
 
-    QStringList files = QDir(":/templates/data/" + projectType).entryList();
+    QStringList files = QDir(QString::fromUtf8(":/templates/data/")
+                             + projectType).entryList();
     for (QStringList::iterator i = files.begin();i != files.end();++i) {
-        QFile t(":/templates/data/" + projectType + '/' + *i);
+        QFile t(QString::fromUtf8(":/templates/data/") + projectType
+                + QString::fromUtf8("/") + *i);
         t.open(QIODevice::ReadOnly);
 
         Core::GeneratedFile f(projectPath + *i);
         f.setBinaryContents(t.readAll());
 
-        if (*i != "main.cpp")
+        if (*i != QString::fromUtf8("main.cpp"))
             f.setAttributes(Core::GeneratedFile::OpenEditorAttribute);
 
         ret.push_back(f);
