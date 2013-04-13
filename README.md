@@ -90,12 +90,6 @@ documentation is available in the following formats:
     configured in the system PATH, but still want to generate the documentation
     in this format, just run the tool using doc/html/index.qhp as input file.
 
-Tufão also have a lot of code to test its correctness. These codes are seperated
-in one different qmake project for each Tufão class and are located in the
-folder tests. If you got Tufão from a git checkout (not a stable release), then
-you may be interessed in run these tests. To compile and run them, just run the
-execute-tests.sh script.
-
 NOTE:
 If you intend to create a CPack-based installer, just run:
 
@@ -138,6 +132,7 @@ You can also see Tufão documentation integrated in QtAssistant.
 ## NEWS
 
 Version 1.0
+  * The project finally have a logo (made by me in Inkscape)
   * Deprecated API was removed
   * Url and QueryString removed in favor of QUrl
   * Headers refactored to inherit from QMultiHash instead of QMultiMap
@@ -176,6 +171,13 @@ Version 1.0
   * HttpUpgradeRouter introduced
    * HttpServer::setUpgradeHandler also
 
+Version 0.6:
+  * HttpServerRequest
+   * setUrl added
+  * UrlRewriterHandler added
+  * HttpUpgradeRouter added
+  * headers can be "streamed" to QDebug objects
+
 Version 0.5:
   * WebSocket
    * peerAddress() method added
@@ -212,12 +214,9 @@ Version 0.2:
 
 Here is a small roadmap for Tufão:
 
-0.5:
-  * Better (and easier) multi-thread support
-
-0.6:
+1.1:
   * RPC support
   * Service discovery and description support
 
-1.1:
+1.2:
   * Forms and file uploads
