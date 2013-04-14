@@ -1,0 +1,15 @@
+{
+    "version": 0,
+    "plugins": [
+        {
+            "name": "myplugin",
+            "path": "/path/to/your/plugin/binary"
+        }
+    ],
+    "requests": [
+        {
+            "path": "^/plugin$",
+            "plugin": "myplugin"
+        }
+    ]
+}

@@ -1,0 +1,4 @@
+A full featured web application sketch. It provides:
+
+* Robust static file server
+* Plugin-based server, to allow change code at runtime
