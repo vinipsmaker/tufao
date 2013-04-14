@@ -1,15 +1,15 @@
 {
-    version: 0,
-    plugins: [
+    "version": 0,
+    "plugins": [
         {
-            name: "myplugin",
-            path: "/path/to/your/plugin/binary"
-        },
+            "name": "myplugin",
+            "path": "/path/to/your/plugin/binary"
+        }
     ],
-    requests: [
+    "requests": [
         {
-            path: "^/plugin$",
-            plugin: "myplugin"
-        },
+            "path": "^/plugin$",
+            "plugin": "myplugin"
+        }
     ]
 }
