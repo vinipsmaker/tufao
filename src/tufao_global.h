@@ -32,11 +32,11 @@
 #endif
 
 #ifndef TUFAO_VERSION_MAJOR
-#  define TUFAO_VERSION_MAJOR 0
+#  define TUFAO_VERSION_MAJOR 1
 #endif
 
 #ifndef TUFAO_VERSION_MINOR
-#  define TUFAO_VERSION_MINOR 4
+#  define TUFAO_VERSION_MINOR 0
 #endif
 
 #endif // TUFAO_GLOBAL_H
