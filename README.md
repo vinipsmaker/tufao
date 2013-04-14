@@ -17,7 +17,7 @@ system (signals & slots). It features:
   * Plugin-based server to allow change the running code without restart the
     application
   * Flexible and secure session support
-  * QtCreator's plugin to allow create new applications rapidly
+  * [QtCreator's plugin](https://github.com/vinipsmaker/tufao-qtcreatorplugin) to allow create new applications rapidly
   * Timeout support
   * C++11
 
