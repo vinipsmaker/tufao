@@ -117,6 +117,11 @@ inline bool operator >=(const IByteArray &lhs, const IByteArray &rhs)
     return qstricmp(lhs.constData(), rhs.constData()) >= 0;
 }
 
+inline uint qHash(const IByteArray &key)
+{
+    return qHash(key.toLower());
+}
+
 } // namespace Tufao
 
 #endif // TUFAO_IBYTEARRAY_H
