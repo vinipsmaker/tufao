@@ -43,6 +43,11 @@ set_target_properties(
     AUTOMOC ON
 )
 
+# Tests
+if(ENABLE_TESTS)
+    add_subdirectory(tests)
+endif()
+
 # Install info
 install(TARGETS "${TUFAO_LIBRARY}"
     DESTINATION "${libdir}"

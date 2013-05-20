@@ -34,6 +34,10 @@ option(GENERATE_DOC
     "Use Doxygen to generate the project documentation" OFF
 )
 
+option(ENABLE_TESTS
+    "Generate and run tests" OFF
+)
+
 set(BUFFER_SIZE 128 CACHE STRING
     "The default buffer size (in bytes) used by Tufão")
 add_definitions(-DBUFFER_SIZE=${BUFFER_SIZE})
