@@ -1,4 +1,4 @@
-#include "ibytearraytest.h"
+#include "ibytearray.h"
 #include <QtTest/QTest>
 #include "../ibytearray.h"
 
@@ -75,3 +75,5 @@ void IByteArrayTest::caseInsensitivity()
     QVERIFY(!(ibytearray1 != ibytearray2));
     QVERIFY(!(ibytearray2 != ibytearray2));
 }
+
+QTEST_APPLESS_MAIN(IByteArrayTest)
