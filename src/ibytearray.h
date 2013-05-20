@@ -39,6 +39,12 @@ namespace Tufao {
     - operator >=
 
   \note
+  Use of overloaded operator '<' is intentionally ambiguous when you combine
+  IByteArray and const char *. This design forces you to make your intent
+  explicit using explicit casts.
+
+  \par
+  \note
   All member functions of this class are inlined and should add the minimum (if
   any) of overhead.
   */
@@ -50,7 +56,6 @@ public:
     IByteArray(const char *str);
     IByteArray(const char *data, int size);
     IByteArray(int size, char ch);
-    operator QByteArray() const;
 
     IByteArray &operator =(const QByteArray &ba);
 };
@@ -73,11 +78,6 @@ inline IByteArray::IByteArray(const char *data, int size) :
 inline IByteArray::IByteArray(int size, char ch) :
     QByteArray(size, ch)
 {}
-
-inline IByteArray::operator QByteArray() const
-{
-    return QByteArray(*this);
-}
 
 inline IByteArray &IByteArray::operator =(const QByteArray &ba)
 {
