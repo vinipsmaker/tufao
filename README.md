@@ -78,6 +78,20 @@ NOTE:
 Qt 5.0 or later is required for 1.x series. Qt 4.7 or later is required to 0.x
 series.
 
+NOTE:
+If you intend to create a CPack-based installer, just run:
+
+    # To create a binary distribution:
+    cpack -C CPackConfig.cmake
+
+    # To create a source distribution:
+    cpack -C CPackSourceConfig.cmake
+
+    # To create a Windows NSIS-based installer:
+    cpack -GNSIS
+
+### Documentation
+
 To generate the documentation, just run doxygen using Doxyfile as configuration
 file and the documentation will be generated in the folder doc. The
 documentation is available in the following formats:
@@ -90,17 +104,17 @@ documentation is available in the following formats:
     configured in the system PATH, but still want to generate the documentation
     in this format, just run the tool using doc/html/index.qhp as input file.
 
-NOTE:
-If you intend to create a CPack-based installer, just run:
+### Tests
 
-    # To create a binary distribution:
-    cpack -C CPackConfig.cmake
+Tufão also have a lot of code to test its correctness. These codes are based on
+QTestLib and generate a self-contained executable. There is also some CTest
+rules and integration with the CMake build. To run a test, just execute:
 
-    # To create a source distribution:
-    cpack -C CPackSourceConfig.cmake
+    make test
 
-    # To create a Windows NSIS-based installer:
-    cpack -GNSIS
+Or, if you don't want to use Makefiles:
+
+    ctest
 
 ## INSTALL
 
