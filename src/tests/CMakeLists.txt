@@ -9,6 +9,7 @@ set(tests
     httppluginserver
     websocket
     sessionsettings
+    httpserverrequestrouter
 )
 
 foreach(test ${tests})
