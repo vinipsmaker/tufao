@@ -8,6 +8,7 @@ set(tests
     httpfileserver
     httppluginserver
     websocket
+    sessionsettings
 )
 
 foreach(test ${tests})
