@@ -10,6 +10,7 @@ set(tests
     websocket
     sessionsettings
     httpserverrequestrouter
+    httpupgraderouter
 )
 
 foreach(test ${tests})
