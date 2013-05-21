@@ -77,7 +77,7 @@ struct SessionSettings
         }
         cookie.setHttpOnly(settings.httpOnly);
         cookie.setSecure(settings.secure);
-        if (!settings.domain.isEmpty()) cookie.setName(settings.domain);
+        if (!settings.domain.isEmpty()) cookie.setDomain(settings.domain);
         if (!settings.path.isEmpty()) cookie.setPath(settings.path);
 
         cookie.setName(settings.name);
