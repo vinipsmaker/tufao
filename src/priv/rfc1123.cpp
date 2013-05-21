@@ -20,14 +20,27 @@
 
 namespace Tufao {
 
-const QRegExp Rfc1123::rfc1123("(?:\\w{3}\\s*,\\s*)?" // day
-                               "(\\d{1,2})\\s+" // day-1
-                               "(\\w{3})\\s+" // month-2
-                               "(\\d{2}(?:\\d{2})?)\\s+" // year-3
+// HTTP-date is case sensitive and MUST NOT include additional LWS beyond that
+// specifically included as SP in the grammar
+
+//   rfc1123-date = wkday "," SP date1 SP time SP "GMT"
+//   wkday        = "Mon" | "Tue" | "Wed"
+//                | "Thu" | "Fri" | "Sat" | "Sun"
+//   date1        = 2DIGIT SP month SP 4DIGIT
+//   month        = "Jan" | "Feb" | "Mar" | "Apr"
+//                | "May" | "Jun" | "Jul" | "Aug"
+//                | "Sep" | "Oct" | "Nov" | "Dec"
+//   time         = 2DIGIT ":" 2DIGIT ":" 2DIGIT
+
+// Example: Sun, 06 Nov 1994 08:49:37 GMT
+
+const QRegExp Rfc1123::rfc1123("\\w{3},\\s" // day
+                               "(\\d{2})\\s" // day-1
+                               "(\\w{3})\\s" // month-2
+                               "(\\d{4})\\s" // year-3
                                "(\\d{2}):" // hour-4
-                               "(\\d{2})" // minutes-5
-                               "(?::(\\d{2}))?\\s*" // seconds-6
-                               "GMT"
-                               );
+                               "(\\d{2}):" // minutes-5
+                               "(\\d{2})\\s" // seconds-6
+                               "GMT");
 
 } // namespace Tufao

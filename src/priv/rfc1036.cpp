@@ -20,14 +20,28 @@
 
 namespace Tufao {
 
-const QRegExp Rfc1036::rfc1036("(?:\\w{3}\\s*,\\s*)" // day
-                               "(\\d{1,2})\\s+" // day-1
-                               "(\\w{3})\\s+" // month-2
-                               "(\\d{2})\\s+" // year-3
+// HTTP-date is case sensitive and MUST NOT include additional LWS beyond that
+// specifically included as SP in the grammar. RFC 1036 updates and replaces
+// RFC-850.
+
+//   rfc850-date  = weekday "," SP date2 SP time SP "GMT"
+//   weekday      = "Monday" | "Tuesday" | "Wednesday"
+//              | "Thursday" | "Friday" | "Saturday" | "Sunday"
+//   date2        = 2DIGIT "-" month "-" 2DIGIT
+//   month        = "Jan" | "Feb" | "Mar" | "Apr"
+//                | "May" | "Jun" | "Jul" | "Aug"
+//                | "Sep" | "Oct" | "Nov" | "Dec"
+//   time         = 2DIGIT ":" 2DIGIT ":" 2DIGIT
+
+// Example: Sunday, 06-Nov-94 08:49:37 GMT
+
+const QRegExp Rfc1036::rfc1036("\\w+,\\s" // day
+                               "(\\d{2})-" // day-1
+                               "(\\w{3})-" // month-2
+                               "(\\d{2})\\s" // year-3
                                "(\\d{2}):" // hour-4
                                "(\\d{2}):" // minutes-5
-                               "(\\d{2})\\s+" // seconds-6
-                               "GMT"
-                               );
+                               "(\\d{2})\\s" // seconds-6
+                               "GMT");
 
 } // namespace Tufao

@@ -30,7 +30,7 @@ QByteArray Headers::fromDateTime(const QDateTime &dateTime)
 {
     return QLocale(QLocale::C).toString(dateTime.toUTC(),
                 "ddd," // day
-                " d MMM yyyy" // date
+                " dd MMM yyyy" // date
                 " hh:mm:ss" // hour
                 ).toUtf8() + " GMT"; // zone
 }
