@@ -4,6 +4,7 @@ enable_testing()
 # Tests
 set(tests
     ibytearray
+    headers
 )
 
 foreach(test ${tests})

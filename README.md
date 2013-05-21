@@ -17,7 +17,8 @@ system (signals & slots). It features:
   * Plugin-based server to allow change the running code without restart the
     application
   * Flexible and secure session support
-  * [QtCreator's plugin](https://github.com/vinipsmaker/tufao-qtcreatorplugin) to allow create new applications rapidly
+  * [QtCreator's plugin](https://github.com/vinipsmaker/tufao-qtcreatorplugin)
+    to allow create new applications rapidly
   * Timeout support
   * C++11
 
@@ -58,6 +59,7 @@ OPTIONS can be null or have a combination of the following values:
   * -DCMAKE_BUILD_TYPE=RelWithDebInfo
   * -DCMAKE_BUILD_TYPE=MinSizeRel
   * -DGENERATE_DOC=YES generate documentation using Doxygen
+  * -DENABLE_TESTS=YES enable generate and run tests
 
 OPTIONS available on Windows:
   * -G"MinGW Makefiles" to generate Makefiles for use with MinGW environment
@@ -107,10 +109,10 @@ documentation is available in the following formats:
 ### Tests
 
 Tufão also have a lot of code to test its correctness. These codes are based on
-QTestLib and generate a self-contained executable. There is also some CTest
-rules and integration with the CMake build. To run a test, just execute:
+QTestLib and generate self-contained executables. There is also some CTest rules
+and integration with the CMake build. To run the tests, just execute:
 
-    make test
+    make tests
 
 Or, if you don't want to use Makefiles:
 
