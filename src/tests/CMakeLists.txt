@@ -7,6 +7,7 @@ set(tests
     headers
     httpfileserver
     httppluginserver
+    websocket
 )
 
 foreach(test ${tests})
