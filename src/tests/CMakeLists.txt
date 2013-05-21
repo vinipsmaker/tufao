@@ -5,6 +5,7 @@ enable_testing()
 set(tests
     ibytearray
     headers
+    httpfileserver
 )
 
 foreach(test ${tests})
