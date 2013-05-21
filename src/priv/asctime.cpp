@@ -20,13 +20,27 @@
 
 namespace Tufao {
 
-const QRegularExpression Asctime::asctime(R"re((?:\w{3})\s+" // day
-                                          "(\w{3})\s+" // month-1
-                                          "(\d{1,2})\s+" // day-2
-                                          "(\d{2}):" // hour-3
-                                          "(\d{2}):" // minutes-4
-                                          "(\d{2})\s+" // seconds-5
-                                          "(\d{4}))re" // year-6
+// HTTP-date is case sensitive and MUST NOT include additional LWS beyond that
+// specifically included as SP in the grammar
+
+//   asctime-date = wkday SP date3 SP time SP 4DIGIT
+//   wkday        = "Mon" | "Tue" | "Wed"
+//                | "Thu" | "Fri" | "Sat" | "Sun"
+//   date3        = month SP ( 2DIGIT | ( SP 1DIGIT ))
+//   month        = "Jan" | "Feb" | "Mar" | "Apr"
+//                | "May" | "Jun" | "Jul" | "Aug"
+//                | "Sep" | "Oct" | "Nov" | "Dec"
+//   time         = 2DIGIT ":" 2DIGIT ":" 2DIGIT
+
+// Example: Sun Nov  6 08:49:37 1994
+
+const QRegularExpression Asctime::asctime("\\w{3}\\s" // day
+                                          "(\\w{3})\\s{1,2}" // month-1
+                                          "(\\d{1,2})\\s" // day-2
+                                          "(\\d{2}):" // hour-3
+                                          "(\\d{2}):" // minutes-4
+                                          "(\\d{2})\\s" // seconds-5
+                                          "(\\d{4})" // year-6
                                           );
 
 const QStringList Asctime::months{
