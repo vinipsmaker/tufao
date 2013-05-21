@@ -13,20 +13,24 @@ set(tests
     httpupgraderouter
 )
 
+macro(setup_test_target target)
+    qt5_use_modules("${target}" Core Network Test)
+    set_target_properties(
+        "${target}"
+        PROPERTIES
+        AUTOMOC ON
+    )
+    target_link_libraries("${target}" "${TUFAO_LIBRARY}")
+
+    add_test("${target}" "${CMAKE_CURRENT_BINARY_DIR}/${target}")
+endmacro()
+
 foreach(test ${tests})
     if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${test}")
         add_subdirectory("${test}")
     else()
         add_executable("${test}" "${test}.cpp")
-        qt5_use_modules("${test}" Core Network Test)
-        set_target_properties(
-            "${test}"
-            PROPERTIES
-            AUTOMOC ON
-        )
-        target_link_libraries("${test}" "${TUFAO_LIBRARY}")
-
-        add_test("${test}" "${CMAKE_CURRENT_BINARY_DIR}/${test}")
+        setup_test_target("${test}")
     endif()
 endforeach()
 

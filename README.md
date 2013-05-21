@@ -60,7 +60,7 @@ OPTIONS can be null or have a combination of the following values:
   * -DCMAKE_BUILD_TYPE=RelWithDebInfo
   * -DCMAKE_BUILD_TYPE=MinSizeRel
   * -DGENERATE_DOC=YES generate documentation using Doxygen
-  * -DENABLE_TESTS=YES enable generate and run tests
+  * -DENABLE_TESTS=YES generate and run tests
 
 OPTIONS available on Windows:
   * -G"MinGW Makefiles" to generate Makefiles for use with MinGW environment
