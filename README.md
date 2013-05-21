@@ -19,6 +19,7 @@ system (signals & slots). It features:
   * Flexible and secure session support
   * [QtCreator's plugin](https://github.com/vinipsmaker/tufao-qtcreatorplugin)
     to allow create new applications rapidly
+  * Lots of tests
   * Timeout support
   * C++11
 
@@ -117,6 +118,18 @@ and integration with the CMake build. To run the tests, just execute:
 Or, if you don't want to use Makefiles:
 
     ctest
+
+In Visual Studio, the target _RUN_TESTS_ is created.
+
+CTest integrates with
+[CDash](http://cmake.org/Wiki/CMake/Testing_With_CTest#Dashboards)
+to allow developers to centralize the tests result. You can send the results to
+CDash running the _Experimental_ target:
+
+    make Experimental
+
+You can see the Tufão testing log at
+[Tufao CDash project's page](http://my.cdash.org/index.php?project=Tufao).
 
 ## INSTALL
 
