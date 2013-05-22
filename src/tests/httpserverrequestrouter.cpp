@@ -35,6 +35,10 @@ void HttpServerRequestRouterTest::mappings()
     QCOMPARE(active[0], true);
     QCOMPARE(active[1], false);
     QCOMPARE(active[2], true);
+    QCOMPARE(httpServerRequestRouter.map({
+                QRegularExpression{},
+                [](HttpServerRequest&, HttpServerResponse&){return true;}
+            }), 2);
 
     httpServerRequestRouter.unmap(1);
     QCOMPARE(active[0], true);
@@ -45,6 +49,10 @@ void HttpServerRequestRouterTest::mappings()
     QCOMPARE(active[0], false);
     QCOMPARE(active[1], false);
     QCOMPARE(active[2], false);
+    QCOMPARE(httpServerRequestRouter.map({
+                QRegularExpression{},
+                [](HttpServerRequest&, HttpServerResponse&){return true;}
+            }), 1);
 }
 
 QTEST_APPLESS_MAIN(HttpServerRequestRouterTest)

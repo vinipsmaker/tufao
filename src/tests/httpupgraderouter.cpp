@@ -35,6 +35,10 @@ void HttpUpgradeRouterTest::mappings()
     QCOMPARE(active[0], true);
     QCOMPARE(active[1], false);
     QCOMPARE(active[2], true);
+    QCOMPARE(httpUpgradeRouter.map({
+                QRegularExpression{},
+                [](HttpServerRequest&, const QByteArray &){return true;}
+            }), 2);
 
     httpUpgradeRouter.unmap(1);
     QCOMPARE(active[0], true);
@@ -45,6 +49,10 @@ void HttpUpgradeRouterTest::mappings()
     QCOMPARE(active[0], false);
     QCOMPARE(active[1], false);
     QCOMPARE(active[2], false);
+    QCOMPARE(httpUpgradeRouter.map({
+                QRegularExpression{},
+                [](HttpServerRequest&, const QByteArray &){return true;}
+            }), 1);
 }
 
 QTEST_APPLESS_MAIN(HttpUpgradeRouterTest)
