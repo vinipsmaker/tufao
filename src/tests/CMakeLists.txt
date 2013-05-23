@@ -22,7 +22,10 @@ macro(setup_test_target target)
     )
     target_link_libraries("${target}" "${TUFAO_LIBRARY}")
 
-    add_test("${target}" "${CMAKE_CURRENT_BINARY_DIR}/${target}")
+    add_test(NAME "${target}"
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src"
+        COMMAND $<TARGET_FILE:${target}>
+    )
 endmacro()
 
 foreach(test ${tests})
