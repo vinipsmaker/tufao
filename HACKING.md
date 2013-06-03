@@ -18,7 +18,7 @@ following rules **MUST** be respected:
   * The only Tufão dependency is Qt and use native/low-level API is **not**
     allowed
   * Always use this form to include Qt headers:
-        #include <QtCore/QWhatever>
+        #include &lt;QtCore/QWhatever&gt;
   * Always use quotes-enclosed form to include other Tufão headers:
         #include "othertufaoheader.h"
     The corresponding &lt;OtherTufaoHeader&gt; is only available after the
@@ -68,13 +68,14 @@ following rules **MUST** be respected:
     placed under _src/doc_.
   * If a signal is unsafe, you **must** document it:
         \note
-        **This signal is unsafe** (read this: \ref safe-signal)!
+        \*\*This signal is unsafe\*\* (read this: \ref safe-signal)!
 
 # Introducing a new feature
 
   1. Add the function signature in an existing header.
   2. If the function is not member of any existing class, use the TUFAO_EXPORT
-     macro in its signature.
+     macro in its signature. This macro is available under
+     _src/tufao\_global.h_.
   3. Do not forget to put the Doxygen's _\since_ command in the documentation.
   4. Implement the function in the corresponding source file.
   5. Create tests
@@ -87,7 +88,8 @@ following rules **MUST** be respected:
      license.
    * It **MUST** use a define guard.
   2. Put the class declaration. If it's not a template, then it **MUST** use
-     the TUFAO_EXPORT macro.
+     the TUFAO_EXPORT macro. This macro is available under
+     _src/tufao\_global.h_.
   3. Document the class. And **DON'T FORGET** to use the _\since_ command.
   4. Create the source file.
    * It **MUST** contain a copyright notice and be distributed under "LGPLv2.1
