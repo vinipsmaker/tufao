@@ -2,14 +2,15 @@
 
 Tufão is a web framework for C++ that makes use of Qt's object communication
 system (signals & slots). It features:
+
   * High performance standalone server
   * Cross-plataform support
   * Good [documentation](http://vinipsmaker.github.com/tufao/ref/)
   * Support modern HTTP features
-   * Persistent streams
-   * Chunked entities
-   * 100-continue status
-   * WebSocket
+    * Persistent streams
+    * Chunked entities
+    * 100-continue status
+    * WebSocket
   * HTTPS support
   * Flexible request router
   * Static file server with support for conditional requests, partial download
@@ -53,6 +54,7 @@ set, then create a folder for the build and, from there, run:
     $ make MAKEOPTIONS
 
 OPTIONS can be null or have a combination of the following values:
+
   * -DCMAKE_INSTALL_PREFIX=${INSTALLDIR} sets the directory where to install
     Tufão.
   * -DCMAKE_BUILD_TYPE=Debug
@@ -63,10 +65,12 @@ OPTIONS can be null or have a combination of the following values:
   * -DENABLE_TESTS=YES generate and run tests
 
 OPTIONS available on Windows:
+
   * -G"MinGW Makefiles" to generate Makefiles for use with MinGW environment
   * -G"Visual Studio 10" to generate project files for Visual Studio 10
 
 MAKEOPTIONS can be null or have a combination of the following values:
+
   * install installs Tufão
   * DESTDIR=${PKGDIR} sets the directory where to install Tufão. This options
     should be used if you intend to package Tufão to set the package directory.
@@ -98,6 +102,7 @@ If you intend to create a CPack-based installer, just run:
 To generate the documentation, just run doxygen using Doxyfile as configuration
 file and the documentation will be generated in the folder doc. The
 documentation is available in the following formats:
+
   * HTML: Always generated. It should be in the doc/html folder.
   * latex: You can use this format to generate a pdf. Just run make inside the
     doc/latex folder.
@@ -161,66 +166,71 @@ You can also see Tufão documentation integrated in QtAssistant.
 ## NEWS
 
 Version 1.0
+
   * The project finally have a logo (made by me in Inkscape)
   * Deprecated API was removed
   * Url and QueryString removed in favor of QUrl
   * Headers refactored to inherit from QMultiHash instead of QMultiMap
   * HttpServerResponse
-   * Constructor's options argument is optional now
-   * setOptions method added
-   * Constructor takes a reference to a QIODevice instead a pointer
+    * Constructor's options argument is optional now
+    * setOptions method added
+    * Constructor takes a reference to a QIODevice instead a pointer
   * HttpServerRequest
-   * Constructor takes a reference to a QAbstractSocket instead a pointer
-   * socket method returns a reference instead a pointer
-   * url returns a QUrl
-   * data signal was changed and you must use readBody method to access body's content.
-   * the upgrade's _head_ data is accessed from the request body from now on
-   * now the object auto-disconnects slots from data and end signals right before emit ready
-   * setCustomData and customData methods added
-    * Now HttpServerRequestRouter use these methods to pass the list of captured
-      texts
+    * Constructor takes a reference to a QAbstractSocket instead a pointer
+    * socket method returns a reference instead a pointer
+    * url returns a QUrl
+    * data signal was changed and you must use readBody method to access body's content.
+    * the upgrade's _head_ data is accessed from the request body from now on
+    * now the object auto-disconnects slots from data and end signals right before emit ready
+    * setCustomData and customData methods added
+      * Now HttpServerRequestRouter use these methods to pass the list of captured
+        texts
   * HttpServer uses reference instead of pointers in several places
   * AbstractHttpServerRequestRouter refactored to explore lambdas features.
   * Tufão's plugin system fully refactored
-   * It's using JSON files as configuration
+    * It's using JSON files as configuration
   * AbstractHttpServerRequestHandler::handleRequest
-   * It uses references instead pointers
-   * It receives 2 arguments instead of 3
+    * It uses references instead pointers
+    * It receives 2 arguments instead of 3
   * One more abstraction to sessions created to explore lambdas
   * WebSocket
-   * startServerHandshake is taking references instead pointers
+    * startServerHandshake is taking references instead pointers
   * LESS POINTERS and MORE REFERENCES
-   * This change exposes a model more predictive and natural
-   * I'm caring less about Qt style and more about C++ style
-    * But don't worry, I'll maintain a balance
+    * This change exposes a model more predictive and natural
+    * I'm caring less about Qt style and more about C++ style
+      * But don't worry, I'll maintain a balance
   * Using scoped enums
   * HttpFileServer uses/sends mime info
   * Interfaces don't inherit from QObject anymore, so you can use multiple
     inheritance to make the same class implement many interfaces
   * HttpUpgradeRouter introduced
-   * HttpServer::setUpgradeHandler also
+    * HttpServer::setUpgradeHandler also
   * Updated QtCreator plugin to work with QtCreator 2.7.0 and Qt 5
 
 Version 0.6:
+
   * HttpServerRequest
-   * setUrl added
+    * setUrl added
   * UrlRewriterHandler added
   * HttpUpgradeRouter added
   * headers can be "streamed" to QDebug objects
 
 Version 0.5:
+
   * WebSocket
-   * peerAddress() method added
-   * peerSocket() method added
+    * peerAddress() method added
+    * peerSocket() method added
 
 Version 0.4:
+
   * Using CMake build system
-   * Changes to allow parallel Tufão installations (if major versions differs)
-   * Added PKGCONFIG support
+    * Changes to allow parallel Tufão installations (if major versions differs)
+    * Added PKGCONFIG support
   * Session support
   * Better documentation
 
 Version 0.3
+
   * More application templates in QtCreator Tufão's plugin
   * Class to serve static files with support for conditional requests and
     byte-range requests
@@ -232,6 +242,7 @@ Version 0.3
   * Some minor improvements
 
 Version 0.2:
+
   * Code is more stable
   * Documentation improved
   * HttpServerResponse is easier to use
@@ -245,8 +256,10 @@ Version 0.2:
 Here is a small roadmap for Tufão:
 
 1.1:
+
   * RPC support
   * Service discovery and description support
 
 1.2:
+
   * Forms and file uploads
