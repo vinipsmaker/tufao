@@ -38,8 +38,25 @@ class HttpServerRequest;
   This class represents a WebSocket connection.
 
   WebSocket is a protocol designed to allow HTTP user agents and servers
-  communicates using a two-way protocol. It's possible to upgrade a established
+  communicates using a two-way protocol. It's possible to upgrade an established
   HTTP connection to a WebSocket connection.
+
+  # WebSocket server
+
+  If you intend to create a server able to accept WebSocket connections, you
+  must create a HTTP server and create a handler to upgrade events.
+
+  In the handler for the upgrade event, you must create a new WebSocket object
+  and call the method startServerHandshake. This method will send the initial
+  WebSocket server payload and check if it's a valid WebSocket connection
+  request.
+
+  # WebSocket client
+
+  If you intend to connect to a WebSocket server, you must call one of the
+  connectToHost methods. If the connection should be encrypted, then call one of
+  the connectToHostEncrypted methods. The connected signal will emitted when the
+  socket is ready.
 
   \sa
   Tufao::AbstractMessageSocket
@@ -312,12 +329,14 @@ public:
 
     /*!
       It establish a WebSocket connection initiated by \p request with \p head
-      data.
+      data. The method send the initial WebSocket server payload and check if
+      it's a valid WebSocket connection request.
 
       \note
       You should call this function only after \p request emitts the
       Tufao::HttpServerRequest::upgrade signal.
 
+      \par
       \note
       Tufao::WebSocket won't treat optional headers found in \p request. If you
       want to respond to these headers in the opening handshake response, just
@@ -328,15 +347,18 @@ public:
         - Cookie
         - Sec-WebSocket-Protocol: The subprotocol the client wishes to speak.
 
+      \par
       \note
       If you want to perform additional client authentication, you should
       start the handshake only after the authentication occurs. You can use the
       401 status code with "WWW-Authenticate" header to perform the
       authentication, among other methods.
 
+      \par
       \note
       You can use a 3xx status code to redirect the client.
 
+      \par
       \note
       If the handshake fail, the method will write the appropriate message to
       the socket and return false.
