@@ -137,3 +137,11 @@ under _src/tests/CMakeLists.txt_.
 Individual features being developed may have its own branches to avoid blocking
 releases. When a feature is ready (functionality, documentation, tests and
 examples), it can be merged in the _master branch_.
+
+# Send your changes
+
+Did you make a modification to Tufão and think its worth to go upstream?
+
+  * Send a [pull request](http://archlinux.me/dusty/2012/03/18/contributing-to-git-projects-on-github/)
+  * Send the patch to the [mailing list](https://github.com/vinipsmaker/tufao/wiki/Contact)
+    (tip: use the command _git format-patch_ to generate the patches)
