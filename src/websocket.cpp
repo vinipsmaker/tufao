@@ -24,6 +24,10 @@
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QSslSocket>
 
+#if defined(NO_ERROR) && defined(_WIN32)
+# undef NO_ERROR
+#endif
+
 // Writes a string without the '\0' char using function \p func
 #define WRITE_STRING(func, chunk) (func)(chunk, sizeof(chunk) - 1)
 
