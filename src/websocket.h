@@ -28,6 +28,11 @@
 
 #include <QtNetwork/QAbstractSocket>
 
+#if defined(NO_ERROR) && defined(_WIN32)
+# define __WINERROR_WORKAROUND NO_ERROR
+# undef NO_ERROR
+#endif
+
 class QSslError;
 
 namespace Tufao {
@@ -520,5 +525,9 @@ private:
 };
 
 } // namespace Tufao
+
+#if defined(__WINERROR_WORKAROUND)
+# define NO_ERROR __WINERROR_WORKAROUND
+#endif
 
 #endif // TUFAO_WEBSOCKET_H
