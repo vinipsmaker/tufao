@@ -25,6 +25,11 @@
 #include <QtNetwork/QAbstractSocket>
 #include <QtCore/QtEndian>
 
+#if defined(NO_ERROR) && defined(_WIN32)
+# define TUFAO_WINERROR_WORKAROUND
+# undef NO_ERROR
+#endif
+
 namespace Tufao {
 
 struct HttpClientSettings;
@@ -333,5 +338,10 @@ inline bool hasValueCaseInsensitively(const QList<QByteArray> &values,
 }
 
 } // namespace Tufao
+
+#if defined(TUFAO_WINERROR_WORKAROUND)
+# define NO_ERROR 0L
+# undef TUFAO_WINERROR_WORKAROUND
+#endif
 
 #endif // TUFAO_PRIV_WEBSOCKET_H
