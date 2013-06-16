@@ -12,6 +12,7 @@ set(tests
     httpserverrequestrouter
     httpupgraderouter
     asctime
+    rfc1036
 )
 
 macro(setup_test_target target)
