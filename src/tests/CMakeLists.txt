@@ -14,6 +14,7 @@ set(tests
     asctime
     rfc1036
     rfc1123
+    cryptography
 )
 
 macro(setup_test_target target)
