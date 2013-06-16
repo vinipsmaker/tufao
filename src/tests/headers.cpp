@@ -57,7 +57,7 @@ void HeadersTest::dateTimeConversion_data()
     QTest::newRow("RFC 2616's 3.3.1")
         << QDateTime{QDate{1994, 11, 6}, QTime{8, 49, 37}, Qt::UTC}
         << QByteArray{"Sun Nov  6 08:49:37 1994"}
-    << QByteArray{"Sunday, 06-Nov-94 08:49:37 GMT"}
+        << QByteArray{"Sunday, 06-Nov-94 08:49:37 GMT"}
         << QByteArray{"Sun, 06 Nov 1994 08:49:37 GMT"};
     QTest::newRow("Another data")
         << QDateTime{QDate{1903, 12, 1}, QTime{}, Qt::UTC}
