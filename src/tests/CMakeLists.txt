@@ -13,6 +13,7 @@ set(tests
     httpupgraderouter
     asctime
     rfc1036
+    rfc1123
 )
 
 macro(setup_test_target target)
