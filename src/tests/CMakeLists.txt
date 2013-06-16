@@ -11,6 +11,7 @@ set(tests
     sessionsettings
     httpserverrequestrouter
     httpupgraderouter
+    asctime
 )
 
 macro(setup_test_target target)
