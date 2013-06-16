@@ -42,6 +42,14 @@ class HttpServerRequest;
 /*!
   This enum describes the possible erros tha can occur.
 
+  \note
+  Avoid to directly test against NO_ERROR, because Windows API defines the
+  NO_ERROR macro and your code might fail to build under this plataform. You can
+  safely make a test using code like the following:
+
+  \note
+  \include websocket_testerror.cpp
+
   \since
   1.0
 */
