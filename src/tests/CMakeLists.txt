@@ -15,6 +15,7 @@ set(tests
     rfc1036
     rfc1123
     cryptography
+    httpserverresponse
 )
 
 macro(setup_test_target target)
