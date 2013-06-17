@@ -70,6 +70,12 @@ set_target_properties(
     VS_KEYWORD Qt4VSv1.0
 )
 
+# Tests
+if(ENABLE_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
 # Install info
 install(TARGETS tufao
     DESTINATION "${libdir}"

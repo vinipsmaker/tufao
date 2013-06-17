@@ -8,6 +8,10 @@ option(GENERATE_DOC
     "Use Doxygen to generate the project documentation" OFF
 )
 
+option(ENABLE_TESTS
+    "Generate and run tests" OFF
+)
+
 set(BUFFER_SIZE 128 CACHE STRING
     "The default buffer size (in bytes) used by Tufão")
 add_definitions(-DBUFFER_SIZE=${BUFFER_SIZE})
@@ -46,3 +50,8 @@ set(CPACK_PACKAGE_VERSION_MINOR "${TUFAO_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${TUFAO_VERSION_PATCH}")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING.LESSER")
 include(CPack)
+
+# Testing
+if(ENABLE_TESTS)
+    include(CTest)
+endif()
