@@ -305,8 +305,21 @@ public:
     /*!
       The same as WebSocket::connectToHost, but uses a TLS connection.
 
+      \p ignoredSslErrors is passed to QSslSocket::ignoreSslErrors.
+
       \sa
       Tufao::WebSocket::connectToHost
+
+      \since
+      1.1
+      */
+    bool connectToHostEncrypted(const QString &hostname, quint16 port,
+                                const QByteArray &resource,
+                                const Headers &headers,
+                                const QList<QSslError> &ignoredSslErrors);
+
+    /*!
+      This is an overloaded function.
       */
     bool connectToHostEncrypted(const QString &hostname, quint16 port,
                                 const QByteArray &resource,

@@ -108,12 +108,15 @@ bool WebSocket::connectToHost(const QString &hostname,
 
 bool WebSocket::connectToHostEncrypted(const QString &hostname, quint16 port,
                                        const QByteArray &resource,
-                                       const Headers &headers)
+                                       const Headers &headers,
+                                       const QList<QSslError> &ignoredSslErrors)
 {
     if  (priv->state != Priv::CLOSED)
         return false;
 
     QSslSocket *socket = new QSslSocket(this);
+
+    socket->ignoreSslErrors(ignoredSslErrors);
 
     if (!headers.contains("Host")) {
         Headers newHeaders(headers);
@@ -126,6 +129,14 @@ bool WebSocket::connectToHostEncrypted(const QString &hostname, quint16 port,
     socket->connectToHostEncrypted(hostname, port);
 
     return true;
+}
+
+bool WebSocket::connectToHostEncrypted(const QString &hostname, quint16 port,
+                                       const QByteArray &resource,
+                                       const Headers &headers)
+{
+    return connectToHostEncrypted(hostname, port, resource, headers,
+                                  QList<QSslError>());
 }
 
 bool WebSocket::connectToHostEncrypted(const QString &hostname,

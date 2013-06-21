@@ -165,6 +165,10 @@ You can also see Tufão documentation integrated in QtAssistant.
 
 ## NEWS
 
+Version 1.1 (unreleased)
+
+  * Add ability to ignore a set of SSL errors in WebSocket
+
 Version 1.0
 
   * The project finally have a logo (made by me in Inkscape)
@@ -260,6 +264,6 @@ Here is a small roadmap for Tufão:
   * RPC support
   * Service discovery and description support
 
-1.2:
+1.1:
 
   * Forms and file uploads
