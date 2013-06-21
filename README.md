@@ -19,6 +19,7 @@ system (signals & slots). It features:
     application
   * Flexible and secure session support
   * QtCreator's plugin to allow create new applications rapidly
+  * Lots of tests
   * Timeout support
 
 It uses Ryan Dahl's HTTP parser to provide good performance.
@@ -56,6 +57,7 @@ OPTIONS can be null or have a combination of the following values:
   * -DCMAKE_BUILD_TYPE=RelWithDebInfo
   * -DCMAKE_BUILD_TYPE=MinSizeRel
   * -DGENERATE_DOC=YES generate documentation using Doxygen
+  * -DENABLE_TESTS=YES generate and run tests
 
 OPTIONS available on Windows:
 
@@ -77,6 +79,20 @@ Example:
 NOTE:
 Qt 4.7 or later is required.
 
+NOTE:
+If you intend to create a CPack-based installer, just run:
+
+    # To create a binary distribution:
+    cpack -C CPackConfig.cmake
+
+    # To create a source distribution:
+    cpack -C CPackSourceConfig.cmake
+
+    # To create a Windows NSIS-based installer:
+    cpack -GNSIS
+
+### Documentation
+
 To generate the documentation, just run doxygen using Doxyfile as configuration
 file and the documentation will be generated in the folder doc. The
 documentation is available in the following formats:
@@ -96,17 +112,29 @@ folder tests. If you got Tufão from a git checkout (not a stable release), then
 you may be interessed in run these tests. To compile and run them, just run the
 execute-tests.sh script.
 
-NOTE:
-If you intend to create a CPack-based installer, just run:
+### Tests
 
-    # To create a binary distribution:
-    cpack -C CPackConfig.cmake
+Tufão also have a lot of code to test its correctness. These codes are based on
+QTestLib and generate self-contained executables. There is also some CTest rules
+and integration with the CMake build. To run the tests, just execute:
 
-    # To create a source distribution:
-    cpack -C CPackSourceConfig.cmake
+    make tests
 
-    # To create a Windows NSIS-based installer:
-    cpack -GNSIS
+Or, if you don't want to use Makefiles:
+
+    ctest
+
+In Visual Studio, the target _RUN_TESTS_ is created.
+
+CTest integrates with
+[CDash](http://cmake.org/Wiki/CMake/Testing_With_CTest#Dashboards)
+to allow developers to centralize the tests result. You can send the results to
+CDash running the _Experimental_ target:
+
+    make Experimental
+
+You can see the Tufão testing log at
+[Tufao CDash project's page](http://my.cdash.org/index.php?project=Tufao).
 
 ## INSTALL
 
