@@ -181,6 +181,7 @@ You can also see Tufão documentation integrated in QtAssistant.
 Version 0.7
 
   * Support for Qt5
+  * Add ability to ignore a set of SSL errors in WebSocket
 
 Version 0.6
 
