@@ -58,6 +58,7 @@ OPTIONS can be null or have a combination of the following values:
   * -DCMAKE_BUILD_TYPE=MinSizeRel
   * -DGENERATE_DOC=YES generate documentation using Doxygen
   * -DENABLE_TESTS=YES generate and run tests
+  * -DUSE_QT5=YES build Tufão against Qt5 (see below for more info)
 
 OPTIONS available on Windows:
 
@@ -90,6 +91,18 @@ If you intend to create a CPack-based installer, just run:
 
     # To create a Windows NSIS-based installer:
     cpack -GNSIS
+
+### Tufão 0.x and Qt 5
+
+It's possible to build Tufão 0.x series against Qt 5 if you use the configure
+option USE_QT5 cited above. It's possible to install two parallel Tufão 0.x
+libraries if they are built using different Qt major versions (Qt4 and Qt5). The
+Qt5 version has some differences noted below:
+
+  * If you use PKG-CONFIG, now you must use the _tufao0-qt5_ module instead
+    _tufao0_.
+  * If you use CMake, now you must use the _Tufao0-qt5_ module instead
+    _Tufao/Tufao0_.
 
 ### Documentation
 
@@ -164,6 +177,10 @@ If you want use Tufão in other build system, just add the compiler option
 You can also see Tufão documentation integrated in QtAssistant.
 
 ## NEWS
+
+Version 0.7
+
+  * Support for Qt5
 
 Version 0.6
 

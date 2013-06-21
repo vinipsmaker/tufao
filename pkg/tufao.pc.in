@@ -8,5 +8,5 @@ Description: An asynchronous web framework for C++ built on top of Qt
 URL: http://code.google.com/p/tufao/
 Version: @TUFAO_VERSION@
 Requires: QtCore QtNetwork
-Libs: -L${libdir} -ltufao
+Libs: -L${libdir} -l"@TUFAO_LIBRARY@"
 Cflags: -I${includedir}
