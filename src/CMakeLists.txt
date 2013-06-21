@@ -59,11 +59,11 @@ qt4_wrap_cpp(tufao_MOC ${tufao_MOC_HDRS}
     "-DQT_VERSION_MINOR=${QT_VERSION_MINOR}"
     "-DQT_VERSION_PATCH=${QT_VERSION_PATCH}"
 )
-add_library(tufao SHARED ${tufao_SRC} ${tufao_MOC})
-target_link_libraries(tufao ${QT_LIBRARIES})
+add_library("${TUFAO_LIBRARY}" SHARED ${tufao_SRC} ${tufao_MOC})
+target_link_libraries("${TUFAO_LIBRARY}" ${QT_LIBRARIES})
 
 set_target_properties(
-    tufao
+    "${TUFAO_LIBRARY}"
     PROPERTIES
     SOVERSION ${TUFAO_VERSION_MAJOR}
     VERSION ${TUFAO_VERSION}
@@ -77,7 +77,7 @@ if(ENABLE_TESTS)
 endif()
 
 # Install info
-install(TARGETS tufao
+install(TARGETS "${TUFAO_LIBRARY}"
     DESTINATION "${libdir}"
     COMPONENT runtime
 )

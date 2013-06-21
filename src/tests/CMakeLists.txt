@@ -25,7 +25,7 @@ macro(setup_test_target target source)
         "-DQT_VERSION_PATCH=${QT_VERSION_PATCH}"
     )
     add_executable("${test}" "${source}" "${${target}_MOC}")
-    target_link_libraries("${target}" tufao ${QT_LIBRARIES})
+    target_link_libraries("${target}" "${TUFAO_LIBRARY}" ${QT_LIBRARIES})
 
     add_test(NAME "${target}"
         WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src"
