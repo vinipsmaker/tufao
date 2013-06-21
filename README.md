@@ -2,14 +2,15 @@
 
 Tufão is a web framework for C++ that makes use of Qt's object communication
 system (signals & slots). It features:
+
   * High performance standalone server
   * Cross-plataform support
   * Good [documentation](http://vinipsmaker.github.com/tufao/ref/)
   * Support modern HTTP features
-   * Persistent streams
-   * Chunked entities
-   * 100-continue status
-   * WebSocket
+    * Persistent streams
+    * Chunked entities
+    * 100-continue status
+    * WebSocket
   * HTTPS support
   * Flexible request router
   * Static file server with support for conditional requests and partial
@@ -47,6 +48,7 @@ set, then create a folder for the build and, from there, run:
     $ make MAKEOPTIONS
 
 OPTIONS can be null or have a combination of the following values:
+
   * -DCMAKE_INSTALL_PREFIX=${INSTALLDIR} sets the directory where to install
     Tufão.
   * -DCMAKE_BUILD_TYPE=Debug
@@ -56,10 +58,12 @@ OPTIONS can be null or have a combination of the following values:
   * -DGENERATE_DOC=YES generate documentation using Doxygen
 
 OPTIONS available on Windows:
+
   * -G"MinGW Makefiles" to generate Makefiles for use with MinGW environment
   * -G"Visual Studio 10" to generate project files for Visual Studio 10
 
 MAKEOPTIONS can be null or have a combination of the following values:
+
   * install installs Tufão
   * DESTDIR=${PKGDIR} sets the directory where to install Tufão. This options
     should be used if you intend to package Tufão to set the package directory.
@@ -76,6 +80,7 @@ Qt 4.7 or later is required.
 To generate the documentation, just run doxygen using Doxyfile as configuration
 file and the documentation will be generated in the folder doc. The
 documentation is available in the following formats:
+
   * HTML: Always generated. It should be in the doc/html folder.
   * latex: You can use this format to generate a pdf. Just run make inside the
     doc/latex folder.
@@ -119,7 +124,7 @@ To install to a different prefix, run:
 
 To use Tufão in your Qt projects, just edit your .pro file and add the line:
 
-> CONFIG += TUFAO0
+    CONFIG += TUFAO0
 
 You can find some examples in the examples folder.
 
@@ -133,25 +138,29 @@ You can also see Tufão documentation integrated in QtAssistant.
 ## NEWS
 
 Version 0.6
- * HttpServerRequest
-  * setUrl added
- * UrlRewriterHandler added
- * HttpUpgradeRouter added
- * headers can be "streamed" to QDebug objects
+
+  * HttpServerRequest
+    * setUrl added
+  * UrlRewriterHandler added
+  * HttpUpgradeRouter added
+  * headers can be "streamed" to QDebug objects
 
 Version 0.5:
+
   * WebSocket
-   * peerAddress() method added
-   * peerSocket() method added
+    * peerAddress() method added
+    * peerSocket() method added
 
 Version 0.4:
+
   * Using CMake build system
-   * Changes to allow parallel Tufão installations (if major versions differs)
-   * Added PKGCONFIG support
+    * Changes to allow parallel Tufão installations (if major versions differs)
+    * Added PKGCONFIG support
   * Session support
   * Better documentation
 
 Version 0.3
+
   * More application templates in QtCreator Tufão's plugin
   * Class to serve static files with support for conditional requests and
     byte-range requests
@@ -163,6 +172,7 @@ Version 0.3
   * Some minor improvements
 
 Version 0.2:
+
   * Code is more stable
   * Documentation improved
   * HttpServerResponse is easier to use
@@ -176,11 +186,14 @@ Version 0.2:
 Here is a small roadmap for Tufão:
 
 0.7:
+
   * Better (and easier) multi-thread support
 
 0.8:
+
   * RPC support
   * Service discovery and description support
 
 1.1:
+
   * Forms and file uploads
