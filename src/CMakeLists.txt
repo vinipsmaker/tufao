@@ -56,7 +56,14 @@ add_definitions(-DTUFAO_LIBRARY
 )
 
 if (USE_QT5)
-    add_library("${TUFAO_LIBRARY}" SHARED ${tufao_SRC})
+    qt5_wrap_cpp(tufao_MOC ${tufao_MOC_HDRS}
+        OPTIONS
+        "-DQT_VERSION_MAJOR=${Qt5Core_VERSION_MAJOR}"
+        "-DQT_VERSION_MINOR=${Qt5Core_VERSION_MINOR}"
+        "-DQT_VERSION_PATCH=${Qt5Core_VERSION_PATCH}"
+    )
+
+    add_library("${TUFAO_LIBRARY}" SHARED ${tufao_SRC} ${tufao_MOC})
     qt5_use_modules("${TUFAO_LIBRARY}" Core Network)
 else (USE_QT5)
     qt4_wrap_cpp(tufao_MOC ${tufao_MOC_HDRS}
@@ -65,6 +72,7 @@ else (USE_QT5)
         "-DQT_VERSION_MINOR=${QT_VERSION_MINOR}"
         "-DQT_VERSION_PATCH=${QT_VERSION_PATCH}"
     )
+
     add_library("${TUFAO_LIBRARY}" SHARED ${tufao_SRC} ${tufao_MOC})
     target_link_libraries("${TUFAO_LIBRARY}" ${QT_LIBRARIES})
 endif (USE_QT5)
@@ -76,14 +84,6 @@ set_target_properties(
     VERSION ${TUFAO_VERSION}
     VS_KEYWORD Qt4VSv1.0
 )
-
-if (USE_QT5)
-    set_target_properties(
-        "${TUFAO_LIBRARY}"
-        PROPERTIES
-        AUTOMOC ON
-    )
-endif()
 
 # Tests
 if(ENABLE_TESTS)
