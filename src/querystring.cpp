@@ -63,6 +63,9 @@ QMap<QByteArray, QByteArray> parse(const QByteArray &string, char sep, char eq,
 {
     QMap<QByteArray, QByteArray> ret;
 
+    if (!string.size())
+        return ret;
+
     int i = 0;
     while (string[i] == '&') ++i;
     int j = string.indexOf(sep, i + 1);
