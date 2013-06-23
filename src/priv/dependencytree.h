@@ -11,7 +11,7 @@ namespace Tufao {
 
 // If an exception is throw, there will be no memory leaks, but the object state
 // may become invalid
-template<class T, class Container = QList<T> >
+template<class T, class Container = QList<T>>
 class DependencyTree
 {
 public:
@@ -19,7 +19,7 @@ public:
     DependencyTree(const DependencyTree &) = delete;
     DependencyTree &operator =(const DependencyTree &) = delete;
 
-    bool addNode(const T &value, const Container &dependencies = QStringList{})
+    bool addNode(const T &value, const Container &dependencies = Container{})
     {
         QSet<T> uniqueDependencies;
 
