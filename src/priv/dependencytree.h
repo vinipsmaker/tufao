@@ -4,6 +4,7 @@
 #include <QtCore/QSet>
 #include <QtCore/QList>
 #include <QtCore/QPair>
+#include <QtCore/QStringList>
 
 #include <algorithm>
 
