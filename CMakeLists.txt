@@ -50,7 +50,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
 
 # Install info
 set(includedir include/tufao-${TUFAO_VERSION_MAJOR})
-set(libdir lib)
+set(libdir "lib${LIB_SUFFIX}")
 
 # Targets
 add_subdirectory(src)
