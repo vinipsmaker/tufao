@@ -56,7 +56,7 @@ endif()
 
 # Install info
 set(includedir include/tufao-${TUFAO_VERSION_MAJOR})
-set(libdir lib)
+set(libdir "lib${LIB_SUFFIX}")
 if (USE_QT5)
     set(includedir ${includedir}-qt5)
 endif()

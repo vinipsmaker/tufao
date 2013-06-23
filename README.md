@@ -56,6 +56,12 @@ OPTIONS can be null or have a combination of the following values:
   * -DCMAKE_BUILD_TYPE=Release
   * -DCMAKE_BUILD_TYPE=RelWithDebInfo
   * -DCMAKE_BUILD_TYPE=MinSizeRel
+  * -DLIB_SUFFIX=${LIB_SUFFIX} set the suffix for the install destination. If
+    you are compiling Tufão under a 64 bit system using a 32 bit "environment",
+    maybe you want to set this variable to 32, then Tufão libs will be installed
+    under "${INSTALLDIR}/lib32". This setting is highly dependent on your
+    operating system conventions and I do not try to put any auto magic
+    detection.
   * -DGENERATE_DOC=YES generate documentation using Doxygen
   * -DENABLE_TESTS=YES generate and run tests
   * -DUSE_QT5=YES build Tufão against Qt5 (see below for more info)
