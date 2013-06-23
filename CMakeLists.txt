@@ -50,7 +50,17 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
 
 # Install info
 set(includedir include/tufao-${TUFAO_VERSION_MAJOR})
-set(libdir lib)
+
+if (NOT DEFINED LIB_SUFFIX)
+  # Detect 32 vs. 64 bit arch
+  if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(libdir "lib64")
+  else()
+    set(libdir "lib")
+  endif()
+else ()
+  set(libdir "lib${LIB_SUFFIX}")
+endif ()
 
 # Targets
 add_subdirectory(src)
