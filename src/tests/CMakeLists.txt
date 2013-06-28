@@ -20,6 +20,7 @@ set(tests
     rfc1123
     cryptography
     httpserverresponse
+    querystring
 )
 
 if (USE_QT5)
