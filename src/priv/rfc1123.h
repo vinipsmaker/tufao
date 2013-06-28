@@ -26,7 +26,7 @@
 
 namespace Tufao {
 
-class Rfc1123
+class Q_DECL_EXPORT Rfc1123
 {
 public:
     Rfc1123(const QString &headerValue);
