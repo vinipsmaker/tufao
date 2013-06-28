@@ -24,7 +24,7 @@
 
 namespace Tufao {
 
-class Asctime
+class Q_DECL_EXPORT Asctime
 {
 public:
     Asctime(const QByteArray &headerValue);

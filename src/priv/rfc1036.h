@@ -24,7 +24,7 @@
 
 namespace Tufao {
 
-class Rfc1036
+class Q_DECL_EXPORT Rfc1036
 {
 public:
     Rfc1036(const QByteArray &headerValue);
