@@ -21,6 +21,7 @@ set(tests
     cryptography
     httpserverresponse
     querystring
+    url
 )
 
 if (USE_QT5)
