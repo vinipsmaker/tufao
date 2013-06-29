@@ -10,6 +10,9 @@ private slots:
     void customReasonPhrases();
     void normalMessages_data();
     void normalMessages();
+    void generalMessages_data();
+    void generalMessages();
+    void http10Buffering();
     void chunkedEntities_data();
     void chunkedEntities();
     void httpContinue();

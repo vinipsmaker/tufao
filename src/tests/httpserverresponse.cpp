@@ -3,8 +3,14 @@
 #include <QtCore/QLocale>
 #include <QtCore/QBuffer>
 #include "../httpserverresponse.h"
+#include "../headers.h"
 
 using namespace Tufao;
+
+typedef QList<QByteArray> Chunks;
+typedef QList< QPair<QByteArray, QByteArray> > PredictableHeaders;
+
+Q_DECLARE_METATYPE(Headers)
 
 void HttpServerResponseTest::statusCode_data()
 {
@@ -99,6 +105,274 @@ void HttpServerResponseTest::normalMessages()
     QVERIFY(response.end(body));
 
     QVERIFY(buffer.data().endsWith(body));
+}
+
+void HttpServerResponseTest::generalMessages_data()
+{
+    QTest::addColumn<int>("options");
+    QTest::addColumn<int>("head");
+    QTest::addColumn<QByteArray>("reasonPhrase");
+    QTest::addColumn<Headers>("headers");
+    QTest::addColumn<Chunks>("chunks");
+    QTest::addColumn<PredictableHeaders>("trailers");
+    QTest::addColumn<QByteArray>("end");
+    QTest::addColumn<QByteArray>("expected");
+
+    {
+        // Do a simple HTTP/1.0 stream test.
+
+        Headers headers;
+        headers.insert("Content-Type", "text/plain");
+
+        Chunks chunks;
+        chunks << ("This string should be buffered and appear in the final"
+                   " response\n");
+
+        QTest::newRow("test1")
+            << int(HttpServerResponse::HTTP_1_0) << 200 << QByteArray()
+            << headers << chunks << PredictableHeaders() << QByteArray("42\n")
+            << QByteArray("HTTP/1.0 200 OK\r\n"
+                          "Content-Length: 67\r\n"
+                          "Content-Type: text/plain\r\n"
+                          "\r\n"
+                          "This string should be buffered and appear"
+                          " in the final response\n"
+                          "42\n");
+    }
+    {
+        // Do a HTTP/1.0 stream test with an empty body.
+
+        QTest::newRow("test2")
+            << int(HttpServerResponse::HTTP_1_0) << 200 << QByteArray()
+            << Headers() << Chunks() << PredictableHeaders() << QByteArray()
+            << QByteArray("HTTP/1.0 200 OK\r\n"
+                          "Content-Length: 0\r\n"
+                          "\r\n");
+    }
+    {
+        // Do a simple HTTP/1.1 stream test.
+
+        QTest::newRow("test3")
+            << int(HttpServerResponse::HTTP_1_1) << 200 << QByteArray("Okay")
+            << Headers() << Chunks() << PredictableHeaders()
+            << QByteArray("42\n")
+            << QByteArray("HTTP/1.1 200 Okay\r\n"
+                          "Connection: close\r\n"
+                          "Transfer-Encoding: chunked\r\n"
+                          "\r\n"
+                          "3\r\n"
+                          "42\n"
+                          "\r\n"
+                          "0\r\n"
+                          "\r\n");
+    }
+    {
+        // Do a simple HTTP/1.1 keep-alive stream test.
+
+        QTest::newRow("test4")
+            << (HttpServerResponse::HTTP_1_1 | HttpServerResponse::KEEP_ALIVE)
+            << 200 << QByteArray() << Headers() << Chunks()
+            << PredictableHeaders() << QByteArray("42\n")
+            << QByteArray("HTTP/1.1 200 OK\r\n"
+                          "Connection: keep-alive\r\n"
+                          "Transfer-Encoding: chunked\r\n"
+                          "\r\n"
+                          "3\r\n"
+                          "42\n"
+                          "\r\n"
+                          "0\r\n"
+                          "\r\n");
+    }
+    {
+        // Do a simple HTTP/1.1 keep-alive stream test.
+        // Test HttpServerResponse::write
+
+        QList<QByteArray> chunks;
+        chunks << "The number is ";
+
+        QTest::newRow("test5")
+            << (HttpServerResponse::HTTP_1_1 | HttpServerResponse::KEEP_ALIVE)
+            << 200 << QByteArray() << Headers() << chunks
+            << PredictableHeaders() << QByteArray("42\n")
+            << QByteArray("HTTP/1.1 200 OK\r\n"
+                          "Connection: keep-alive\r\n"
+                          "Transfer-Encoding: chunked\r\n"
+                          "\r\n"
+                          "e\r\n"
+                          "The number is \r\n"
+                          "3\r\n"
+                          "42\n"
+                          "\r\n"
+                          "0\r\n"
+                          "\r\n");
+    }
+    {
+        // Do a simple HTTP/1.1 keep-alive stream test.
+        // Test HttpServerResponse::write and a empty HttpServerResponse::end
+
+        QList<QByteArray> chunks;
+        chunks << "The number is " << "42\n";
+
+        QTest::newRow("test6")
+            << (HttpServerResponse::HTTP_1_1 | HttpServerResponse::KEEP_ALIVE)
+            << 200 << QByteArray() << Headers() << chunks
+            << PredictableHeaders() << QByteArray()
+            << QByteArray("HTTP/1.1 200 OK\r\n"
+                          "Connection: keep-alive\r\n"
+                          "Transfer-Encoding: chunked\r\n"
+                          "\r\n"
+                          "e\r\n"
+                          "The number is \r\n"
+                          "3\r\n"
+                          "42\n"
+                          "\r\n"
+                          "0\r\n"
+                          "\r\n");
+    }
+    {
+        // Do a simple HTTP/1.1 keep-alive empty data stream test.
+
+        QTest::newRow("test7")
+            << (HttpServerResponse::HTTP_1_1 | HttpServerResponse::KEEP_ALIVE)
+            << 200 << QByteArray() << Headers() << Chunks()
+            << PredictableHeaders() << QByteArray()
+            << QByteArray("HTTP/1.1 200 OK\r\n"
+                          "Connection: keep-alive\r\n"
+                          "Transfer-Encoding: chunked\r\n"
+                          "\r\n"
+                          "0\r\n"
+                          "\r\n");
+    }
+    {
+        //Do a simple HTTP/1.1 keep-alive empty data stream test.
+        // Test a trailer.
+
+        Headers headers;
+        headers.replace("Trailer", "Content-MD5");
+
+        Chunks chunks;
+        chunks << "help";
+
+        PredictableHeaders trailers;
+        trailers << QPair<QByteArray, QByteArray>("Content-MD5",
+                                                  "45b758a4f518f3ff"
+                                                  "31363696132f5f5a");
+
+        QTest::newRow("test8")
+            << (HttpServerResponse::HTTP_1_1 | HttpServerResponse::KEEP_ALIVE)
+            << 200 << QByteArray() << headers << chunks << trailers
+            << QByteArray()
+            << QByteArray("HTTP/1.1 200 OK\r\n"
+                          "Connection: keep-alive\r\n"
+                          "Trailer: Content-MD5\r\n"
+                          "Transfer-Encoding: chunked\r\n"
+                          "\r\n"
+                          "4\r\n"
+                          "help\r\n"
+                          "0\r\n"
+                          "Content-MD5: 45b758a4f518f3ff31363696132f5f5a\r\n"
+                          "\r\n");
+    }
+    {
+        // Do a simple HTTP/1.1 keep-alive empty data stream test
+        // Test 2 trailers.
+
+        Headers headers;
+        headers.replace("Trailer", "Content-MD5, Content-Type");
+
+        Chunks chunks;
+        chunks << "help";
+
+        PredictableHeaders trailers;
+        trailers
+            << QPair<QByteArray, QByteArray>("Content-MD5",
+                                             "45b758a4f518f3ff31363696132f5f5a")
+            << QPair<QByteArray, QByteArray>("Content-Type", "text/plain");
+
+        QTest::newRow("test9")
+            << (HttpServerResponse::HTTP_1_1 | HttpServerResponse::KEEP_ALIVE)
+            << 200 << QByteArray() << headers << chunks << trailers
+            << QByteArray()
+            << QByteArray("HTTP/1.1 200 OK\r\n"
+                          "Connection: keep-alive\r\n"
+                          "Trailer: Content-MD5, Content-Type\r\n"
+                          "Transfer-Encoding: chunked\r\n"
+                          "\r\n"
+                          "4\r\n"
+                          "help\r\n"
+                          "0\r\n"
+                          "Content-MD5: 45b758a4f518f3ff31363696132f5f5a\r\n"
+                          "Content-Type: text/plain\r\n"
+                          "\r\n");
+    }
+}
+
+void HttpServerResponseTest::generalMessages()
+{
+    QFETCH(int, options);
+    QFETCH(int, head);
+    QFETCH(QByteArray, reasonPhrase);
+    QFETCH(Headers, headers);
+    QFETCH(Chunks, chunks);
+    QFETCH(PredictableHeaders, trailers);
+    QFETCH(QByteArray, end);
+    QFETCH(QByteArray, expected);
+
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+
+    HttpServerResponse::Option o;
+    *(reinterpret_cast<int*>(&o)) = options;
+
+    HttpServerResponse response(&buffer, o);
+
+    if (reasonPhrase.size())
+        response.writeHead(head, reasonPhrase);
+    else
+        response.writeHead(head);
+
+    response.headers() = headers;
+
+    for (int i = 0;i != chunks.size();++i)
+        response.write(chunks[i]);
+
+    for (int i = 0;i != trailers.size();++i)
+        response.addTrailer(trailers[i].first, trailers[i].second);
+
+    response.end(end);
+
+    QCOMPARE(buffer.isOpen(), bool(o & HttpServerResponse::KEEP_ALIVE));
+
+    QCOMPARE(buffer.buffer(), expected);
+}
+
+void HttpServerResponseTest::http10Buffering()
+{
+    QBuffer b;
+    b.open(QIODevice::WriteOnly);
+
+    HttpServerResponse::Options o;
+    o |= HttpServerResponse::HTTP_1_0;
+
+    HttpServerResponse r(&b, o);
+
+    QVERIFY(!r.end());
+    QVERIFY(r.writeHead(HttpServerResponse::OK));
+    QVERIFY(!r.writeHead(200));
+    QVERIFY(r.write("This string should be buffered and appear in the final"
+                    " response\n"));
+    r.headers().insert("Content-Type", "text/plain");
+    QVERIFY(r.end("42\n"));
+    QVERIFY(!b.isOpen());
+
+    QCOMPARE(b.buffer(),
+             QByteArray("HTTP/1.0 200 OK\r\n"
+                        "Content-Length: 67\r\n"
+                        "Content-Type: text/plain\r\n"
+                        "\r\n"
+                        "This string should be buffered and appear"
+                        " in the final response\n"
+                        "42\n"));
 }
 
 void HttpServerResponseTest::chunkedEntities_data()
