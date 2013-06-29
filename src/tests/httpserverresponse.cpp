@@ -7,8 +7,8 @@
 
 using namespace Tufao;
 
-typedef QList<QByteArray> Chunks;
 typedef QList< QPair<QByteArray, QByteArray> > PredictableHeaders;
+Q_DECLARE_METATYPE(PredictableHeaders)
 
 Q_DECLARE_METATYPE(Headers)
 
@@ -113,7 +113,7 @@ void HttpServerResponseTest::generalMessages_data()
     QTest::addColumn<int>("head");
     QTest::addColumn<QByteArray>("reasonPhrase");
     QTest::addColumn<Headers>("headers");
-    QTest::addColumn<Chunks>("chunks");
+    QTest::addColumn<QStringList>("chunks");
     QTest::addColumn<PredictableHeaders>("trailers");
     QTest::addColumn<QByteArray>("end");
     QTest::addColumn<QByteArray>("expected");
@@ -124,7 +124,7 @@ void HttpServerResponseTest::generalMessages_data()
         Headers headers;
         headers.insert("Content-Type", "text/plain");
 
-        Chunks chunks;
+        QStringList chunks;
         chunks << ("This string should be buffered and appear in the final"
                    " response\n");
 
@@ -144,7 +144,7 @@ void HttpServerResponseTest::generalMessages_data()
 
         QTest::newRow("test2")
             << int(HttpServerResponse::HTTP_1_0) << 200 << QByteArray()
-            << Headers() << Chunks() << PredictableHeaders() << QByteArray()
+            << Headers() << QStringList() << PredictableHeaders() << QByteArray()
             << QByteArray("HTTP/1.0 200 OK\r\n"
                           "Content-Length: 0\r\n"
                           "\r\n");
@@ -154,7 +154,7 @@ void HttpServerResponseTest::generalMessages_data()
 
         QTest::newRow("test3")
             << int(HttpServerResponse::HTTP_1_1) << 200 << QByteArray("Okay")
-            << Headers() << Chunks() << PredictableHeaders()
+            << Headers() << QStringList() << PredictableHeaders()
             << QByteArray("42\n")
             << QByteArray("HTTP/1.1 200 Okay\r\n"
                           "Connection: close\r\n"
@@ -171,7 +171,7 @@ void HttpServerResponseTest::generalMessages_data()
 
         QTest::newRow("test4")
             << (HttpServerResponse::HTTP_1_1 | HttpServerResponse::KEEP_ALIVE)
-            << 200 << QByteArray() << Headers() << Chunks()
+            << 200 << QByteArray() << Headers() << QStringList()
             << PredictableHeaders() << QByteArray("42\n")
             << QByteArray("HTTP/1.1 200 OK\r\n"
                           "Connection: keep-alive\r\n"
@@ -187,7 +187,7 @@ void HttpServerResponseTest::generalMessages_data()
         // Do a simple HTTP/1.1 keep-alive stream test.
         // Test HttpServerResponse::write
 
-        QList<QByteArray> chunks;
+        QStringList chunks;
         chunks << "The number is ";
 
         QTest::newRow("test5")
@@ -210,7 +210,7 @@ void HttpServerResponseTest::generalMessages_data()
         // Do a simple HTTP/1.1 keep-alive stream test.
         // Test HttpServerResponse::write and a empty HttpServerResponse::end
 
-        QList<QByteArray> chunks;
+        QStringList chunks;
         chunks << "The number is " << "42\n";
 
         QTest::newRow("test6")
@@ -234,7 +234,7 @@ void HttpServerResponseTest::generalMessages_data()
 
         QTest::newRow("test7")
             << (HttpServerResponse::HTTP_1_1 | HttpServerResponse::KEEP_ALIVE)
-            << 200 << QByteArray() << Headers() << Chunks()
+            << 200 << QByteArray() << Headers() << QStringList()
             << PredictableHeaders() << QByteArray()
             << QByteArray("HTTP/1.1 200 OK\r\n"
                           "Connection: keep-alive\r\n"
@@ -250,7 +250,7 @@ void HttpServerResponseTest::generalMessages_data()
         Headers headers;
         headers.replace("Trailer", "Content-MD5");
 
-        Chunks chunks;
+        QStringList chunks;
         chunks << "help";
 
         PredictableHeaders trailers;
@@ -280,7 +280,7 @@ void HttpServerResponseTest::generalMessages_data()
         Headers headers;
         headers.replace("Trailer", "Content-MD5, Content-Type");
 
-        Chunks chunks;
+        QStringList chunks;
         chunks << "help";
 
         PredictableHeaders trailers;
@@ -313,7 +313,7 @@ void HttpServerResponseTest::generalMessages()
     QFETCH(int, head);
     QFETCH(QByteArray, reasonPhrase);
     QFETCH(Headers, headers);
-    QFETCH(Chunks, chunks);
+    QFETCH(QStringList, chunks);
     QFETCH(PredictableHeaders, trailers);
     QFETCH(QByteArray, end);
     QFETCH(QByteArray, expected);
@@ -334,7 +334,7 @@ void HttpServerResponseTest::generalMessages()
     response.headers() = headers;
 
     for (int i = 0;i != chunks.size();++i)
-        response.write(chunks[i]);
+        response.write(chunks[i].toUtf8());
 
     for (int i = 0;i != trailers.size();++i)
         response.addTrailer(trailers[i].first, trailers[i].second);

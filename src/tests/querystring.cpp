@@ -4,6 +4,7 @@
 
 using namespace Tufao;
 typedef QMap<QByteArray, QByteArray> MapType;
+Q_DECLARE_METATYPE(MapType)
 
 void QueryStringTest::parse_data()
 {
