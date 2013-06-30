@@ -21,14 +21,103 @@
 
 #include "../httppluginserver.h"
 #include "../httpserverrequestrouter.h"
+
 #include <QtCore/QPluginLoader>
+#include <QtCore/QFileInfo>
+#include <QtCore/QFileSystemWatcher>
 
 namespace Tufao {
+
+class ConfigFile
+{
+public:
+    ConfigFile() :observingFile_(false), autoreload_(false) {}
+
+    /*!
+      Whether the observed path is file() or  QFileInfo(file()).path().
+
+      \note
+      You need to call setFile again after the file begins to exist, then the
+      watcher() will begin to watch the wanted file.
+
+      \retval true
+      If the observed path is file().
+
+      \retval false
+      If the observed path if QFileInfo(file()).path().
+    */
+    bool observingFile() const
+    {
+        return observingFile_;
+    }
+
+    const QFileSystemWatcher &watcher() const
+    {
+        return watcher_;
+    }
+
+    void setFile(const QString &file, bool autoreload)
+    {
+        // clean old resources
+        if (file_.size()) {
+            if (observingFile_)
+                // normal flow
+                watcher_.removePath(file_);
+            else
+                // watches directory
+                watcher_.removePath(QFileInfo(file_).path());
+        }
+
+        // use new resources
+        file_ = file;
+        autoreload_ = autoreload;
+        observingFile_ = true;
+
+        if (!autoreload || !file.size())
+            return;
+
+        QFileInfo info(file);
+        if (info.exists()) {
+            // normal flow
+
+            watcher_.addPath(file);
+        } else {
+            // watches directory
+
+            watcher_.addPath(info.path());
+            observingFile_ = false;
+        }
+    }
+
+    QString file() const
+    {
+        return file_;
+    }
+
+    bool autoreload() const
+    {
+        return autoreload_;
+    }
+
+    void clear()
+    {
+        watcher_.removePath(file_);
+        file_.clear();
+    }
+
+private:
+    bool observingFile_;
+    QString file_;
+
+    // Kind of optional<QFileSystemWatcher>
+    bool autoreload_;
+    QFileSystemWatcher watcher_;
+};
 
 struct HttpPluginServer::Priv
 {
     Tufao::HttpServerRequestRouter router;
-    QString configFile;
+    ConfigFile configFile;
     QList<QPluginLoader*> plugins;
     QObjectList handlers;
 };
@@ -36,3 +125,13 @@ struct HttpPluginServer::Priv
 } // namespace Tufao
 
 #endif // TUFAO_PRIV_HTTPPLUGINSERVER_H
+
+
+
+
+
+
+
+
+
+

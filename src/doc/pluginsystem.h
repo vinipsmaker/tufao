@@ -56,17 +56,6 @@
   This is how we set the plugins from Tufao::HttpPluginServer. This file can be
   edited using the tufao-routes-editor tool (see \ref plugin-editor).
 
-  One limitation of Tufao::HttpPluginServer is it that don't know when reload
-  the routes file. The Tufão team could add this feature, but this would make
-  Tufão less portable. If the Qt framework add the needed API, the Tufão team
-  will use it. Until then, you'll need to tell Tufao::HttpPluginServer when to
-  reload the config file. This is done invoking the
-  Tufao::HttpPluginServer::reloadConfig slot.
-
-  In the previous application, we create a custom handler to invoke the
-  Tufao::HttpPluginServer::reloadConfig. We could use a timer, but it may cause
-  some troubles in some cases.
-
   \subsection plugin-user The plugin
 
   ![](qtcreator_pluginserver.png "The plugin template")
@@ -112,10 +101,6 @@
     - Edit the config file used by the plugin server of our application. In the
       previous application, this file is any file named _routes.conf_ placed in
       the application's working dir.
-    - Make the application reload its plugins, if the application was already
-      running. In the previous application, this is can be done by creating,
-      from the same host as the application, a request to the page "/reload"
-      (<http://localhost:8080/reload>).
 
   ![](routes_editor.png "tufao-routes-editor tool")
 

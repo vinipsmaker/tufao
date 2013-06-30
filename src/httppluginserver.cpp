@@ -28,10 +28,33 @@ HttpPluginServer::HttpPluginServer(const QString &configFile, QObject *parent):
     AbstractHttpServerRequestHandler(parent),
     priv(new Priv)
 {
-    if (!configFile.isEmpty()) {
-        priv->configFile = configFile;
-        reloadConfig();
-    }
+    connect(&priv->configFile.watcher(), SIGNAL(fileChanged(QString)),
+            this, SLOT(onConfigFileChanged()));
+    connect(&priv->configFile.watcher(), SIGNAL(directoryChanged(QString)),
+            this, SLOT(onConfigFileChanged()));
+
+    if (configFile.isEmpty())
+        return;
+
+    priv->configFile.setFile(configFile, false);
+    reloadConfig();
+}
+
+HttpPluginServer::HttpPluginServer(const QString &configFile, bool autoreload,
+                                   QObject *parent):
+    AbstractHttpServerRequestHandler(parent),
+    priv(new Priv)
+{
+    connect(&priv->configFile.watcher(), SIGNAL(fileChanged(QString)),
+            this, SLOT(onConfigFileChanged()));
+    connect(&priv->configFile.watcher(), SIGNAL(directoryChanged(QString)),
+            this, SLOT(onConfigFileChanged()));
+
+    if (configFile.isEmpty())
+        return;
+
+    priv->configFile.setFile(configFile, autoreload);
+    reloadConfig();
 }
 
 HttpPluginServer::~HttpPluginServer()
@@ -42,13 +65,18 @@ HttpPluginServer::~HttpPluginServer()
 
 void HttpPluginServer::setConfig(const QString &file)
 {
-    priv->configFile = file;
+    setConfig(file, false);
+}
+
+void HttpPluginServer::setConfig(const QString &file, bool autoreload)
+{
+    priv->configFile.setFile(file, autoreload);
     reloadConfig();
 }
 
 QString HttpPluginServer::config() const
 {
-    return priv->configFile;
+    return priv->configFile.file();
 }
 
 bool HttpPluginServer::handleRequest(HttpServerRequest *request,
@@ -70,7 +98,7 @@ void HttpPluginServer::reloadConfig()
 {
     clear();
 
-    QSettings settings(priv->configFile, QSettings::IniFormat);
+    QSettings settings(priv->configFile.file(), QSettings::IniFormat);
     if (settings.value("version").toString() != "0.1") {
         qWarning("Unsupported config file version");
         return;
@@ -120,12 +148,33 @@ void HttpPluginServer::reloadConfig()
     }
 }
 
+void HttpPluginServer::onConfigFileChanged()
+{
+    if (priv->configFile.observingFile()) {
+        // normal flow
+
+        reloadConfig();
+
+        if (!QFileInfo(priv->configFile.file()).exists())
+            priv->configFile.setFile(priv->configFile.file(),
+                                     priv->configFile.autoreload());
+    } else {
+        // watches directory
+
+        if (QFileInfo(priv->configFile.file()).exists()) {
+            priv->configFile.setFile(priv->configFile.file(),
+                                     priv->configFile.autoreload());
+            reloadConfig();
+        }
+    }
+}
+
 inline void HttpPluginServer::clear()
 {
     priv->router.clear();
 
     for (int i = 0;i != priv->handlers.size();++i)
-        priv->handlers[i]->deleteLater();
+        delete priv->handlers[i];
     priv->handlers.clear();
 
     for (int i = 0;i != priv->plugins.size();++i) {
@@ -136,3 +185,4 @@ inline void HttpPluginServer::clear()
 }
 
 } // namespace Tufao
+

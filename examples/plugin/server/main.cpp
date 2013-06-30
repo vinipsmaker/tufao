@@ -6,7 +6,6 @@
 #include <Tufao/HttpPluginServer>
 
 #include "notfound.h"
-#include "pluginreloader.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,11 +16,9 @@ int main(int argc, char *argv[])
     Tufao::HttpServerRequestRouter router;
 
     Tufao::HttpPluginServer pluginServer("routes.conf");
-    PluginReloader pluginReloader(&pluginServer);
     NotFoundHandler handler404;
 
     router.map(QRegExp(""), &pluginServer)
-            .map(QRegExp("^/reload$"), &pluginReloader)
             .map(QRegExp(""), &handler404);
 
     QObject::connect(&server, SIGNAL(requestReady(Tufao::HttpServerRequest*,Tufao::HttpServerResponse*)),

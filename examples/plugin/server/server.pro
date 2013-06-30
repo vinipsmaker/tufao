@@ -5,12 +5,10 @@ CONFIG += TUFAO0
 QT -= gui
 
 SOURCES += main.cpp \
-    notfound.cpp \
-    pluginreloader.cpp
+    notfound.cpp
 
 HEADERS += \
-    notfound.h \
-    pluginreloader.h
+    notfound.h
 
 RESOURCES += \
     static.qrc

@@ -7,7 +7,6 @@
 #include <Tufao/HttpPluginServer>
 
 #include "notfound.h"
-#include "pluginreloader.h"
 
 int main(int argc, char *argv[])
 {
@@ -22,9 +21,7 @@ int main(int argc, char *argv[])
     //   ...using some handlers
     
     // to allow you change the running code without restart the application
-    Tufao::HttpPluginServer pluginServer("routes.conf");
-    // do a request to http://localhost:8080/reload to reload the plugins
-    PluginReloader pluginReloader(&pluginServer);
+    Tufao::HttpPluginServer pluginServer("routes.conf", true);
     // to server static files under public folder
     Tufao::HttpFileServer fileServer("public");
     // to respond the remaining requests with a "404 - not found"
@@ -34,7 +31,6 @@ int main(int argc, char *argv[])
     //   - "/" (maybe redirecting to some other path)
     //   - "/favicon.ico" (to serve the page's icon)
     router.map(QRegExp(""), &pluginServer)
-            .map(QRegExp("^/reload$"), &pluginReloader)
             .map(QRegExp(""), &fileServer)
             .map(QRegExp(""), &handler404);
     

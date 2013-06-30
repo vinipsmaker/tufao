@@ -76,8 +76,8 @@
 
   \includelineno applicationdefaultmain.cpp
 
-  A main file with 50 lines of code. It's a bunch of code, but if you delete the
-  comments and includes, you'll have only 30 lines remaining. It's possible to
+  A main file with 46 lines of code. It's a bunch of code, but if you delete the
+  comments and includes, you'll have only 26 lines remaining. It's possible to
   create Tufão applications with fewer yet lines, but I'll use this code to
   explain important Tufão features. They'll prove their value.
 
@@ -93,9 +93,9 @@
   But you need to promisse that you'll use Tufão facilities and read the
   documentation.
 
-  To use the Tufão HTTP server, we instantiate, as show in the line 17, a
-  Tufao::HttpServer, put it to listen on port 8080, as show in the line 46, and
-  start a event loop, as show in the line 49. This server will expose all we
+  To use the Tufão HTTP server, we instantiate, as show in the line 16, a
+  Tufao::HttpServer, put it to listen on port 8080, as show in the line 42, and
+  start a event loop, as show in the line 45. This server will expose all we
   need to this introduction.
 
   The Tufao::HttpServer will emit the Tufao::HttpServer::requestReady signal
@@ -113,27 +113,24 @@
   handlers and mapped paths to them. If a request comes to a handler unable to
   handle it, the request is delegated to another handler in the chain.
 
-  In the code, we have one router (line 20) and four handlers (lines 25, 27, 29
-  and 31). In the lines 36 to 39 we bind the router and the handlers and in the
-  line 42 we bind the router and the server. The handlers, in order, are:
+  In the code, we have one router (line 19) and three handlers (lines 24, 26 and
+  28). In the lines 33 to 35 we bind the router and the handlers and in the line
+  38 we bind the router and the server. The handlers, in order, are:
 
     - Tufao::HttpPluginServer: Uses plugins to handle the requests. A plugin
       mechanism is what allows you to change the running code without restart
       the application. In this code, we use the file routes.conf (editable with
-      the tufao-routes-editor tool) to configure the plugins.
-    - PluginReloader: A custom class (defined in the files _pluginreloader.h_
-      and _pluginreloader.cpp_) that instructs the pluginServer to refresh the
-      list of plugins. For security reasons, it'll only accept requests
-      originated from local host.
+      the tufao-routes-editor tool) to configure the plugins and set autoreload
+      to true.
     - Tufao::HttpFileServer: Serve static files. We use the folder _public_ as
       root dir.
     - NotFoundHandler: A custom class (defined in the files _notfound.h_ and
       _notfound.cpp_) that responds to every request with a 404 status code. It
       will use the file _notfound.html_ embedded in the binary (through the Qt
       resource system) as message body of the responses. Line 14 init the
-      necessary resource.
+      needed resource.
 
-  If you run this application, you see the error _Unsupported config file
+  If you run this application, you'll see the error _Unsupported config file
   version_. This is happening because you didn't prepare a _routes.conf_ file to
   feed the plugin handler. See \ref pluginsystem to learn how to fix it and add
   a plugin-based handler to the application. The file _routes.conf_ must be

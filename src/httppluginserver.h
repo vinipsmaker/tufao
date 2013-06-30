@@ -39,9 +39,9 @@ namespace Tufao {
   tufao-routes-editor.
 
   \note
-  Besides being able to change its list of plugins at runtime, it can't know
-  when the configuration file changes and you'll need to invoke the
-  HttpPluginServer::reloadConfig to notify this event.
+  If you want to control when the plugins are reloaded, you must ensure that
+  autoreload is false and explicitly call the slot
+  HttpPluginServer::reloadConfig.
 
   \sa
   AbstractHttpServerRequestHandlerFactory to implement your plugins.
@@ -59,11 +59,32 @@ public:
     /*!
       Constructs a HttpPluginServer object.
 
-      \p parent is passed to the QObject constructor.
+      \param configFile It's used as configuration file.
 
-      \p configFile is used as configuration file.
+      \param parent It's passed to the QObject constructor.
+
+      \warning
+      The object created by this constructor doesn't autoreload the config file
+      when it changes. You can use another constructor or call
+      HttpPluginServer::setConfig if you want a different behaviour.
       */
     explicit HttpPluginServer(const QString &configFile = QString(),
+                              QObject *parent = 0);
+
+    /*!
+      Constructs a HttpPluginServer object.
+
+      \param configFile It's used as configuration file.
+
+      \param autoreload Whether HttpPluginServer will autoreload the config file
+      when it is modified.
+
+      \param parent It's passed to the QObject constructor.
+
+      \since
+      0.8
+      */
+    explicit HttpPluginServer(const QString &configFile, bool autoreload,
                               QObject *parent = 0);
 
     /*!
@@ -72,14 +93,27 @@ public:
     ~HttpPluginServer();
 
     /*!
+      This is an overloaded function.
+
+      It will **NOT** autoreload the config referenced by \p file.
+      */
+    void setConfig(const QString &file);
+
+    /*!
       Set the configuration file used to handle requests.
 
       Call this function will reload the configuration.
 
+      \p autoreload tells whether HttpPluginServer should autoreload the config
+      file when it is modified.
+
       \sa
       config
+
+      \since
+      0.8
       */
-    void setConfig(const QString &file);
+    void setConfig(const QString &file, bool autoreload);
 
     /*!
       Return the current used configuration file. This file is used to handle
@@ -99,10 +133,17 @@ public slots:
     /*!
       Clear all previous mappings and reload all rules and plugins.
 
-      Call this function after change the configuration file to the changes take
-      effect.
+      If you want to control when the plugins are reloaded, you must ensure that
+      autoreload is false and explicitly call this slot when you want to make
+      the changes of the config file take effect.
+
+      This is an advanced use of HttpPluginServer and you probably just want to
+      ensure autoreload is true to avoid unnecessary complexities.
       */
     void reloadConfig();
+
+private slots:
+    void onConfigFileChanged();
 
 private:
     void clear();
