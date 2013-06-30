@@ -184,6 +184,14 @@ You can also see Tufão documentation integrated in QtAssistant.
 
 ## NEWS
 
+Version 0.8
+
+  * Some bugfixes and build fixes
+  * Ported tests from old system
+  * Support lib vs. lib64
+  * Adding new behaviour (backward compatible) to HttpPluginServer autoreload
+    config files
+
 Version 0.7
 
   * Support for Qt5
