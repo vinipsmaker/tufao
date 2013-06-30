@@ -25,12 +25,30 @@ public:
 
         // fill uniqueDependencies
         for (const auto &d: dependencies) {
+            if (d == value)
+                return false;
+
             if (d != T())
                 uniqueDependencies.insert(d);
         }
 
         if (uniqueDependencies.empty()) {
-            if (rootNodes.contains(value))
+            auto nodeExists = [this](const T &value) -> bool {
+                if (unsatisfiedDependencies.contains(value))
+                    return false;
+
+                if (rootNodes.contains(value))
+                    return true;
+
+                for (const auto &e: edges) {
+                    if (e.first == value || e.second == value)
+                        return true;
+                }
+
+                return false;
+            };
+
+            if (nodeExists(value))
                 return false;
 
             unsatisfiedDependencies.remove(value);
@@ -38,10 +56,7 @@ public:
             return true;
         }
 
-        auto &edges = this->edges;
-        auto &rootNodes = this->rootNodes;
-
-        auto contains = [&edges,&rootNodes](const T &value) -> bool {
+        auto contains = [this](const T &value) -> bool {
             if (rootNodes.contains(value))
                 return true;
 
@@ -53,10 +68,11 @@ public:
             return false;
         };
 
-        auto depends = [&edges](const T &first, const T &second) -> bool {
+        auto depends = [this](const T &first, const T &second) -> bool {
             QList<T> remaining{first};
+            QSet<T> visited;
 
-            for (QSet<T> visited;remaining.size();) {
+            while (remaining.size()) {
                 T current = remaining.front();
 
                 if (current == second)
@@ -65,14 +81,15 @@ public:
                 remaining.pop_front();
                 visited.insert(current);
 
-                std::for_each(std::lower_bound(edges.begin(), edges.end(),
-                                               qMakePair(current, T())),
-                              std::upper_bound(edges.begin(), edges.end(),
-                                               qMakePair(current, T())),
-                              [&visited,&remaining](const QPair<T, T> &value) {
-                    if (!visited.contains(value.second))
-                        remaining.push_back(value.second);
-                });
+                for (auto it = std::lower_bound(edges.begin(), edges.end(),
+                                                qMakePair(current, T())),
+                         end = edges.end();it != end;++it) {
+                    if (it->first != current)
+                        break;
+
+                    if (!visited.contains(it->second))
+                        remaining.push_back(it->second);
+                }
             }
 
             return false;
@@ -112,17 +129,44 @@ public:
 
     Container sorted() const
     {
+        if (unsatisfiedDependencies.size())
+            return Container{};
+
         Container sorted;
 
         auto current = edges;
 
+        auto nodeExists = [&current,this](const T &value) -> bool {
+            if (unsatisfiedDependencies.contains(value))
+                return false;
+
+            if (rootNodes.contains(value))
+                return true;
+
+            for (const auto &e: current) {
+                if (e.first == value || e.second == value)
+                    return true;
+            }
+
+            return false;
+        };
+
         for (const auto &n: rootNodes) {
             sorted.push_back(n);
 
+            QSet<T> removed;
+
             for (typename QList<QPair<T, T>>::size_type i = 0
                  ;i != current.size();++i) {
-                if (current[i].second == n)
+                if (current[i].second == n) {
+                    removed.insert(current[i].first);
                     current.removeAt(i--);
+                }
+            }
+
+            for (const auto &n: removed) {
+                if (!nodeExists(n))
+                    sorted.push_back(n);
             }
         }
 
@@ -136,10 +180,10 @@ public:
             return false;
         };
 
-        auto findSink = [&current,&hasDependencies]() -> T {
-            for (const auto &e: current) {
-                QSet<T> visited;
+        auto findSink = [&current,&hasDependencies,&nodeExists]() -> T {
+            QSet<T> visited;
 
+            for (const auto &e: current) {
                 if (visited.contains(e.second))
                     continue;
 
@@ -156,10 +200,19 @@ public:
             auto sink = findSink();
             sorted.push_back(sink);
 
+            QSet<T> removed;
+
             for (typename QList<QPair<T, T>>::size_type i = 0
                  ;i != current.size();++i) {
-                if (current[i].second == sink)
+                if (current[i].second == sink) {
+                    removed.insert(current[i].first);
                     current.removeAt(i--);
+                }
+            }
+
+            for (const auto &n: removed) {
+                if (!nodeExists(n))
+                    sorted.push_back(n);
             }
         }
 
