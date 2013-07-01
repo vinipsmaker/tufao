@@ -4,7 +4,7 @@ project(tufao)
 # Metadata
 set(TUFAO_VERSION_MAJOR 1)
 set(TUFAO_VERSION_MINOR 0)
-set(TUFAO_VERSION_PATCH 0)
+set(TUFAO_VERSION_PATCH 2)
 set(TUFAO_VERSION ${TUFAO_VERSION_MAJOR}.${TUFAO_VERSION_MINOR}.${TUFAO_VERSION_PATCH})
 set(TUFAO_BRIEF "An asynchronous web framework for C++ built on top of Qt")
 
