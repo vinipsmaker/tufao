@@ -16,6 +16,7 @@ set(tests
     rfc1123
     cryptography
     httpserverresponse
+    dependencytree
 )
 
 macro(setup_test_target target)
