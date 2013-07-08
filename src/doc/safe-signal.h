@@ -67,7 +67,7 @@
 
   \section safe-signal-conclusion Conclusion
 
-  **Every signal in Tufão is safe, unless explicitly stated the opposite.**
+  __Every signal in Tufão is safe, unless explicitly stated the opposite.__
 
   \warning
   It's unsafe to _delete_ an object in the body of a slot connected to an unsafe

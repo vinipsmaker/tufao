@@ -270,7 +270,7 @@ signals:
       only missing parts may be (if any) the message body and the trailers.
 
       \note
-      **This signal is unsafe** (read this: \ref safe-signal)!
+      __This signal is unsafe__ (read this: \ref safe-signal)!
 
       \warning
       Right before emit this signal, HttpServerRequest object will disconnect
@@ -295,7 +295,7 @@ signals:
       Use readBody() to consume the data.
 
       \note
-      **This signal is unsafe** (read this: \ref safe-signal)!
+      __This signal is unsafe__ (read this: \ref safe-signal)!
 
       \since
       1.0
