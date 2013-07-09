@@ -215,7 +215,7 @@ signals:
       only missing parts may be (if any) the message body and the trailers.
 
       \note
-      **This signal is unsafe** (read this: \ref safe-signal)!
+      __This signal is unsafe__ (read this: \ref safe-signal)!
 
       \sa
       Tufao::HttpServerRequest::responseOptions
@@ -230,7 +230,7 @@ signals:
       This signal is emitted each time a piece of the message body is received.
 
       \note
-      **This signal is unsafe** (read this: \ref safe-signal)!
+      __This signal is unsafe__ (read this: \ref safe-signal)!
       */
     void data(QByteArray data);
 
