@@ -1,5 +1,5 @@
 void SomeObject::someMethod()
 {
-    qDebug() << this.x;
+    qDebug() << this->x;
     emit someSignal();
 }
