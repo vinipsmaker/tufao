@@ -50,7 +50,7 @@ class HttpServerResponse;
 class TUFAO_EXPORT AbstractHttpServerRequestHandler
 {
 public:
-    ~AbstractHttpServerRequestHandler() = default;
+    virtual ~AbstractHttpServerRequestHandler() = default;
 
     /*!
       Implicit conversion operator to std::function functor object.
