@@ -54,7 +54,9 @@ struct HttpServerRequest::Priv
         timeout(0)
     {
         http_parser_init(&parser, HTTP_REQUEST);
-        timer.setSingleShot(true);
+        timer = new QTimer(request);
+        timer->setSingleShot(true);
+
         parser.data = request;
     }
 
@@ -86,7 +88,7 @@ struct HttpServerRequest::Priv
     QVariant customData;
 
     int timeout;
-    QTimer timer;
+    QTimer *timer;
 
     static const http_parser_settings httpSettingsInstance;
 };

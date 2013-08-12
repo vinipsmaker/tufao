@@ -99,8 +99,15 @@ void HttpServer::checkContinue(HttpServerRequest &request,
 
 void HttpServer::handleConnection(QAbstractSocket *socket)
 {
-    socket->setParent(this);
-    HttpServerRequest *handle = new HttpServerRequest(*socket, this);
+
+    /**
+     * @TODO Check if requests don't leak with the current solution
+     *       I had to remove the parent because moveToThread can only move QObjects
+     *       that don't have a parent
+     */
+
+    HttpServerRequest *handle = new HttpServerRequest(*socket);
+    socket->setParent(handle);
 
     if (priv->timeout)
         handle->setTimeout(priv->timeout);
@@ -112,6 +119,9 @@ void HttpServer::handleConnection(QAbstractSocket *socket)
             handle, &QObject::deleteLater);
     connect(socket, &QAbstractSocket::disconnected,
             socket, &QObject::deleteLater);
+
+    //this way we should not leak if HttpServer is destroyed before all requests are handled
+    connect(this,&QObject::destroyed,handle,&QObject::deleteLater);
 }
 
 void HttpServer::onNewConnection(qintptr socketDescriptor)
@@ -126,7 +136,7 @@ void HttpServer::onRequestReady()
 
     QAbstractSocket &socket = request->socket();
     HttpServerResponse *response
-            = new HttpServerResponse(socket, request->responseOptions(), this);
+            = new HttpServerResponse(socket, request->responseOptions(), request);
 
     connect(&socket, &QAbstractSocket::disconnected,
             response, &QObject::deleteLater);
