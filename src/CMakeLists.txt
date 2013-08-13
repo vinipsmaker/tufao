@@ -21,6 +21,9 @@ set(tufao_SRC
     notfoundhandler.cpp
     urlrewriterhandler.cpp
     httpupgraderouter.cpp
+    threadedhttprequestdispatcher.cpp
+    priv/worker.cpp
+    priv/workerthreadevent.cpp
 )
 
 add_definitions(-DTUFAO_LIBRARY
