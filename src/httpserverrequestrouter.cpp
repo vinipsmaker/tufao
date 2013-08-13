@@ -57,10 +57,10 @@ int HttpServerRequestRouter::map(Mapping map)
 int HttpServerRequestRouter::map(std::initializer_list<Mapping> map)
 {
     int i = priv->mappings.size();
-    for(auto iter = map.begin(); iter != map.end(); iter++){
-        priv->mappings.push_back(*iter);
-    }
-    //std::copy(std::begin(map), std::end(map), std::end(priv->mappings));
+    if(priv->mappings.isEmpty())
+        priv->mappings = {map};
+    else
+        std::copy(std::begin(map), std::end(map), std::end(priv->mappings));
     return i;
 }
 
