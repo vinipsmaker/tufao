@@ -24,6 +24,7 @@ set(tufao_SRC
     threadedhttprequestdispatcher.cpp
     priv/worker.cpp
     priv/workerthreadevent.cpp
+    priv/workerthreadcontrol.cpp
 )
 
 add_definitions(-DTUFAO_LIBRARY

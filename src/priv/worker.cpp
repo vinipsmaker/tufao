@@ -17,23 +17,27 @@
 */
 
 #include "worker.h"
+
 #include <functional>
-#include "../abstracthttpserverrequesthandler.h"
 #include <QtCore/QEventLoop>
 #include <QtCore/QRunnable>
 #include <QtCore/QMutex>
 #include <QtCore/QWaitCondition>
 #include <QtCore/QCoreApplication>
 
+#include "../abstracthttpserverrequesthandler.h"
 #include "httpserverrequest.h"
 #include "httpserverresponse.h"
 #include "workerthreadevent.h"
+#include "workerthreadcontrol.h"
 #include "threadedhttprequestdispatcher.h"
+
+#define debug() qDebug()<<"["<<QThread::currentThreadId()<<"] "
 
 namespace Tufao {
 
 WorkerThread::WorkerThread(int id, std::function<AbstractHttpServerRequestHandler* ()> factory, ThreadedHttpRequestDispatcher *parent)
-    : QThread(parent),id(id), factory(factory),dispatcher(parent)
+    : QThread(parent),id(id), factory(factory),dispatcher(parent),shutdownRequested(false)
 {
 
 }
@@ -42,11 +46,13 @@ void WorkerThread::handleRequest(WorkerThread::Request r)
 {
     mutex.lock();
 
-    qDebug()<<"Before move to Thread";
     myRequest = r;
-    myRequest.request->moveToThread(this);
-    qDebug()<<"After move to Thread";
 
+    Q_ASSERT_X(myRequest.response->parent() == myRequest.request
+               ,Q_FUNC_INFO
+               ,"Response HAS to be a child of Request");
+
+    myRequest.request->moveToThread(this);
     mutex.unlock();
 
     //wake the thread up
@@ -75,8 +81,13 @@ void WorkerThread::run()
     threadEvent->thread = this;
     QCoreApplication::postEvent(dispatcher,threadEvent);
 
+    WorkerThreadControl controller;
+
     forever{
         //wait for a new request to handle
+
+        debug()<<"Goes to sleep";
+
         mutex.lock();
         wait.wait(&mutex);
 
@@ -85,6 +96,8 @@ void WorkerThread::run()
             break;
         }
         mutex.unlock();
+
+        debug()<<"Woke up";
 
         //Tell the dispatcher we are working
         WorkerThreadEvent* threadEvent = new WorkerThreadEvent(WorkerThreadEvent::ThreadRunning);
@@ -95,12 +108,13 @@ void WorkerThread::run()
         HttpServerResponse& response = *myRequest.response;
 
         //make shure eventloop is exited when the request is done
-        connect(myRequest.request.data(),&HttpServerRequest::end,this,&WorkerThread::quit);
-        connect(myRequest.request.data(),&HttpServerRequest::close,this,&WorkerThread::quit);
-        connect(myRequest.request.data(),&HttpServerRequest::destroyed,this,&WorkerThread::quit);
-        connect(myRequest.response.data(),&HttpServerResponse::finished,this,&WorkerThread::quit);
+        connect(myRequest.request.data(),&HttpServerRequest::close,&controller,&WorkerThreadControl::onRequestClosed);
+        connect(myRequest.request.data(),&HttpServerRequest::destroyed,&controller,&WorkerThreadControl::onRequestDestroyed);
+        connect(myRequest.response.data(),&HttpServerResponse::finished,&controller,&WorkerThreadControl::onResponseFinished);
 
         bool handled = handler->handleRequest(request,response);
+
+
 
         //If the request was handled the user should have called end()
         if(!handled){
@@ -108,10 +122,13 @@ void WorkerThread::run()
             request.end();
         }
 
+        debug()<<"Enters Eventloop";
         /*enter eventloop in case the request is handled async
          *or needs to be deleted
          */
         exec();
+
+        debug()<<"Leaves Eventloop";
 
         //Tell the dispatcher we are done
         threadEvent = new WorkerThreadEvent(WorkerThreadEvent::ThreadIdle);
@@ -120,21 +137,21 @@ void WorkerThread::run()
         //maybe request was deleted while in the eventloop
         if(myRequest.request){
             //undo connections
-            disconnect(myRequest.request.data(),0,this,0);
+            disconnect(myRequest.request.data(),0,&controller,0);
 
             if(myRequest.response)
-                disconnect(myRequest.response.data(),0,this,0);
+                disconnect(myRequest.response.data(),0,&controller,0);
 
             //push request object back to the dispatcher's thread
-            qDebug()<<"Before moving back to mainthread";
             request.moveToThread(dispatcher->thread());
-            qDebug()<<"After moving back to mainthread";
+
         }
 
         QCoreApplication::postEvent(dispatcher,threadEvent);
 
     }
 
+    debug()<<"!!!!!!!!!!!!THREAD GOES DOWN";
     //clean up all ressources
     delete handler;
 

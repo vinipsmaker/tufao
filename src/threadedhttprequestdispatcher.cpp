@@ -73,15 +73,16 @@ bool ThreadedHttpRequestDispatcher::handleRequest(HttpServerRequest &request,
                                             HttpServerResponse &response)
 {
 
+    qDebug()<<"Incoming Request";
     WorkerThread::Request r;
-    r.request  = & request;
-    r.response = & response;
+    r.request  = &request;
+    r.response = &response;
 
     priv->pendingRequests.append(r);
     if(priv->idleThreads.size())
         priv->scheduleRequests();
 
-    return false;
+    return true;
 }
 
 void ThreadedHttpRequestDispatcher::initializeThreads()
@@ -112,19 +113,21 @@ bool ThreadedHttpRequestDispatcher::ThreadedHttpRequestDispatcher::event(QEvent 
     switch(e->type()){
         case (QEvent::Type) WorkerThreadEvent::ThreadStarted:{
             WorkerThreadEvent *event = static_cast<WorkerThreadEvent*>(e);
-            qDebug()<<"Thread "<<event->thread->threadId()<<" up and running";
+            qDebug()<<"Thread ["<<event->thread->threadId()<<"] up and running";
 
             return true;
         }
         case (QEvent::Type)WorkerThreadEvent::ThreadIdle:{
             WorkerThreadEvent *event = static_cast<WorkerThreadEvent*>(e);
-            qDebug()<<"Thread "<<event->thread->threadId()<<" finished work";
-
             if(!priv->workingThreads.contains(event->thread->threadId())){
-                qDebug()<<"Thread "<<event->thread->threadId()<<" goes into idle mode but is not in working Map";
+                qDebug()<<"Thread ["<<event->thread->threadId()<<"] goes into idle mode but is not in working Map";
             }else{
                 WorkerThread* th = priv->workingThreads.take(event->thread->threadId());
                 priv->idleThreads.append(th);
+
+                qDebug()<<"Thread ["<<event->thread->threadId()<<"] finished work";
+                qDebug()<<"Idle Threads: "<<priv->idleThreads.size();
+                qDebug()<<"Working Threads: "<<priv->workingThreads.size()<<" "<<priv->workingThreads.keys();
 
                 if(priv->idleThreads.size() && priv->pendingRequests.size())
                     priv->scheduleRequests();
