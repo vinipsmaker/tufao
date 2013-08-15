@@ -30,8 +30,7 @@
 #include <QWaitCondition>
 #include <QPointer>
 #include <functional>
-
-
+#include <QDebug>
 
 namespace Tufao {
 
@@ -72,7 +71,6 @@ class WorkerThread : public QThread
         std::function<AbstractHttpServerRequestHandler* ()> factory;
         ThreadedHttpRequestDispatcher* dispatcher;
 };
-
 
 } //namespace Tufao
 

@@ -1,7 +1,9 @@
-#ifndef THREADLOGGER_H
-#define THREADLOGGER_H
+#ifndef TUFAO_PRIV_WORKERTHREADCONTROL_H
+#define TUFAO_PRIV_WORKERTHREADCONTROL_H
 
 #include <QObject>
+
+namespace Tufao {
 
 class WorkerThreadControl : public QObject
 {
@@ -14,9 +16,10 @@ class WorkerThreadControl : public QObject
     public slots:
         void onResponseFinished();
         void onRequestDestroyed();
-        void onRequestEnd ();
         void onRequestClosed();
         
 };
 
-#endif // THREADLOGGER_H
+} //namespace Tufao
+
+#endif // TUFAO_PRIV_WORKERTHREADCONTROL_H

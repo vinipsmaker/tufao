@@ -1,8 +1,9 @@
 #include "workerthreadcontrol.h"
+#include "threadedhttprequestdispatcher.h"
 #include <QThread>
 #include <QDebug>
 
-#define debug() qDebug()<<"["<<QThread::currentThreadId()<<"] "
+namespace Tufao {
 
 WorkerThreadControl::WorkerThreadControl(QObject *parent) :
     QObject(parent)
@@ -11,24 +12,20 @@ WorkerThreadControl::WorkerThreadControl(QObject *parent) :
 
 void WorkerThreadControl::onResponseFinished()
 {
-    debug()<<"onResponseFinished";
+    tDebug()<<"onResponseFinished";
     QThread::currentThread()->exit();
 }
 
 void WorkerThreadControl::onRequestDestroyed()
 {
-    debug()<<"onRequestDestroyed";
-    QThread::currentThread()->exit();
-}
-
-void WorkerThreadControl::onRequestEnd()
-{
-    debug()<<"onRequestEnd";
+    tDebug()<<"onRequestDestroyed";
     QThread::currentThread()->exit();
 }
 
 void WorkerThreadControl::onRequestClosed()
 {
-    debug()<<"onRequestClosed";
+    tDebug()<<"onRequestClosed";
     QThread::currentThread()->exit();
+}
+
 }

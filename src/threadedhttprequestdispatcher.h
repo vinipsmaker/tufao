@@ -28,6 +28,7 @@
 
 #include <QtCore/QRegularExpression>
 #include <QtCore/QObject>
+#include <QtCore/QDebug>
 
 #include "tufao_global.h"
 #include "abstracthttpserverrequesthandler.h"
@@ -35,28 +36,24 @@
 namespace Tufao {
 
 /*!
-  This class provides a robust and high performance Threaded HTTP request router. It
-  allows to register a chain of request handler factories. This router uses mapping rules
-  based on the url's path component and http method to determine the correct
-  handlers.
+  This class provides a robust and high performance Threaded HTTP request dispatcher.
 
-  The type of mapping rules used in this class provides a predictable behaviour
-  that is simple to understand and allow the use of caching algorithms to
-  improve the performance.
+  It takes a incoming request and forwards it to one of its internal worker threads.
+  The size of the threadpool can be customized. The handleRequest function will
+  ALWAYS return true, because there is no way the dispatcher can know if the request
+  was handled properly inside one of the threads.
 
-  When the router finds one matching request handler, it will call it passing
-  the request and response objects. If the found handler cannot handle the
-  request (this is indicated by the return value), the router will continue its
-  quest in the search of a worthy handler. If the router fails in its quest
-  (when no handlers are found or when none of the found handlers are able to
-  respond the request), the handleRequest method in the router returns false and
-  the connection remains open. This mean that you should always create a handler
-  that responds to any request with a <i>404 not found</i> as the last handler
-  in the most top-level request router.
+  The dispatcher supports asynchronous programming and will be attached to a request
+  until finished() was emitted from the response object, or the connection is closed.
+
+  \warning
+  Always call end() on your response object or the thread will be stuck forever with
+  the request and the dispatcher will run out of threads.
+
 
   The code below provides an example usage:
 
-  \include applicationdefaultmain.cpp
+  \include threadedapplicationdefaultmain.cpp
 
   \warning
   Do NEVER delete a Factory as long as the threads are running
@@ -133,6 +130,13 @@ private:
     Priv *priv;
 
 };
+
+/**
+ * @brief tDebug
+ * @return
+ * Calls qDebug() but prefixes the string with the threadId
+ */
+TUFAO_EXPORT QDebug tDebug ();
 
 } // namespace Tufao
 

@@ -155,6 +155,14 @@ void HttpServer::onUpgrade()
     Q_ASSERT(request);
 
     priv->upgradeHandler(*request, request->readBody());
+
+    //make shure the socket is useable after the upgrade
+    QAbstractSocket& socket = request->socket();
+    if(socket.parent() == request){
+        //socket will be automatically deleted when disconnected was emitted
+        socket.setParent(0);
+    }
+
     delete request;
 }
 

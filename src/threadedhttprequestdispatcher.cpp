@@ -41,7 +41,6 @@ ThreadedHttpRequestDispatcher::ThreadedHttpRequestDispatcher(Factory threadIniti
     //activate threads when the eventloop is started, to give the user a chance
     //to set some default values
     QMetaObject::invokeMethod(this,"initializeThreads",Qt::QueuedConnection);
-    //push mappings into the thread, so it can create the handlers itself
 }
 
 ThreadedHttpRequestDispatcher::~ThreadedHttpRequestDispatcher()
@@ -72,8 +71,6 @@ void ThreadedHttpRequestDispatcher::restart()
 bool ThreadedHttpRequestDispatcher::handleRequest(HttpServerRequest &request,
                                             HttpServerResponse &response)
 {
-
-    qDebug()<<"Incoming Request";
     WorkerThread::Request r;
     r.request  = &request;
     r.response = &response;
@@ -145,6 +142,15 @@ bool ThreadedHttpRequestDispatcher::ThreadedHttpRequestDispatcher::event(QEvent 
         default:
             return QObject::event(e);
     }
+}
+
+QDebug tDebug()
+{
+    WorkerThread* t = qobject_cast<WorkerThread*>(QThread::currentThread());
+    if(t)
+        return qDebug()<<"["<<t->threadId()<<"]";
+
+    return qDebug();
 }
 
 } // namespace Tufao

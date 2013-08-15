@@ -1,5 +1,5 @@
-#ifndef WORKERTHREADEVENT_H
-#define WORKERTHREADEVENT_H
+#ifndef TUFAO_PRIV_WORKERTHREADEVENT_H
+#define TUFAO_PRIV_WORKERTHREADEVENT_H
 
 #include <QEvent>
 
@@ -23,4 +23,4 @@ class WorkerThreadEvent : public QEvent
 
 } //namespace Tufao
 
-#endif // WORKERTHREADEVENT_H
+#endif // TUFAO_PRIV_WORKERTHREADEVENT_H

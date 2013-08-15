@@ -32,12 +32,10 @@
 #include "workerthreadcontrol.h"
 #include "threadedhttprequestdispatcher.h"
 
-#define debug() qDebug()<<"["<<QThread::currentThreadId()<<"] "
-
 namespace Tufao {
 
 WorkerThread::WorkerThread(int id, std::function<AbstractHttpServerRequestHandler* ()> factory, ThreadedHttpRequestDispatcher *parent)
-    : QThread(parent),id(id), factory(factory),dispatcher(parent),shutdownRequested(false)
+    : QThread(parent),id(id),shutdownRequested(false), factory(factory),dispatcher(parent)
 {
 
 }
@@ -86,7 +84,7 @@ void WorkerThread::run()
     forever{
         //wait for a new request to handle
 
-        debug()<<"Goes to sleep";
+        tDebug()<<"Goes to sleep";
 
         mutex.lock();
         wait.wait(&mutex);
@@ -97,7 +95,7 @@ void WorkerThread::run()
         }
         mutex.unlock();
 
-        debug()<<"Woke up";
+        tDebug()<<"Woke up";
 
         //Tell the dispatcher we are working
         WorkerThreadEvent* threadEvent = new WorkerThreadEvent(WorkerThreadEvent::ThreadRunning);
@@ -122,13 +120,13 @@ void WorkerThread::run()
             request.end();
         }
 
-        debug()<<"Enters Eventloop";
+        tDebug()<<"Enters Eventloop";
         /*enter eventloop in case the request is handled async
          *or needs to be deleted
          */
         exec();
 
-        debug()<<"Leaves Eventloop";
+        tDebug()<<"Leaves Eventloop";
 
         //Tell the dispatcher we are done
         threadEvent = new WorkerThreadEvent(WorkerThreadEvent::ThreadIdle);
@@ -151,7 +149,7 @@ void WorkerThread::run()
 
     }
 
-    debug()<<"!!!!!!!!!!!!THREAD GOES DOWN";
+    tDebug()<<"!!!!!!!!!!!!THREAD GOES DOWN";
     //clean up all ressources
     delete handler;
 
