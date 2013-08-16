@@ -1,5 +1,5 @@
 /*  This file is part of the Tufão project
-    Copyright (C) 2012 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+    Copyright (C) 2013 Benjamin Zeller <zeller.benjamin@web.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -23,14 +23,23 @@
 #include <QtCore/QUrl>
 #include <QtCore/QVariant>
 #include <QtCore/QDebug>
+#include <QtCore/QCoreApplication>
 
 #include "priv/worker.h"
 #include "priv/workerthreadevent.h"
 
 #include <algorithm>
 #include <QEvent>
+#include <QTime>
 
 namespace Tufao {
+
+ThreadedHttpRequestDispatcher::Priv::Priv()
+    : numberOfThreads (10), deferredDispatch(false)
+{
+
+}
+
 
 ThreadedHttpRequestDispatcher::ThreadedHttpRequestDispatcher(Factory threadInitializer, QObject *parent) :
     QObject(parent),
@@ -55,16 +64,28 @@ void ThreadedHttpRequestDispatcher::setThreadPoolSize(const unsigned int size)
 
 void ThreadedHttpRequestDispatcher::restart()
 {
-    /*
-    //quit all threads
-    for(int i= 0; i < priv->workers.size(); i++){
-        //@BUG need a better way to do this
-        priv->workers[i]->terminate();
-        priv->workers[i]->deleteLater();
-    }
-    priv->workers.clear();
+    priv->deferredDispatch = true; //stop request dispatching
+
+    priv->stopAllThreads();
     initializeThreads();
-    */
+
+    //give the threads some time to start
+    QThread::msleep(100);
+    priv->deferredDispatch = false;
+    priv->dispatchRequests();
+}
+
+void ThreadedHttpRequestDispatcher::shutdown()
+{
+    priv->deferredDispatch = true; //stop request dispatching
+
+    while(priv->pendingRequests.size()){
+        WorkerThread::Request r = priv->pendingRequests.dequeue();
+        r.response->writeHead(HttpResponseStatus::SERVICE_UNAVAILABLE);
+        r.response->end();
+    }
+
+    priv->stopAllThreads();
 }
 
 
@@ -77,7 +98,7 @@ bool ThreadedHttpRequestDispatcher::handleRequest(HttpServerRequest &request,
 
     priv->pendingRequests.append(r);
     if(priv->idleThreads.size())
-        priv->scheduleRequests();
+        priv->dispatchRequests();
 
     return true;
 }
@@ -91,8 +112,11 @@ void ThreadedHttpRequestDispatcher::initializeThreads()
     }
 }
 
-void ThreadedHttpRequestDispatcher::Priv::scheduleRequests()
+void ThreadedHttpRequestDispatcher::Priv::dispatchRequests()
 {
+    if(deferredDispatch)
+        return;
+
     while(pendingRequests.size()){
         if(idleThreads.size() == 0)
             break;
@@ -102,6 +126,56 @@ void ThreadedHttpRequestDispatcher::Priv::scheduleRequests()
 
         WorkerThread::Request r = pendingRequests.dequeue();
         w->handleRequest(r);
+    }
+}
+
+void ThreadedHttpRequestDispatcher::Priv::stopAllThreads()
+{
+    QTime timer;
+    long timeout = 60 * 1000;
+
+    timer.start();
+
+    while(workingThreads.size()){
+        //deliver thread finished events to us
+        QCoreApplication::sendPostedEvents(this,WorkerThreadEvent::ThreadIdle);
+        QThread::msleep(10);
+
+        /* If we hit this, we waited long enough, maybe the threads
+         * are somehow blocked. We need to force quit them
+         */
+        if(timer.elapsed() > timeout){
+            for(auto i = workingThreads.begin();
+                i != workingThreads.end(); i++){
+
+                WorkerThread* th = i.value();
+                th->terminate();
+                th->wait(10*1000);
+                delete th;
+
+            }
+            workingThreads.clear();
+            break;
+        }
+
+    }
+
+    timeout = 10 * 1000;
+
+    //quit all threads
+    for(int i= 0; i < idleThreads.size(); i++){
+        WorkerThread* th = idleThreads.takeAt(i);
+        th->shutdown();
+        bool finished = th->wait(timeout);
+        if(!finished){
+            th->terminate();
+            finished = th->wait(timeout);
+
+            //@BUG what to do if the thread can not be terminated
+            if(!finished)
+                tDebug()<<"Could not stop thread correctly";
+        }
+        delete th;
     }
 }
 
@@ -127,7 +201,7 @@ bool ThreadedHttpRequestDispatcher::ThreadedHttpRequestDispatcher::event(QEvent 
                 qDebug()<<"Working Threads: "<<priv->workingThreads.size()<<" "<<priv->workingThreads.keys();
 
                 if(priv->idleThreads.size() && priv->pendingRequests.size())
-                    priv->scheduleRequests();
+                    priv->dispatchRequests();
 
             }
 

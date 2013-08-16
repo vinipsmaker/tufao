@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2012 Vinícius dos Santos Oliveira
+  Copyright (c) 2013 Benjamin Zeller
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -43,8 +43,9 @@ namespace Tufao {
   ALWAYS return true, because there is no way the dispatcher can know if the request
   was handled properly inside one of the threads.
 
-  The dispatcher supports asynchronous programming and will be attached to a request
-  until finished() was emitted from the response object, or the connection is closed.
+  The dispatcher supports asynchronous programming and a thread will be attached to a
+  request until finished() was emitted from the response object, or the connection is
+  closed.
 
   \warning
   Always call end() on your response object or the thread will be stuck forever with
@@ -55,13 +56,8 @@ namespace Tufao {
 
   \include threadedapplicationdefaultmain.cpp
 
-  \warning
-  Do NEVER delete a Factory as long as the threads are running
-  If you need to delete it, you have to unregister it from the Router and call reload()
-  Only after that call its safe to delete a Factory object
-
   \since
-  0.3
+  1.0
   */
 class TUFAO_EXPORT ThreadedHttpRequestDispatcher: public QObject,
                                             public AbstractHttpServerRequestHandler
@@ -71,15 +67,12 @@ public:
     /*!
      It's a simple typedef for the type of handler accepted by the
      HttpServerRequestRouter.
-
-     \since
-     1.0
      */
     typedef std::function<AbstractHttpServerRequestHandler* ()>
     Factory;
 
     /*!
-      Constructs a HttpServerRequestRouter object.
+      Constructs a ThreadedHttpRequestDispatcher object.
       */
     explicit ThreadedHttpRequestDispatcher(Factory threadInitializer, QObject *parent = 0);
 
@@ -97,10 +90,20 @@ public:
     void setThreadPoolSize (const unsigned int size);
 
     /*!
-     * \brief restart
-     *Will unload all threads and restart them
+      \brief restart
+      Will unload all threads and restart them
+
+      \note This will block until all threads are restarted
      */
     void restart ();
+
+    /*!
+      \brief shutdown
+      Will stop all threads and request dispatching
+
+      \note This will close all open requests
+     */
+    void shutdown ();
 
 // QObject interface
 public:
@@ -108,7 +111,7 @@ public:
 
 public slots:
     /*!
-      It will route the request to the right handler thread.
+      Will dispatch the request to the right handler thread.
 
       \return
       Returns always true if there is a thread to handle the request.

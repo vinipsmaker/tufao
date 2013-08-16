@@ -1,5 +1,5 @@
 /*  This file is part of the Tufão project
-    Copyright (C) 2012 Vinícius dos Santos Oliveira <vini.ipsmaker@gmail.com>
+    Copyright (C) 2013 Benjamin Zeller <zeller.benjamin@web.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public

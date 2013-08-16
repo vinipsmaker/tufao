@@ -35,14 +35,18 @@ namespace Tufao {
 
 struct ThreadedHttpRequestDispatcher::Priv
 {
-    void scheduleRequests ();
+    ThreadedHttpRequestDispatcher::Priv();
 
-    QList< WorkerThread* >  idleThreads;
+    void dispatchRequests ();
+    void stopAllThreads   ();
+
+    QList< WorkerThread* >    idleThreads;
     QMap<int,WorkerThread* >  workingThreads;
-    Factory               threadInitializer;
+    Factory                   threadInitializer;
 
     QQueue<WorkerThread::Request> pendingRequests;
-    unsigned int          numberOfThreads;
+    unsigned int                  numberOfThreads;
+    bool                          deferredDispatch;
 };
 
 } // namespace Tufao
