@@ -29,13 +29,14 @@
 #include <QtCore/QAtomicInt>
 #include <QtCore/QQueue>
 
-#include "worker.h"
+#include "workerthread.h"
 
 namespace Tufao {
 
 struct ThreadedHttpRequestDispatcher::Priv
 {
-    ThreadedHttpRequestDispatcher::Priv();
+    Priv(ThreadedHttpRequestDispatcher* pub);
+    virtual ~Priv() = default;
 
     void dispatchRequests ();
     void stopAllThreads   ();
@@ -43,10 +44,16 @@ struct ThreadedHttpRequestDispatcher::Priv
     QList< WorkerThread* >    idleThreads;
     QMap<int,WorkerThread* >  workingThreads;
     Factory                   threadInitializer;
+    CleanupFunc               threadCleaner;
 
     QQueue<WorkerThread::Request> pendingRequests;
     unsigned int                  numberOfThreads;
     bool                          deferredDispatch;
+    bool                          rejectRequests;
+
+    ThreadedHttpRequestDispatcher* pub;
+
+
 };
 
 } // namespace Tufao

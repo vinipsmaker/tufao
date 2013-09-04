@@ -65,11 +65,18 @@ class TUFAO_EXPORT ThreadedHttpRequestDispatcher: public QObject,
     Q_OBJECT
 public:
     /*!
-     It's a simple typedef for the type of handler accepted by the
-     HttpServerRequestRouter.
+     It's a simple typedef for the type of factory accepted by the
+     ThreadedHttpRequestDispatcher.
      */
-    typedef std::function<AbstractHttpServerRequestHandler* ()>
+    typedef std::function<AbstractHttpServerRequestHandler* (void **customData)>
     Factory;
+
+    /*!
+     It's a simple typedef for the type of cleanup function accepted by the
+     ThreadedHttpRequestDispatcher.
+     */
+    typedef std::function<void (void **customData)>
+    CleanupFunc;
 
     /*!
       Constructs a ThreadedHttpRequestDispatcher object.
@@ -82,10 +89,17 @@ public:
     ~ThreadedHttpRequestDispatcher();
 
     /*!
+      \brief setCleanupFunction
+      Sets the cleanup function that is called when the thread is shutdown
+      \note changing this after start was called requires to call restart()
+     */
+    void setCleanupFunction (CleanupFunc fun);
+
+    /*!
       \brief setThreadPoolSize
       Sets the number of threads that handle incoming requests
       \param size
-      \note changing this after the eventloop was started requires to call restart()
+      \note changing this after start was called requires to call restart()
      */
     void setThreadPoolSize (const unsigned int size);
 
@@ -125,13 +139,19 @@ public slots:
     bool handleRequest(Tufao::HttpServerRequest &request,
                        Tufao::HttpServerResponse &response) override;
 
-private slots:
-    void initializeThreads();
+protected slots:
+    virtual void initializeThreads();
+
+public:
+    struct Priv;
+
+protected:
+    explicit ThreadedHttpRequestDispatcher(Priv* priv, Factory threadInitializer, QObject *parent = 0);
+    Priv* _priv();
+    const Priv *_priv() const;
 
 private:
-    struct Priv;
     Priv *priv;
-
 };
 
 /**

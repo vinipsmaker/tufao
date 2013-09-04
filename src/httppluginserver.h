@@ -260,13 +260,14 @@ public slots:
     bool handleRequest(Tufao::HttpServerRequest &request,
                        Tufao::HttpServerResponse &response) override;
 
+public:
+    struct Priv;
+
 private:
     void changeConfig(const QString &file);
     void onConfigFileChanged();
     void clear();
     void reloadConfig();
-
-    struct Priv;
     Priv *priv;
 };
 

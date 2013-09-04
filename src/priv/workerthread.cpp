@@ -16,7 +16,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "worker.h"
+#include "workerthread.h"
 
 #include <functional>
 #include <QtCore/QEventLoop>
@@ -34,8 +34,11 @@
 
 namespace Tufao {
 
-WorkerThread::WorkerThread(int id, std::function<AbstractHttpServerRequestHandler* ()> factory, ThreadedHttpRequestDispatcher *parent)
-    : QThread(parent),id(id),shutdownRequested(false), factory(factory),dispatcher(parent)
+WorkerThread::WorkerThread(int id,
+                           std::function<AbstractHttpServerRequestHandler* (void **)> factory,
+                           std::function<void (void **customData)> cleanup,
+                           ThreadedHttpRequestDispatcher *parent)
+    : QThread(parent),id(id),shutdownRequested(false), factory(factory),cleanup(cleanup),dispatcher(parent)
 {
 
 }
@@ -54,7 +57,7 @@ void WorkerThread::handleRequest(WorkerThread::Request r)
     mutex.unlock();
 
     //wake the thread up
-    wait.wakeAll();
+    m_wait.wakeAll();
 }
 
 void WorkerThread::shutdown()
@@ -62,7 +65,7 @@ void WorkerThread::shutdown()
     mutex.lock();
     shutdownRequested = true;
     mutex.unlock();
-    wait.wakeAll();
+    m_wait.wakeAll();
 }
 
 int WorkerThread::threadId()
@@ -72,7 +75,8 @@ int WorkerThread::threadId()
 
 void WorkerThread::run()
 {
-    AbstractHttpServerRequestHandler* handler = factory();
+    void* customData = 0; //Custom data storage room
+    AbstractHttpServerRequestHandler* handler = factory(&customData);
 
     //Tell the dispatcher we are here
     WorkerThreadEvent* threadEvent = new WorkerThreadEvent(WorkerThreadEvent::ThreadStarted);
@@ -87,7 +91,7 @@ void WorkerThread::run()
         tDebug()<<"Goes to sleep";
 
         mutex.lock();
-        wait.wait(&mutex);
+        m_wait.wait(&mutex);
 
         if(shutdownRequested){
             mutex.unlock();
@@ -151,6 +155,16 @@ void WorkerThread::run()
 
     tDebug()<<"!!!!!!!!!!!!THREAD GOES DOWN";
     //clean up all ressources
+    if(customData){
+        if(cleanup){
+            cleanup(&customData);
+            if(customData){
+                qWarning()<<"Tufao::ThreadedHttpRequestDispatcher customData is not cleaned up or not set to 0. Possible data leak!";
+            }
+        }else{
+            qWarning()<<"Tufao::ThreadedHttpRequestDispatcher customData is used but no cleanup function registered! This means leaking Data!";
+        }
+    }
     delete handler;
 
 }

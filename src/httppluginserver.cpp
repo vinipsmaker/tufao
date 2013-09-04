@@ -16,7 +16,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "priv/httppluginserver.h"
+#include "priv/httppluginserver_p.h"
 
 #include "httpserverresponse.h"
 
@@ -26,7 +26,7 @@ namespace Tufao {
 
 HttpPluginServer::HttpPluginServer(QObject *parent):
     QObject(parent),
-    priv(new Priv)
+    priv(new Priv(this))
 {
     connect(&priv->configFile.watcher(), &QFileSystemWatcher::fileChanged,
             this, &HttpPluginServer::onConfigFileChanged);
@@ -67,7 +67,7 @@ QString HttpPluginServer::config() const
 bool HttpPluginServer::handleRequest(HttpServerRequest &request,
                                      HttpServerResponse &response)
 {
-    return priv->router.handleRequest(request, response);
+    return priv->router->handleRequest(request, response);
 }
 
 void HttpPluginServer::onConfigFileChanged()
@@ -84,7 +84,7 @@ inline void HttpPluginServer::clear()
 {
     priv->configFile.clear();
     priv->configContent.clear();
-    priv->router.clear();
+    priv->router->clear();
 
     for (const auto &p: priv->plugins)
         p->deleteLater();
@@ -106,75 +106,18 @@ inline void HttpPluginServer::reloadConfig()
     }
 
     // Reset the request handlers
-    priv->router.clear();
+    priv->router->clear();
 
-    for (const auto &p: priv->plugins)
+    for (const auto &p: priv->plugins){
+        p->unload();
         p->deleteLater();
+    }
 
     priv->plugins.clear();
+    priv->handlers.clear();
 
     // Load the new config
-    for (const auto &p: priv->configContent.plugins()) {
-        QPluginLoader *loader = new QPluginLoader(p.path, this);
-        auto warn = [&p,loader]() {
-            qWarning("Tufao::HttpPluginServer: Couldn't load plugin"
-                     " \"%s\"", qPrintable(p.path));
-            loader->deleteLater();
-        };
-
-        if (!loader->load()) {
-            warn();
-            continue;
-        }
-
-        auto plugin = qobject_cast<HttpServerPlugin*>(loader->instance());
-
-        if (!plugin) {
-            warn();
-            continue;
-        }
-
-        HttpServerRequestRouter::Handler handler;
-        {
-            QHash<QString, HttpServerPlugin*> dependencies;
-            bool ok = true;
-
-            for (const auto &d: p.dependencies) {
-                if (!priv->handlers.contains(d)) {
-                    ok = false;
-                    break;
-                }
-
-                dependencies[d] = priv->handlers[d].plugin;
-            }
-
-            if (!ok) {
-                warn();
-                continue;
-            }
-
-            handler = plugin->createHandler(dependencies, p.customData);
-        }
-
-        priv->handlers[p.name] = {plugin, std::move(handler)};
-        priv->plugins += loader;
-    }
-
-    for (const auto &r: priv->configContent.requests()) {
-        if (!priv->handlers.contains(r.plugin)) {
-            qWarning("Tufao::HttpPluginServer: Plugin not loaded: \"%s\"",
-                     qPrintable(r.plugin));
-            continue;
-        }
-
-        auto path = QRegularExpression{r.path};
-        const auto &handler = priv->handlers[r.plugin].handler;
-
-        if (r.method.size())
-            priv->router.map({path, r.method.toUtf8(), handler});
-        else
-            priv->router.map({path, handler});
-    }
+    HttpPluginServer::Priv::loadNewConfig(priv->router,priv->configContent,priv->plugins,priv->handlers);
 }
 
 } // namespace Tufao

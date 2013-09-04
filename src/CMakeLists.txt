@@ -12,6 +12,7 @@ set(tufao_SRC
     httpfileserver.cpp
     httpserverrequestrouter.cpp
     httppluginserver.cpp
+    priv/httppluginserver_p.cpp
     headers.cpp
     priv/rfc1123.cpp
     priv/rfc1036.cpp
@@ -22,7 +23,8 @@ set(tufao_SRC
     urlrewriterhandler.cpp
     httpupgraderouter.cpp
     threadedhttprequestdispatcher.cpp
-    priv/worker.cpp
+    threadedhttppluginserver.cpp
+    priv/workerthread.cpp
     priv/workerthreadevent.cpp
     priv/workerthreadcontrol.cpp
 )

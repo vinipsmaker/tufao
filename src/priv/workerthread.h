@@ -50,7 +50,9 @@ class WorkerThread : public QThread
             QPointer<HttpServerResponse> response;
         };
 
-        WorkerThread(int id, std::function<AbstractHttpServerRequestHandler* ()> factory, ThreadedHttpRequestDispatcher* parent);
+        WorkerThread(int id, std::function<AbstractHttpServerRequestHandler* (void **)> factory
+                     ,std::function<void (void **customData)> cleanup
+                     ,ThreadedHttpRequestDispatcher* parent);
 
         void handleRequest(Request r);
         void shutdown     ();
@@ -64,11 +66,12 @@ class WorkerThread : public QThread
     private:
         int    id;
         QMutex mutex;
-        QWaitCondition wait; //the worker thread is sleeping on this waitcondition
+        QWaitCondition m_wait; //the worker thread is sleeping on this waitcondition
         Request myRequest; //the request that is handled by this thread
         bool shutdownRequested;
 
-        std::function<AbstractHttpServerRequestHandler* ()> factory;
+        std::function<AbstractHttpServerRequestHandler* (void **)> factory;
+        std::function<void (void **customData)> cleanup;
         ThreadedHttpRequestDispatcher* dispatcher;
 };
 
