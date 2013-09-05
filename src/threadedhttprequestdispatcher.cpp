@@ -101,6 +101,8 @@ bool ThreadedHttpRequestDispatcher::handleRequest(HttpServerRequest &request,
     if(priv->rejectRequests)
         return false;
 
+    qDebug()<<"Handling request";
+
     WorkerThread::Request r;
     r.request  = &request;
     r.response = &response;
@@ -108,17 +110,21 @@ bool ThreadedHttpRequestDispatcher::handleRequest(HttpServerRequest &request,
     priv->pendingRequests.append(r);
     if(priv->idleThreads.size())
         priv->dispatchRequests();
+    else
+        qWarning()<<"!!!!!!!!!!!!!!!!!!!!!!!!!!! I RAN OUT OF THREADS; DELAYING DELAYING";
 
     return true;
 }
 
 void ThreadedHttpRequestDispatcher::initializeThreads()
 {
+    priv->threadListMutex.lock();
     for(unsigned int i = 0; i < priv->numberOfThreads; i++){
-        WorkerThread *w = new WorkerThread(i,priv->threadInitializer,priv->threadCleaner,this);
+        WorkerThread *w = new WorkerThread(i,priv->threadInitializer,priv->threadCleaner,priv);
         w->start();
         priv->idleThreads.append(w);
     }
+    priv->threadListMutex.unlock();
 }
 
 ThreadedHttpRequestDispatcher::ThreadedHttpRequestDispatcher(ThreadedHttpRequestDispatcher::Priv *priv, ThreadedHttpRequestDispatcher::Factory threadInitializer, QObject *parent)
@@ -144,16 +150,34 @@ void ThreadedHttpRequestDispatcher::Priv::dispatchRequests()
     if(deferredDispatch)
         return;
 
+    qDebug()<<"Starting request dispatch";
     while(pendingRequests.size()){
+#if 0
         if(idleThreads.size() == 0)
             break;
 
         WorkerThread* w = idleThreads.takeFirst();
         workingThreads.insert(w->threadId(),w);
-
+#else
+        WorkerThread* w = takeIdleThread();
+        if(!w){
+            qDebug()<<"!!!!!!!!!!! We ran out of threads !!!!!!!!!!!!!!!!!!!!!!!!!!!";
+            break;
+        }
+#endif
         WorkerThread::Request r = pendingRequests.dequeue();
-        w->handleRequest(r);
+
+        //maybe the request was deleted while waiting (high serverload?)
+        if(r.request && r.response)
+            w->handleRequest(r);
+        else{
+            if(r.request)
+                r.request->deleteLater();
+            if(r.response)
+                r.response->deleteLater();
+        }
     }
+    qDebug()<<"Finished request dispatch";
 }
 
 void ThreadedHttpRequestDispatcher::Priv::stopAllThreads()
@@ -163,15 +187,25 @@ void ThreadedHttpRequestDispatcher::Priv::stopAllThreads()
 
     timer.start();
 
-    while(workingThreads.size()){
+    while(true){
+
+        int size = 0;
+        threadListMutex.lock();
+        size = workingThreads.size();
+        threadListMutex.unlock();
+
+        if(size <= 0)
+            break;
+
         //deliver thread finished events to us
-        QCoreApplication::sendPostedEvents(pub,WorkerThreadEvent::ThreadIdle);
+        //QCoreApplication::sendPostedEvents(pub,WorkerThreadEvent::ThreadIdle);
         QThread::msleep(10);
 
         /* If we hit this, we waited long enough, maybe the threads
          * are somehow blocked. We need to force quit them
          */
         if(timer.elapsed() > timeout){
+            threadListMutex.lock();
             for(auto i = workingThreads.begin();
                 i != workingThreads.end(); i++){
 
@@ -182,6 +216,7 @@ void ThreadedHttpRequestDispatcher::Priv::stopAllThreads()
 
             }
             workingThreads.clear();
+            threadListMutex.unlock();
             break;
         }
 
@@ -190,6 +225,7 @@ void ThreadedHttpRequestDispatcher::Priv::stopAllThreads()
     timeout = 10 * 1000;
 
     //quit all threads
+    QMutexLocker l(&threadListMutex);
     for(int i= 0; i < idleThreads.size(); i++){
         WorkerThread* th = idleThreads.takeAt(i);
         th->shutdown();
@@ -206,8 +242,43 @@ void ThreadedHttpRequestDispatcher::Priv::stopAllThreads()
     }
 }
 
+WorkerThread *ThreadedHttpRequestDispatcher::Priv::takeIdleThread()
+{
+    QMutexLocker l(&threadListMutex);
+
+    if(idleThreads.size()){
+        WorkerThread* wt = idleThreads.takeFirst();
+        workingThreads.insert(wt->threadId(),wt);
+
+        qDebug()<<"Idle Threads: "<<idleThreads.size();
+        qDebug()<<"Working Threads: "<<workingThreads.size()<<" "<<workingThreads.keys();
+
+        return wt;
+    }
+    return 0;
+}
+
+void ThreadedHttpRequestDispatcher::Priv::takeWorkingThread(WorkerThread *thread)
+{
+    QMutexLocker l(&threadListMutex);
+    if(!workingThreads.contains(thread->threadId())){
+        qDebug()<<"Thread ["<<thread->threadId()<<"] goes into idle mode but is not in working Map";
+        return;
+    }
+    idleThreads.append(workingThreads.take(thread->threadId()));
+
+    qDebug()<<"Thread ["<<thread->threadId()<<"] finished work";
+    qDebug()<<"Idle Threads: "<<idleThreads.size();
+    qDebug()<<"Working Threads: "<<workingThreads.size()<<" "<<workingThreads.keys();
+
+    l.unlock();
+
+    QCoreApplication::postEvent(pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadIdle));
+}
+
 bool ThreadedHttpRequestDispatcher::ThreadedHttpRequestDispatcher::event(QEvent * e)
 {
+#if 0
     switch(e->type()){
         case (QEvent::Type) WorkerThreadEvent::ThreadStarted:{
             WorkerThreadEvent *event = static_cast<WorkerThreadEvent*>(e);
@@ -243,6 +314,14 @@ bool ThreadedHttpRequestDispatcher::ThreadedHttpRequestDispatcher::event(QEvent 
         default:
             return QObject::event(e);
     }
+#else
+
+    if(e->type() == WorkerThreadEvent::ThreadIdle){
+        priv->dispatchRequests();
+        return true;
+    }
+    return QObject::event(e);
+#endif
 }
 
 QDebug tDebug()

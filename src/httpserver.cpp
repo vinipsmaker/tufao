@@ -82,6 +82,8 @@ void HttpServer::incomingConnection(qintptr socketDescriptor)
 {
     QTcpSocket *socket = new QTcpSocket;
 
+    qDebug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Incoming Connection");
+
     if (!socket->setSocketDescriptor(socketDescriptor)) {
         delete socket;
         return;

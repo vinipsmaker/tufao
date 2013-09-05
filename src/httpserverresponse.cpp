@@ -71,7 +71,13 @@ bool HttpServerResponse::flush()
     if (!socket)
         return false;
 
-    return socket->flush();
+    //if we flush a disconnected socket this would cause
+    //a sigpipe termination
+    if(socket->state() == QAbstractSocket::ConnectedState)
+        return socket->flush();
+
+    //our socket was disconnected what now?
+    return false;
 }
 
 bool HttpServerResponse::writeContinue()

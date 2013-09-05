@@ -37,8 +37,8 @@ namespace Tufao {
 WorkerThread::WorkerThread(int id,
                            std::function<AbstractHttpServerRequestHandler* (void **)> factory,
                            std::function<void (void **customData)> cleanup,
-                           ThreadedHttpRequestDispatcher *parent)
-    : QThread(parent),id(id),shutdownRequested(false), factory(factory),cleanup(cleanup),dispatcher(parent)
+                           ThreadedHttpRequestDispatcher::Priv *parent)
+    : QThread(parent->pub),id(id),shutdownRequested(false), factory(factory),cleanup(cleanup),dispatcher(parent)
 {
 
 }
@@ -54,6 +54,7 @@ void WorkerThread::handleRequest(WorkerThread::Request r)
                ,"Response HAS to be a child of Request");
 
     myRequest.request->moveToThread(this);
+    myRequest.response->moveToThread(this);
     mutex.unlock();
 
     //wake the thread up
@@ -81,7 +82,7 @@ void WorkerThread::run()
     //Tell the dispatcher we are here
     WorkerThreadEvent* threadEvent = new WorkerThreadEvent(WorkerThreadEvent::ThreadStarted);
     threadEvent->thread = this;
-    QCoreApplication::postEvent(dispatcher,threadEvent);
+    QCoreApplication::postEvent(dispatcher->pub,threadEvent);
 
     WorkerThreadControl controller;
 
@@ -104,18 +105,17 @@ void WorkerThread::run()
         //Tell the dispatcher we are working
         WorkerThreadEvent* threadEvent = new WorkerThreadEvent(WorkerThreadEvent::ThreadRunning);
         threadEvent->thread = this;
-        QCoreApplication::postEvent(dispatcher,threadEvent);
+        QCoreApplication::postEvent(dispatcher->pub,threadEvent);
 
         HttpServerRequest& request   = *myRequest.request;
         HttpServerResponse& response = *myRequest.response;
 
-        //make shure eventloop is exited when the request is done
+        //make sure eventloop is exited when the request is done
         connect(myRequest.request.data(),&HttpServerRequest::close,&controller,&WorkerThreadControl::onRequestClosed);
         connect(myRequest.request.data(),&HttpServerRequest::destroyed,&controller,&WorkerThreadControl::onRequestDestroyed);
         connect(myRequest.response.data(),&HttpServerResponse::finished,&controller,&WorkerThreadControl::onResponseFinished);
 
         bool handled = handler->handleRequest(request,response);
-
 
 
         //If the request was handled the user should have called end()
@@ -141,15 +141,23 @@ void WorkerThread::run()
             //undo connections
             disconnect(myRequest.request.data(),0,&controller,0);
 
-            if(myRequest.response)
+            if(myRequest.response){
+                myRequest.response->flush();
                 disconnect(myRequest.response.data(),0,&controller,0);
+            }
 
+#if 1
             //push request object back to the dispatcher's thread
-            request.moveToThread(dispatcher->thread());
+            request.moveToThread(dispatcher->pub->thread());
+#endif
 
         }
 
-        QCoreApplication::postEvent(dispatcher,threadEvent);
+        //make the events a very high priority so they are always delivered
+        //QCoreApplication::postEvent(dispatcher->pub,threadEvent,1000);
+        mutex.lock();
+        dispatcher->takeWorkingThread(this);
+        mutex.unlock();
 
     }
 

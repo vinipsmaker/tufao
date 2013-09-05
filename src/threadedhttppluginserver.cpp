@@ -12,7 +12,12 @@ AbstractHttpServerRequestHandler *ThreadedHttpPluginServer::defaultFactoy(Abstra
 ThreadedHttpPluginServer::ThreadedHttpPluginServer(Factory fact, QObject *parent)
     : ThreadedHttpRequestDispatcher(new Priv(this),nullptr,parent)
 {
-    ((Priv*)_priv())->factoryFunc = fact;
+    ThreadedHttpPluginServer::Priv* p = ((Priv*)_priv());
+    p->factoryFunc = fact;
+
+    connect(&p->configFile.watcher(), &QFileSystemWatcher::fileChanged,
+            this, &ThreadedHttpPluginServer::onConfigFileChanged);
+
 }
 
 bool ThreadedHttpPluginServer::setConfig(const QString &file)
@@ -104,11 +109,13 @@ void ThreadedHttpPluginServer::initializeThreads()
         *customData = 0;
     };
 
+    p->threadListMutex.lock();
     for(unsigned int i = 0; i < p->numberOfThreads; i++){
-        WorkerThread *w = new WorkerThread(i,factory,cleanup,this);
+        WorkerThread *w = new WorkerThread(i,factory,cleanup,p);
         w->start();
         p->idleThreads.append(w);
     }
+    p->threadListMutex.unlock();
 }
 
 void ThreadedHttpPluginServer::onConfigFileChanged()

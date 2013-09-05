@@ -239,7 +239,8 @@ void HttpFileServer::serveFile(const QString &fileName,
 
         while (!file.atEnd()) {
             response << file.read(::bufferSize);
-            request.socket().flush();
+            //response.flush();
+            request.socket().waitForBytesWritten();
         }
 
         response.end();
@@ -337,8 +338,9 @@ void HttpFileServer::setBufferSize(qint64 size)
 std::function<bool(HttpServerRequest&, HttpServerResponse&)>
 HttpFileServer::handler(const QString &rootDir)
 {
-    return [rootDir](HttpServerRequest &request, HttpServerResponse &response) {
-        return handleRequest(request, response, rootDir);
+    QString dir = rootDir;
+    return [dir](HttpServerRequest &request, HttpServerResponse &response) {
+        return handleRequest(request, response, dir);
     };
 }
 

@@ -41,8 +41,13 @@ struct ThreadedHttpRequestDispatcher::Priv
     void dispatchRequests ();
     void stopAllThreads   ();
 
+    WorkerThread* takeIdleThread ();
+    void          takeWorkingThread (WorkerThread* thread);
+
+    QMutex                    threadListMutex;
     QList< WorkerThread* >    idleThreads;
     QMap<int,WorkerThread* >  workingThreads;
+
     Factory                   threadInitializer;
     CleanupFunc               threadCleaner;
 

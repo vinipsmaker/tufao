@@ -32,9 +32,10 @@
 #include <functional>
 #include <QDebug>
 
+#include "../threadedhttprequestdispatcher.h"
+
 namespace Tufao {
 
-class ThreadedHttpRequestDispatcher;
 class HttpServerRequest;
 class HttpServerResponse;
 class AbstractHttpServerRequestHandler;
@@ -52,9 +53,9 @@ class WorkerThread : public QThread
 
         WorkerThread(int id, std::function<AbstractHttpServerRequestHandler* (void **)> factory
                      ,std::function<void (void **customData)> cleanup
-                     ,ThreadedHttpRequestDispatcher* parent);
+                     ,ThreadedHttpRequestDispatcher::Priv* parent);
 
-        void handleRequest(Request r);
+        void handleRequest   (Request r);
         void shutdown     ();
         int  threadId     ();
 
@@ -72,7 +73,7 @@ class WorkerThread : public QThread
 
         std::function<AbstractHttpServerRequestHandler* (void **)> factory;
         std::function<void (void **customData)> cleanup;
-        ThreadedHttpRequestDispatcher* dispatcher;
+        ThreadedHttpRequestDispatcher::Priv* dispatcher;
 };
 
 } //namespace Tufao
