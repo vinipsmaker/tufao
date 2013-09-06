@@ -38,7 +38,7 @@ class WorkerThreadEvent : public QEvent
             ThreadIdle     = ThreadRunning+1
         };
 
-        WorkerThreadEvent(Type t);
+        WorkerThreadEvent(Type t,WorkerThread* th);
 
         WorkerThread* thread;
 };

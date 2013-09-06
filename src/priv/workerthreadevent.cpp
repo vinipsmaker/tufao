@@ -21,7 +21,7 @@
 
 namespace Tufao{
 
-WorkerThreadEvent::WorkerThreadEvent(Type t) : QEvent((QEvent::Type)t)
+WorkerThreadEvent::WorkerThreadEvent(Type t, WorkerThread *th) : QEvent((QEvent::Type)t), thread(th)
 {
 }
 

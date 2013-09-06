@@ -80,9 +80,7 @@ void WorkerThread::run()
     AbstractHttpServerRequestHandler* handler = factory(&customData);
 
     //Tell the dispatcher we are here
-    WorkerThreadEvent* threadEvent = new WorkerThreadEvent(WorkerThreadEvent::ThreadStarted);
-    threadEvent->thread = this;
-    QCoreApplication::postEvent(dispatcher->pub,threadEvent);
+    QCoreApplication::postEvent(dispatcher->pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadStarted,this));
 
     WorkerThreadControl controller;
 
@@ -103,9 +101,7 @@ void WorkerThread::run()
         tDebug()<<"Woke up";
 
         //Tell the dispatcher we are working
-        WorkerThreadEvent* threadEvent = new WorkerThreadEvent(WorkerThreadEvent::ThreadRunning);
-        threadEvent->thread = this;
-        QCoreApplication::postEvent(dispatcher->pub,threadEvent);
+        QCoreApplication::postEvent(dispatcher->pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadRunning,this));
 
         HttpServerRequest& request   = *myRequest.request;
         HttpServerResponse& response = *myRequest.response;
@@ -132,10 +128,6 @@ void WorkerThread::run()
 
         tDebug()<<"Leaves Eventloop";
 
-        //Tell the dispatcher we are done
-        threadEvent = new WorkerThreadEvent(WorkerThreadEvent::ThreadIdle);
-        threadEvent->thread = this;
-
         //maybe request was deleted while in the eventloop
         if(myRequest.request){
             //undo connections
@@ -146,15 +138,11 @@ void WorkerThread::run()
                 disconnect(myRequest.response.data(),0,&controller,0);
             }
 
-#if 1
             //push request object back to the dispatcher's thread
             request.moveToThread(dispatcher->pub->thread());
-#endif
 
         }
 
-        //make the events a very high priority so they are always delivered
-        //QCoreApplication::postEvent(dispatcher->pub,threadEvent,1000);
         mutex.lock();
         dispatcher->takeWorkingThread(this);
         mutex.unlock();

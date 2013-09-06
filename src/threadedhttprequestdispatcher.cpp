@@ -108,10 +108,7 @@ bool ThreadedHttpRequestDispatcher::handleRequest(HttpServerRequest &request,
     r.response = &response;
 
     priv->pendingRequests.append(r);
-    if(priv->idleThreads.size())
-        priv->dispatchRequests();
-    else
-        qWarning()<<"!!!!!!!!!!!!!!!!!!!!!!!!!!! I RAN OUT OF THREADS; DELAYING DELAYING";
+    priv->dispatchRequests();
 
     return true;
 }
@@ -152,19 +149,13 @@ void ThreadedHttpRequestDispatcher::Priv::dispatchRequests()
 
     qDebug()<<"Starting request dispatch";
     while(pendingRequests.size()){
-#if 0
-        if(idleThreads.size() == 0)
-            break;
 
-        WorkerThread* w = idleThreads.takeFirst();
-        workingThreads.insert(w->threadId(),w);
-#else
         WorkerThread* w = takeIdleThread();
         if(!w){
             qDebug()<<"!!!!!!!!!!! We ran out of threads !!!!!!!!!!!!!!!!!!!!!!!!!!!";
             break;
         }
-#endif
+
         WorkerThread::Request r = pendingRequests.dequeue();
 
         //maybe the request was deleted while waiting (high serverload?)
@@ -273,55 +264,17 @@ void ThreadedHttpRequestDispatcher::Priv::takeWorkingThread(WorkerThread *thread
 
     l.unlock();
 
-    QCoreApplication::postEvent(pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadIdle));
+    QCoreApplication::postEvent(pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadIdle,thread));
 }
 
 bool ThreadedHttpRequestDispatcher::ThreadedHttpRequestDispatcher::event(QEvent * e)
 {
-#if 0
-    switch(e->type()){
-        case (QEvent::Type) WorkerThreadEvent::ThreadStarted:{
-            WorkerThreadEvent *event = static_cast<WorkerThreadEvent*>(e);
-            qDebug()<<"Thread ["<<event->thread->threadId()<<"] up and running";
-
-            return true;
-        }
-        case (QEvent::Type)WorkerThreadEvent::ThreadIdle:{
-            WorkerThreadEvent *event = static_cast<WorkerThreadEvent*>(e);
-            if(!priv->workingThreads.contains(event->thread->threadId())){
-                qDebug()<<"Thread ["<<event->thread->threadId()<<"] goes into idle mode but is not in working Map";
-            }else{
-                WorkerThread* th = priv->workingThreads.take(event->thread->threadId());
-                priv->idleThreads.append(th);
-
-                qDebug()<<"Thread ["<<event->thread->threadId()<<"] finished work";
-                qDebug()<<"Idle Threads: "<<priv->idleThreads.size();
-                qDebug()<<"Working Threads: "<<priv->workingThreads.size()<<" "<<priv->workingThreads.keys();
-
-                if(priv->idleThreads.size() && priv->pendingRequests.size())
-                    priv->dispatchRequests();
-
-            }
-
-            return true;
-        }
-        case (QEvent::Type) WorkerThreadEvent::ThreadRunning:{
-            WorkerThreadEvent *event = static_cast<WorkerThreadEvent*>(e);
-            qDebug()<<"Thread "<<event->thread->threadId()<<" started to work";
-
-            return true;
-        }
-        default:
-            return QObject::event(e);
-    }
-#else
-
     if(e->type() == WorkerThreadEvent::ThreadIdle){
-        priv->dispatchRequests();
+        if(priv->pendingRequests.size())
+            priv->dispatchRequests();
         return true;
     }
     return QObject::event(e);
-#endif
 }
 
 QDebug tDebug()
