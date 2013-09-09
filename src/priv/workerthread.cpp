@@ -108,7 +108,7 @@ void WorkerThread::run()
             mutex.unlock();
 
             //deliver all events to the internal socket
-            QCoreApplication::sendPostedEvents(&request->socket());
+            //QCoreApplication::sendPostedEvents(&request->socket());
 
             //Tell the dispatcher we are working
             QCoreApplication::postEvent(dispatcher->pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadRunning,this));
