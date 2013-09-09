@@ -48,6 +48,7 @@ struct ThreadedHttpRequestDispatcher::Priv
     QList< WorkerThread* >    idleThreads;
     QMap<int,WorkerThread* >  workingThreads;
 
+
     Factory                   threadInitializer;
     CleanupFunc               threadCleaner;
 
@@ -58,6 +59,7 @@ struct ThreadedHttpRequestDispatcher::Priv
 
     ThreadedHttpRequestDispatcher* pub;
 
+    int                       maxParallelThreads;
 
 };
 

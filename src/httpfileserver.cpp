@@ -240,7 +240,10 @@ void HttpFileServer::serveFile(const QString &fileName,
         while (!file.atEnd()) {
             response << file.read(::bufferSize);
             //response.flush();
-            request.socket().waitForBytesWritten();
+            if(!request.socket().waitForBytesWritten()){
+                qWarning()<<request.socket().errorString();
+                break;
+            }
         }
 
         response.end();

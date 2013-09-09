@@ -24,6 +24,7 @@
 #include <QtCore/QMutex>
 #include <QtCore/QWaitCondition>
 #include <QtCore/QCoreApplication>
+#include <QtNetwork/QAbstractSocket>
 
 #include "../abstracthttpserverrequesthandler.h"
 #include "httpserverrequest.h"
@@ -84,69 +85,76 @@ void WorkerThread::run()
 
     WorkerThreadControl controller;
 
+    //lock the mutex only in the first run, later the mutex will be locked
+    //at the end of the loop
+    mutex.lock();
     forever{
-        //wait for a new request to handle
 
         tDebug()<<"Goes to sleep";
-
-        mutex.lock();
         m_wait.wait(&mutex);
 
         if(shutdownRequested){
             mutex.unlock();
             break;
-        }
-        mutex.unlock();
+        }else{
+            tDebug()<<"Woke up";
 
-        tDebug()<<"Woke up";
+            QPointer<HttpServerRequest>  request  = myRequest.request;
+            QPointer<HttpServerResponse> response = myRequest.response;
 
-        //Tell the dispatcher we are working
-        QCoreApplication::postEvent(dispatcher->pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadRunning,this));
+            myRequest.request.clear();
+            myRequest.response.clear();
 
-        HttpServerRequest& request   = *myRequest.request;
-        HttpServerResponse& response = *myRequest.response;
+            mutex.unlock();
 
-        //make sure eventloop is exited when the request is done
-        connect(myRequest.request.data(),&HttpServerRequest::close,&controller,&WorkerThreadControl::onRequestClosed);
-        connect(myRequest.request.data(),&HttpServerRequest::destroyed,&controller,&WorkerThreadControl::onRequestDestroyed);
-        connect(myRequest.response.data(),&HttpServerResponse::finished,&controller,&WorkerThreadControl::onResponseFinished);
+            //deliver all events to the internal socket
+            QCoreApplication::sendPostedEvents(&request->socket());
 
-        bool handled = handler->handleRequest(request,response);
+            //Tell the dispatcher we are working
+            QCoreApplication::postEvent(dispatcher->pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadRunning,this));
+
+            //make sure eventloop is exited when the request is done
+            connect(request.data(),&HttpServerRequest::close,&controller,&WorkerThreadControl::onRequestClosed);
+            connect(request.data(),&HttpServerRequest::destroyed,&controller,&WorkerThreadControl::onRequestDestroyed);
+            connect(response.data(),&HttpServerResponse::finished,&controller,&WorkerThreadControl::onResponseFinished);
+
+            bool handled = handler->handleRequest(*request,*response);
 
 
-        //If the request was handled the user should have called end()
-        if(!handled){
-            //our request was not handled who needs to clean it up?
-            request.end();
-        }
-
-        tDebug()<<"Enters Eventloop";
-        /*enter eventloop in case the request is handled async
-         *or needs to be deleted
-         */
-        exec();
-
-        tDebug()<<"Leaves Eventloop";
-
-        //maybe request was deleted while in the eventloop
-        if(myRequest.request){
-            //undo connections
-            disconnect(myRequest.request.data(),0,&controller,0);
-
-            if(myRequest.response){
-                myRequest.response->flush();
-                disconnect(myRequest.response.data(),0,&controller,0);
+            //If the request was handled the user should have called end()
+            if(!handled){
+                //our request was not handled who needs to clean it up?
+                request->end();
             }
 
-            //push request object back to the dispatcher's thread
-            request.moveToThread(dispatcher->pub->thread());
+            tDebug()<<"Enters Eventloop";
+            /*enter eventloop in case the request is handled async
+             *or needs to be deleted
+             */
+            exec();
 
+            tDebug()<<"Leaves Eventloop";
+
+            //maybe request was deleted while in the eventloop
+            if(request){
+                //undo connections
+                disconnect(request.data(),0,&controller,0);
+
+                if(response){
+                    response->flush();
+                    disconnect(response.data(),0,&controller,0);
+                }
+
+                //push request object back to the dispatcher's thread
+                request->moveToThread(dispatcher->pub->thread());
+
+            }
+
+            mutex.lock();
+            dispatcher->takeWorkingThread(this);
+
+            //mutex is unlocked after we went to sleep
         }
-
-        mutex.lock();
-        dispatcher->takeWorkingThread(this);
-        mutex.unlock();
-
     }
 
     tDebug()<<"!!!!!!!!!!!!THREAD GOES DOWN";

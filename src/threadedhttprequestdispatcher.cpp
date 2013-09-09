@@ -35,7 +35,7 @@
 namespace Tufao {
 
 ThreadedHttpRequestDispatcher::Priv::Priv(ThreadedHttpRequestDispatcher *pub)
-    : numberOfThreads (10), deferredDispatch(false),rejectRequests(false), pub(pub)
+    : numberOfThreads (10), deferredDispatch(false),rejectRequests(false), pub(pub),maxParallelThreads(0)
 {
 
 }
@@ -202,7 +202,7 @@ void ThreadedHttpRequestDispatcher::Priv::stopAllThreads()
 
                 WorkerThread* th = i.value();
                 th->terminate();
-                th->wait(10*1000);
+                th->wait(1000);
                 delete th;
 
             }
@@ -244,6 +244,11 @@ WorkerThread *ThreadedHttpRequestDispatcher::Priv::takeIdleThread()
         qDebug()<<"Idle Threads: "<<idleThreads.size();
         qDebug()<<"Working Threads: "<<workingThreads.size()<<" "<<workingThreads.keys();
 
+        if(maxParallelThreads < workingThreads.size())
+            maxParallelThreads = workingThreads.size();
+
+        qDebug()<<"Max Parallel Threads: "<<maxParallelThreads;
+
         return wt;
     }
     return 0;
@@ -258,9 +263,13 @@ void ThreadedHttpRequestDispatcher::Priv::takeWorkingThread(WorkerThread *thread
     }
     idleThreads.append(workingThreads.take(thread->threadId()));
 
+    if(maxParallelThreads < workingThreads.size())
+        maxParallelThreads = workingThreads.size();
+
     qDebug()<<"Thread ["<<thread->threadId()<<"] finished work";
     qDebug()<<"Idle Threads: "<<idleThreads.size();
     qDebug()<<"Working Threads: "<<workingThreads.size()<<" "<<workingThreads.keys();
+    qDebug()<<"Max Parallel Threads: "<<maxParallelThreads;
 
     l.unlock();
 
