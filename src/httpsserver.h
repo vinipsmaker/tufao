@@ -88,7 +88,7 @@ public:
     void setPrivateKey(const QSslKey &key);
 
 protected:
-    void incomingConnection(qintptr socketDescriptor) override;
+    void incomingConnection(qintptr socketDescriptor) Q_DECL_OVERRIDE;
 
 private:
     struct Priv;

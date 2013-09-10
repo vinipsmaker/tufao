@@ -108,7 +108,7 @@ void WorkerThread::run()
             mutex.unlock();
 
             //deliver all events to the internal socket
-            //QCoreApplication::sendPostedEvents(&request->socket());
+            QCoreApplication::sendPostedEvents(&request->socket());
 
             //Tell the dispatcher we are working
             QCoreApplication::postEvent(dispatcher->pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadRunning,this));
@@ -145,8 +145,14 @@ void WorkerThread::run()
                     disconnect(response.data(),0,&controller,0);
                 }
 
+#if 0
                 //push request object back to the dispatcher's thread
                 request->moveToThread(dispatcher->pub->thread());
+#else
+                //force quit, to prevent SEGFAULT
+                request->socket().close();
+                QCoreApplication::sendPostedEvents(request);
+#endif
 
             }
 

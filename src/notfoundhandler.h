@@ -62,7 +62,7 @@ public slots:
       It responds to the request with a not found message.
       */
     bool handleRequest(Tufao::HttpServerRequest &request,
-                       Tufao::HttpServerResponse &response) override;
+                       Tufao::HttpServerResponse &response) Q_DECL_OVERRIDE;
 
 private:
     static const QByteArray body;

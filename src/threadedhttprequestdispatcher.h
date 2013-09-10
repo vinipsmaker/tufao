@@ -137,7 +137,7 @@ public slots:
       1.0
       */
     bool handleRequest(Tufao::HttpServerRequest &request,
-                       Tufao::HttpServerResponse &response) override;
+                       Tufao::HttpServerResponse &response) Q_DECL_OVERRIDE;
 
 protected slots:
     virtual void initializeThreads();

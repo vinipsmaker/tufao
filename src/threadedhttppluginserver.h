@@ -52,7 +52,7 @@ public:
 
     // ThreadedHttpRequestDispatcher interface
 protected slots:
-    virtual void initializeThreads() override;
+    virtual void initializeThreads() Q_DECL_OVERRIDE;
 
 private:
     void changeConfig(const QString &file);

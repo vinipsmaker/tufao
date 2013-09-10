@@ -34,7 +34,7 @@ signals:
     void newConnection(qintptr socketDescriptor);
 
 protected:
-    void incomingConnection(qintptr socketDescriptor) override;
+    void incomingConnection(qintptr socketDescriptor) Q_DECL_OVERRIDE;
 };
 
 } // namespace Tufao
