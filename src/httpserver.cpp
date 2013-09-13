@@ -18,6 +18,7 @@
 
 #include "priv/httpserver.h"
 #include <QtNetwork/QTcpSocket>
+#include <QtCore/QThread>
 #include "headers.h"
 
 namespace Tufao {
@@ -135,6 +136,12 @@ void HttpServer::onRequestReady()
 {
     HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
     Q_ASSERT(request);
+
+    if(request->thread() != QThread::currentThread()){
+        qDebug()<<"RequestThread "<<request->thread();
+        qDebug()<<"Current "<<QThread::currentThread();
+        qDebug()<<"Request is accessed from the WRONG THREAD";
+    }
 
     QAbstractSocket &socket = request->socket();
     HttpServerResponse *response

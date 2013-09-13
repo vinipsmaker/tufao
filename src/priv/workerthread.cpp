@@ -107,16 +107,16 @@ void WorkerThread::run()
 
             mutex.unlock();
 
-            //deliver all events to the internal socket
-            QCoreApplication::sendPostedEvents(&request->socket());
-
-            //Tell the dispatcher we are working
-            QCoreApplication::postEvent(dispatcher->pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadRunning,this));
-
             //make sure eventloop is exited when the request is done
             connect(request.data(),&HttpServerRequest::close,&controller,&WorkerThreadControl::onRequestClosed);
             connect(request.data(),&HttpServerRequest::destroyed,&controller,&WorkerThreadControl::onRequestDestroyed);
             connect(response.data(),&HttpServerResponse::finished,&controller,&WorkerThreadControl::onResponseFinished);
+
+            //deliver all events to the internal socket
+            //QCoreApplication::processEvents();
+
+            //Tell the dispatcher we are working
+            QCoreApplication::postEvent(dispatcher->pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadRunning,this));
 
             bool handled = handler->handleRequest(*request,*response);
 
@@ -124,14 +124,16 @@ void WorkerThread::run()
             //If the request was handled the user should have called end()
             if(!handled){
                 //our request was not handled who needs to clean it up?
-                request->end();
+                response->end();
             }
 
+#if 1
             tDebug()<<"Enters Eventloop";
             /*enter eventloop in case the request is handled async
              *or needs to be deleted
              */
             exec();
+#endif
 
             tDebug()<<"Leaves Eventloop";
 
@@ -145,7 +147,7 @@ void WorkerThread::run()
                     disconnect(response.data(),0,&controller,0);
                 }
 
-#if 0
+#if 1
                 //push request object back to the dispatcher's thread
                 request->moveToThread(dispatcher->pub->thread());
 #else
