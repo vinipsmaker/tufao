@@ -27,6 +27,8 @@
 #include <QtNetwork/QTcpServer>
 #include "tufao_global.h"
 
+#include "httpconnectionhandler.h"
+
 class QAbstractSocket;
 
 namespace Tufao {
@@ -65,8 +67,7 @@ public:
       \since
       1.0
      */
-    typedef std::function<void(HttpServerRequest &request, const QByteArray&)>
-        UpgradeHandler;
+    typedef HttpConnectionHandler::UpgradeHandler UpgradeHandler;
 
     /*!
       Constructs a Tufao::HttpServer object.
@@ -74,6 +75,14 @@ public:
       \p parent is passed to the QObject constructor.
       */
     explicit HttpServer(QObject *parent = 0);
+
+    /*!
+      Constructs a Tufao::HttpServer object, using the passed ConnectionHandler
+
+      \p handler is used as the internal handler backend, ownership is transfered to the httpserver
+      \p parent is passed to the QObject constructor.
+      */
+    explicit HttpServer(HttpConnectionHandler* handler,QObject *parent = 0);
 
     /*!
       Destroys the object.
@@ -162,6 +171,12 @@ public:
      */
     static UpgradeHandler defaultUpgradeHandler();
 
+
+    /*!
+      Returns the internaly used connection handler
+     */
+    AbstractConnectionHandler *connectionHandler () const;
+
 signals:
     /*!
       This signal is emitted each time there is request.
@@ -241,12 +256,10 @@ protected:
     virtual void checkContinue(HttpServerRequest &request,
                                HttpServerResponse &response);
 
-private slots:
-    void onNewConnection(qintptr socketDescriptor);
-    void onRequestReady();
-    void onUpgrade();
+    protected slots:
+        void onNewConnection(qintptr socketDescriptor);
 
-private:
+    private:
     struct Priv;
     Priv *priv;
 };

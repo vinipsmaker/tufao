@@ -22,7 +22,7 @@
 namespace Tufao {
 
 HttpsServer::HttpsServer(QObject *parent) :
-    HttpServer(parent),
+    HttpServer(new HttpsConnectionHandler,parent),
     priv(new Priv)
 {
 }
@@ -34,28 +34,16 @@ HttpsServer::~HttpsServer()
 
 void HttpsServer::setLocalCertificate(const QSslCertificate &certificate)
 {
-    priv->localCertificate = certificate;
+    HttpsConnectionHandler* hdl = qobject_cast<HttpsConnectionHandler*>(connectionHandler());
+    if(hdl)
+        hdl->setLocalCertificate(certificate);
 }
 
 void HttpsServer::setPrivateKey(const QSslKey &key)
 {
-    priv->privateKey = key;
-}
-
-void HttpsServer::incomingConnection(qintptr socketDescriptor)
-{
-    QSslSocket *socket = new QSslSocket;
-    socket->setProtocol(QSsl::TlsV1_0);
-    socket->setLocalCertificate(priv->localCertificate);
-    socket->setPrivateKey(priv->privateKey);
-
-    if (!socket->setSocketDescriptor(socketDescriptor)) {
-        delete socket;
-        return;
-    }
-
-    socket->startServerEncryption();
-    handleConnection(socket);
+    HttpsConnectionHandler* hdl = qobject_cast<HttpsConnectionHandler*>(connectionHandler());
+    if(hdl)
+        hdl->setPrivateKey(key);
 }
 
 } // namespace Tufao

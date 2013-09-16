@@ -21,6 +21,7 @@
 
 #include "../httpserver.h"
 #include "../httpserverrequest.h"
+#include "../httpconnectionhandler.h"
 #include "tcpserverwrapper.h"
 
 namespace Tufao {
@@ -30,6 +31,8 @@ struct HttpServer::Priv
     Priv();
 
     TcpServerWrapper tcpServer;
+    HttpConnectionHandler* connHandler;
+
     int timeout;
     UpgradeHandler upgradeHandler;
 
@@ -43,6 +46,7 @@ HttpServer::UpgradeHandler HttpServer::Priv::defaultUpgradeHandler{
 };
 
 inline HttpServer::Priv::Priv() :
+    connHandler(0),
     timeout(120000),
     upgradeHandler(defaultUpgradeHandler)
 {}

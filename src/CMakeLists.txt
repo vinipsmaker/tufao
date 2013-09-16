@@ -27,6 +27,9 @@ set(tufao_SRC
     priv/workerthread.cpp
     priv/workerthreadevent.cpp
     priv/workerthreadcontrol.cpp
+    abstractconnectionhandler.cpp
+    httpconnectionhandler.cpp
+    httpsconnectionhandler.cpp
 )
 
 add_definitions(-DTUFAO_LIBRARY

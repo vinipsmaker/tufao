@@ -21,6 +21,7 @@
 
 #include "../httpsserver.h"
 #include "../tufao_global.h"
+#include "../httpsconnectionhandler.h"
 
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslKey>

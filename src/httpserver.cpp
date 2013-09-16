@@ -23,10 +23,21 @@
 
 namespace Tufao {
 
-HttpServer::HttpServer(QObject *parent) :
+HttpServer::HttpServer(QObject *parent) : HttpServer(new HttpConnectionHandler(),parent)
+{
+}
+
+HttpServer::HttpServer(HttpConnectionHandler *handler, QObject *parent) :
     QObject(parent),
     priv(new Priv)
 {
+    priv->connHandler = handler;
+
+    //transfer ownership to us
+    handler->setParent(this);
+
+    connect(priv->connHandler,&AbstractConnectionHandler::requestReady,this,&HttpServer::requestReady);
+
     connect(&priv->tcpServer, &TcpServerWrapper::newConnection,
             this, &HttpServer::onNewConnection);
 }
@@ -53,12 +64,12 @@ quint16 HttpServer::serverPort() const
 
 void HttpServer::setTimeout(int msecs)
 {
-    priv->timeout = msecs;
+    priv->connHandler->setTimeout(msecs);
 }
 
 int HttpServer::timeout() const
 {
-    return priv->timeout;
+    return priv->connHandler->timeout();
 }
 
 void HttpServer::setUpgradeHandler(HttpServer::UpgradeHandler functor)
@@ -66,12 +77,17 @@ void HttpServer::setUpgradeHandler(HttpServer::UpgradeHandler functor)
     if (!functor)
         return;
 
-    priv->upgradeHandler = functor;
+    priv->connHandler->setUpgradeHandler(functor);
 }
 
 HttpServer::UpgradeHandler HttpServer::defaultUpgradeHandler()
 {
-    return Priv::defaultUpgradeHandler;
+    return Tufao::HttpConnectionHandler::defaultUpgradeHandler();
+}
+
+AbstractConnectionHandler *HttpServer::connectionHandler() const
+{
+    return priv->connHandler;
 }
 
 void HttpServer::close()
@@ -79,100 +95,9 @@ void HttpServer::close()
     priv->tcpServer.close();
 }
 
-void HttpServer::incomingConnection(qintptr socketDescriptor)
-{
-    QTcpSocket *socket = new QTcpSocket;
-
-    qDebug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Incoming Connection");
-
-    if (!socket->setSocketDescriptor(socketDescriptor)) {
-        delete socket;
-        return;
-    }
-
-    handleConnection(socket);
-}
-
-void HttpServer::checkContinue(HttpServerRequest &request,
-                               HttpServerResponse &response)
-{
-    response.writeContinue();
-    emit requestReady(request, response);
-}
-
-void HttpServer::handleConnection(QAbstractSocket *socket)
-{
-
-    /**
-     * @TODO Check if requests don't leak with the current solution
-     *       I had to remove the parent because moveToThread can only move QObjects
-     *       that don't have a parent
-     */
-
-    HttpServerRequest *handle = new HttpServerRequest(*socket);
-    socket->setParent(handle);
-
-    if (priv->timeout)
-        handle->setTimeout(priv->timeout);
-
-    connect(handle, &HttpServerRequest::ready,
-            this, &HttpServer::onRequestReady);
-    connect(handle, &HttpServerRequest::upgrade, this, &HttpServer::onUpgrade);
-    connect(socket, &QAbstractSocket::disconnected,
-            handle, &QObject::deleteLater);
-    connect(socket, &QAbstractSocket::disconnected,
-            socket, &QObject::deleteLater);
-
-    //this way we should not leak if HttpServer is destroyed before all requests are handled
-    connect(this,&QObject::destroyed,handle,&QObject::deleteLater);
-}
-
 void HttpServer::onNewConnection(qintptr socketDescriptor)
 {
-    incomingConnection(socketDescriptor);
-}
-
-void HttpServer::onRequestReady()
-{
-    HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
-    Q_ASSERT(request);
-
-    if(request->thread() != QThread::currentThread()){
-        qDebug()<<"RequestThread "<<request->thread();
-        qDebug()<<"Current "<<QThread::currentThread();
-        qDebug()<<"Request is accessed from the WRONG THREAD";
-    }
-
-    QAbstractSocket &socket = request->socket();
-    HttpServerResponse *response
-            = new HttpServerResponse(socket, request->responseOptions(), request);
-
-    connect(&socket, &QAbstractSocket::disconnected,
-            response, &QObject::deleteLater);
-    connect(response, &HttpServerResponse::finished,
-            response, &QObject::deleteLater);
-
-    if (request->headers().contains("Expect", "100-continue"))
-        checkContinue(*request, *response);
-    else
-        emit requestReady(*request, *response);
-}
-
-void HttpServer::onUpgrade()
-{
-    HttpServerRequest *request = qobject_cast<HttpServerRequest *>(sender());
-    Q_ASSERT(request);
-
-    priv->upgradeHandler(*request, request->readBody());
-
-    //make shure the socket is useable after the upgrade
-    QAbstractSocket& socket = request->socket();
-    if(socket.parent() == request){
-        //socket will be automatically deleted when disconnected was emitted
-        socket.setParent(0);
-    }
-
-    delete request;
+    priv->connHandler->incomingConnection(socketDescriptor);
 }
 
 } // namespace Tufao
