@@ -33,7 +33,7 @@ void HttpConnectionHandler::setUpgradeHandler(HttpConnectionHandler::UpgradeHand
     ((Priv*)_priv())->upgradeHandler = functor;
 }
 
-void HttpConnectionHandler::incomingConnection(qintptr socketDescriptor)
+bool HttpConnectionHandler::incomingConnection(qintptr socketDescriptor)
 {
     QTcpSocket *socket = new QTcpSocket;
 
@@ -41,10 +41,11 @@ void HttpConnectionHandler::incomingConnection(qintptr socketDescriptor)
 
     if (!socket->setSocketDescriptor(socketDescriptor)) {
         delete socket;
-        return;
+        return false;
     }
 
     handleConnection(socket);
+    return true;
 }
 
 void HttpConnectionHandler::checkContinue(HttpServerRequest &request, HttpServerResponse &response)
@@ -64,3 +65,14 @@ HttpConnectionHandler::UpgradeHandler HttpConnectionHandler::defaultUpgradeHandl
 }
 
 } // namespace Tufao
+
+
+void Tufao::HttpConnectionHandler::closePendingConnection(qintptr socketDescriptor)
+{
+    QTcpSocket sock;
+    sock.setSocketDescriptor(socketDescriptor);
+
+    //TODO write some status
+
+    sock.close();
+}

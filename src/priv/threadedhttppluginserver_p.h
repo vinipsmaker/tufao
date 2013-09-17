@@ -3,11 +3,11 @@
 
 #include "../threadedhttppluginserver.h"
 #include "httppluginserver_p.h"
-#include "threadedhttprequestdispatcher.h"
+#include "threadedhttpserver_p.h"
 
 namespace Tufao{
 
-struct ThreadedHttpPluginServer::Priv : public ThreadedHttpRequestDispatcher::Priv {
+struct ThreadedHttpPluginServer::Priv : public ThreadedHttpServer::Priv {
     Priv(ThreadedHttpPluginServer* parent): ThreadedHttpRequestDispatcher::Priv(parent){}
     virtual ~Priv() = default;
 

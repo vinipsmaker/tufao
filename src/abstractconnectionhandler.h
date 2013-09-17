@@ -30,13 +30,18 @@ class TUFAO_EXPORT AbstractConnectionHandler : public QObject
           This virtual function is called by HttpServer when a new connection is
           available.
 
-          The base implementation creates a QTcpSocket, sets the socket descriptor
-          and call Tufao::HttpServer::handleConnection.
-
           Reimplement this function to alter the server's behavior when a connection
           is available.
           */
-        virtual void incomingConnection(qintptr socketDescriptor) = 0;
+        virtual bool incomingConnection(qintptr socketDescriptor) = 0;
+
+
+        /*!
+          This virtual function is called when a pending connection needs to be
+          closed before it could be processed. This could happen id the server is shut
+          down.
+          */
+        virtual void closePendingConnection (qintptr socketDescriptor) = 0;
 
         /*!
           Sets the timeout of new connections to \p msecs miliseconds.
@@ -58,10 +63,10 @@ class TUFAO_EXPORT AbstractConnectionHandler : public QObject
 
     protected:
         /*!
-          Call this function will make Tufao::HttpServer handle the connection
+          Call this function will make Tufao::AbstractConnectionHandler handle the connection
           \p connection.
 
-          The Tufao::HttpServer object will take ownership of the \p connection
+          The Tufao::AbstractConnectionHandler object will take ownership of the \p connection
           object and delete it when appropriate.
           */
         virtual void handleConnection(QAbstractSocket *connection);
@@ -70,8 +75,8 @@ class TUFAO_EXPORT AbstractConnectionHandler : public QObject
           This virtual function is called by HttpServer when a client do a request
           with the HTTP header "Expect: 100-continue".
 
-          The base implementation call Tufao::HttpServerRequest::writeContinue and
-          emit the Tufao::HttpServer::requestReady signal.
+          The base implementation call Tufao::AbstractConnectionHandler::writeContinue and
+          emit the Tufao::AbstractConnectionHandler::requestReady signal.
 
           Reimplement this function to alter the server's behavior when a "Expect:
           100-continue" request is received.
@@ -92,11 +97,24 @@ class TUFAO_EXPORT AbstractConnectionHandler : public QObject
 
     signals:
         /*!
+          This signal is emitted only once for a Request, before
+          ANY data was parsed, requestReady may be never emitted for
+          this request.
+          Use this if you need to know about new requests BEFORE they
+          are ready
+
+          \note the request can not be accessed and there are no headers parsed
+          \param request An instance of Tufao::HttpServerRequest
+
+          */
+         void newRequest (HttpServerRequest &request);
+
+        /*!
           This signal is emitted each time there is request.
 
           \note
           There may be multiple requests per connection (in the case of keep-alive
-          connections) and HttpServer reutilizes \p request objects, so you can't,
+          connections) and AbstractConnectionHandler reutilizes \p request objects, so you can't,
           as an example, create a map using \p request as key to identify sessions.
 
           \warning
@@ -116,8 +134,8 @@ class TUFAO_EXPORT AbstractConnectionHandler : public QObject
           \since
           1.0
           */
-        void requestReady(Tufao::HttpServerRequest &request,
-                          Tufao::HttpServerResponse &response);
+        void requestReady(HttpServerRequest &request,
+                          HttpServerResponse &response);
 
     private slots:
         void onRequestReady();

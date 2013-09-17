@@ -213,51 +213,9 @@ public slots:
       */
     void close();
 
-protected:
-    /*!
-      Call this function will make Tufao::HttpServer handle the connection
-      \p connection.
 
-      The Tufao::HttpServer object will take ownership of the \p connection
-      object and delete it when appropriate.
-      */
-    void handleConnection(QAbstractSocket *connection);
-
-    /*!
-      This virtual function is called by HttpServer when a new connection is
-      available.
-
-      The base implementation creates a QTcpSocket, sets the socket descriptor
-      and call Tufao::HttpServer::handleConnection.
-
-      Reimplement this function to alter the server's behavior when a connection
-      is available.
-      */
-    virtual void incomingConnection(qintptr socketDescriptor);
-
-    /*!
-      This virtual function is called by HttpServer when a client do a request
-      with the HTTP header "Expect: 100-continue".
-
-      The base implementation call Tufao::HttpServerRequest::writeContinue and
-      emit the Tufao::HttpServer::requestReady signal.
-
-      Reimplement this function to alter the server's behavior when a "Expect:
-      100-continue" request is received.
-
-      \note
-      Don't delete the request or the response object, they will be deleted when
-      the connection closes. If you need delete them before, just close the
-      connection or call the QObject::deleteLater.
-
-      \since
-      1.0
-      */
-    virtual void checkContinue(HttpServerRequest &request,
-                               HttpServerResponse &response);
-
-    protected slots:
-        void onNewConnection(qintptr socketDescriptor);
+protected slots:
+    void onNewConnection(qintptr socketDescriptor);
 
     private:
     struct Priv;

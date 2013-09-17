@@ -239,11 +239,7 @@ void HttpFileServer::serveFile(const QString &fileName,
 
         while (!file.atEnd()) {
             response << file.read(::bufferSize);
-            //response.flush();
-            if(!request.socket().waitForBytesWritten()){
-                qWarning()<<request.socket().errorString();
-                break;
-            }
+            response.flush();
         }
 
         response.end();
@@ -265,7 +261,8 @@ void HttpFileServer::serveFile(const QString &fileName,
         while (remaining) {
             QByteArray chunk(file.read(qMin(remaining, ::bufferSize)));
             response << chunk;
-            request.socket().flush();
+            //request.socket().flush();
+            response.flush();
             remaining -= chunk.size();
         }
 
@@ -295,7 +292,8 @@ void HttpFileServer::serveFile(const QString &fileName,
             while (remaining) {
                 QByteArray chunk(file.read(qMin(remaining, ::bufferSize)));
                 response << chunk;
-                request.socket().flush();
+                //request.socket().flush();
+                response.flush();
                 remaining -= chunk.size();
             }
         }

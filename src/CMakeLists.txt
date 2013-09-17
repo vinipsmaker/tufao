@@ -22,14 +22,15 @@ set(tufao_SRC
     notfoundhandler.cpp
     urlrewriterhandler.cpp
     httpupgraderouter.cpp
-    threadedhttprequestdispatcher.cpp
-    threadedhttppluginserver.cpp
+    priv/workerthreadpool.cpp
     priv/workerthread.cpp
-    priv/workerthreadevent.cpp
-    priv/workerthreadcontrol.cpp
+    priv/workerrunnable.cpp
     abstractconnectionhandler.cpp
     httpconnectionhandler.cpp
     httpsconnectionhandler.cpp
+    threadedhttpserver.cpp
+    #threadedhttppluginserver.cpp
+
 )
 
 add_definitions(-DTUFAO_LIBRARY

@@ -73,14 +73,13 @@ class TUFAO_EXPORT HttpConnectionHandler : public AbstractConnectionHandler
         
         // AbstractConnectionHandler interface
     public:
-        virtual void incomingConnection(qintptr socketDescriptor) Q_DECL_OVERRIDE;
+        virtual bool incomingConnection(qintptr socketDescriptor) Q_DECL_OVERRIDE;
+        virtual void closePendingConnection(qintptr socketDescriptor) Q_DECL_OVERRIDE;
 
     protected:
         virtual void checkContinue(HttpServerRequest &request, HttpServerResponse &response) Q_DECL_OVERRIDE;
         virtual void handleUpgrade(HttpServerRequest &request) Q_DECL_OVERRIDE;
-
-    protected:
-         explicit HttpConnectionHandler(Priv* p,QObject *parent = 0);
+        HttpConnectionHandler(HttpConnectionHandler::Priv *p, QObject *parent);
 };
 } // namespace Tufao
 

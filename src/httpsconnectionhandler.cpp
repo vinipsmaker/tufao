@@ -9,7 +9,7 @@ HttpsConnectionHandler::HttpsConnectionHandler(QObject *parent) :
 
 }
 
-void HttpsConnectionHandler::incomingConnection(qintptr socketDescriptor)
+bool HttpsConnectionHandler::incomingConnection(qintptr socketDescriptor)
 {
     Priv* p = ((Priv*)_priv());
 
@@ -20,11 +20,12 @@ void HttpsConnectionHandler::incomingConnection(qintptr socketDescriptor)
 
     if (!socket->setSocketDescriptor(socketDescriptor)) {
         delete socket;
-        return;
+        return false;
     }
 
     socket->startServerEncryption();
     handleConnection(socket);
+    return true;
 }
 
 void HttpsConnectionHandler::setLocalCertificate(const QSslCertificate &certificate)

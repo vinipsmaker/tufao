@@ -67,7 +67,7 @@ class TUFAO_EXPORT HttpsConnectionHandler : public HttpConnectionHandler
 
     // AbstractConnectionHandler interface
     public:
-        virtual void incomingConnection(qintptr socketDescriptor) Q_DECL_OVERRIDE;
+        virtual bool incomingConnection(qintptr socketDescriptor) Q_DECL_OVERRIDE;
 };
 
 } // namespace Tufao

@@ -1,5 +1,5 @@
-/*
-  Copyright (c) 2013 Benjamin Zeller
+/* This file is part of the Tufão project
+   Copyright (c) 2013 Benjamin Zeller
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -26,18 +26,19 @@
 #include <QtCore/QObject>
 
 #include <QThread>
-#include <QMutex>
-#include <QWaitCondition>
-#include <QPointer>
 #include <functional>
 #include <QDebug>
 
-#include "../threadedhttprequestdispatcher.h"
+#include "workerrunnable.h"
+#include "workerthreadpool.h"
 
 namespace Tufao {
 
 class HttpServerRequest;
 class HttpServerResponse;
+class AbstractConnectionHandler;
+class WorkerRunnable;
+class WorkerThreadPool;
 class AbstractHttpServerRequestHandler;
 
 class WorkerThread : public QThread
@@ -45,19 +46,23 @@ class WorkerThread : public QThread
     Q_OBJECT
 
     public:
+        WorkerThread(int id
+                     ,WorkerThreadData::ConnHandlerFactory connHandlerFactory
+                     ,WorkerThreadData::RequestHandlerFactory reqHandlerfactory
+                     ,WorkerThreadData::CleanupHandlerFactory cleanup
+                     ,WorkerThreadPool* parent);
 
-        struct Request{
-            QPointer<HttpServerRequest>  request;
-            QPointer<HttpServerResponse> response;
-        };
-
-        WorkerThread(int id, std::function<AbstractHttpServerRequestHandler* (void **)> factory
-                     ,std::function<void (void **customData)> cleanup
-                     ,ThreadedHttpRequestDispatcher::Priv* parent);
-
-        void handleRequest   (Request r);
+        void handleRequest   (qintptr r);
         void shutdown     ();
-        int  threadId     ();
+        WorkerRunnable::Load workLoad         ();
+
+        inline int  threadId     (){
+            return id;
+        }
+
+        inline WorkerThreadPool *pool(){
+            return dispatcher;
+        }
 
 
     // QThread interface
@@ -66,14 +71,13 @@ class WorkerThread : public QThread
 
     private:
         int    id;
-        QMutex mutex;
-        QWaitCondition m_wait; //the worker thread is sleeping on this waitcondition
-        Request myRequest; //the request that is handled by this thread
-        bool shutdownRequested;
 
-        std::function<AbstractHttpServerRequestHandler* (void **)> factory;
-        std::function<void (void **customData)> cleanup;
-        ThreadedHttpRequestDispatcher::Priv* dispatcher;
+        WorkerRunnable* controller;
+
+        WorkerThreadData::ConnHandlerFactory    connHandlerFactory;
+        WorkerThreadData::RequestHandlerFactory reqHandlerFactory;
+        WorkerThreadData::CleanupHandlerFactory cleanup;
+        WorkerThreadPool* dispatcher;
 };
 
 } //namespace Tufao

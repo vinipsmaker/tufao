@@ -17,6 +17,16 @@ AbstractConnectionHandler::AbstractConnectionHandler(AbstractConnectionHandler::
 
 }
 
+AbstractConnectionHandler::Priv *AbstractConnectionHandler::_priv()
+{
+    return priv;
+}
+
+const AbstractConnectionHandler::Priv *AbstractConnectionHandler::_priv() const
+{
+    return priv;
+}
+
 AbstractConnectionHandler::AbstractConnectionHandler(QObject *parent) : AbstractConnectionHandler(new Priv(),parent){}
 
 AbstractConnectionHandler::~AbstractConnectionHandler()
@@ -47,8 +57,11 @@ void AbstractConnectionHandler::handleConnection(QAbstractSocket *connection)
     connect(handle, &HttpServerRequest::upgrade, this, &AbstractConnectionHandler::onUpgrade);
     connect(connection, &QAbstractSocket::disconnected,
             handle, &QObject::deleteLater);
+
     connect(connection, &QAbstractSocket::disconnected,
             connection, &QObject::deleteLater);
+
+    emit newRequest(*handle);
 }
 
 void AbstractConnectionHandler::onRequestReady()
@@ -68,7 +81,7 @@ void AbstractConnectionHandler::onRequestReady()
     //in case the timout was changed in the last request handler
     //and the connection was reused
     if (priv->timeout)
-        handle->setTimeout(priv->timeout);
+        request->setTimeout(priv->timeout);
 
     if (request->headers().contains("Expect", "100-continue"))
         checkContinue(*request, *response);

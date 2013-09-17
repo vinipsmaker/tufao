@@ -9,12 +9,12 @@
 #include <QtCore/QDebug>
 
 #include "tufao_global.h"
-#include "threadedhttprequestdispatcher.h"
+#include "threadedhttpserver.h"
 
 
 namespace Tufao {
 
-class ThreadedHttpPluginServer : public ThreadedHttpRequestDispatcher
+class ThreadedHttpPluginServer : public ThreadedHttpServer
 {
     Q_OBJECT
 public:

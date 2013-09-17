@@ -10,7 +10,9 @@
 #include <QtCore/QAtomicInt>
 #include <QtCore/QQueue>
 
+#include "workerthreadpool.h"
 #include "workerthread.h"
+#include "tcpserverwrapper.h"
 
 namespace Tufao{
 
@@ -18,27 +20,12 @@ struct ThreadedHttpServer::Priv{
         Priv(ThreadedHttpServer* pub);
         virtual ~Priv() = default;
 
-        void dispatchRequests ();
-        void stopAllThreads   ();
+        TcpServerWrapper    tcpServer;
+        WorkerThreadPool    *threadPool;
+        bool                rejectRequests;
+        ThreadedHttpServer  *pub;
 
-        WorkerThread* takeIdleThread ();
-        void          takeWorkingThread (WorkerThread* thread);
-
-        QMutex                    threadListMutex;
-        QList< WorkerThread* >    idleThreads;
-        QMap<int,WorkerThread* >  workingThreads;
-
-
-        Factory                   threadInitializer;
-        CleanupFunc               threadCleaner;
-
-        QQueue<qintptr>               pendingConnections;
-        bool                          deferredDispatch;
-        bool                          rejectRequests;
-
-        ThreadedHttpServer* pub;
-
-        int                       maxParallelThreads;
+        static ThreadedHttpServer::ConnectionHandlerFactory defConnHdl;
 };
 
 }

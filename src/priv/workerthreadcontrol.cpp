@@ -29,21 +29,55 @@ WorkerThreadControl::WorkerThreadControl(QObject *parent) :
 {
 }
 
+void WorkerThreadControl::cleanup()
+{
+    //maybe request was deleted while in the eventloop
+    if(currentRequest){
+        //undo connections
+        disconnect(currentRequest.data(),0,this,0);
+    }
+
+    if(currentResponse){
+        currentResponse->flush();
+        disconnect(currentResponse.data(),0,this,0);
+    }
+
+    currentRequest.clear();
+    currentResponse.clear();
+}
+
+void WorkerThreadControl::onRequestReady(HttpServerRequest &request, HttpServerResponse &response)
+{
+    Q_ASSERT_X(currentRequest.isNull() && currentResponse.isNull(),Q_FUNC_INFO,"Can only handle one request at a time");
+    currentRequest = &request;
+    currentResponse = &response;
+
+    connect(&request,&HttpServerRequest::close,this,&WorkerThreadControl::onRequestClosed);
+    connect(&request,&HttpServerRequest::destroyed,this,&WorkerThreadControl::onRequestDestroyed);
+    connect(&response,&HttpServerResponse::finished,this,&WorkerThreadControl::onResponseFinished);
+}
+
 void WorkerThreadControl::onResponseFinished()
 {
     tDebug()<<"onResponseFinished";
+
+    cleanup();
     QThread::currentThread()->exit();
 }
 
 void WorkerThreadControl::onRequestDestroyed()
 {
     tDebug()<<"onRequestDestroyed";
+
+    cleanup();
     QThread::currentThread()->exit();
 }
 
 void WorkerThreadControl::onRequestClosed()
 {
     tDebug()<<"onRequestClosed";
+
+    cleanup();
     QThread::currentThread()->exit();
 }
 

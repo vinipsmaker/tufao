@@ -154,13 +154,6 @@ private:
     Priv *priv;
 };
 
-/**
- * @brief tDebug
- * @return
- * Calls qDebug() but prefixes the string with the threadId
- */
-TUFAO_EXPORT QDebug tDebug ();
-
 } // namespace Tufao
 
 #endif // TUFAO_THREADEDHTTPREQUESTDISTPATCHER_H

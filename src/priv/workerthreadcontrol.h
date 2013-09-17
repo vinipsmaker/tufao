@@ -24,21 +24,32 @@
 #define TUFAO_PRIV_WORKERTHREADCONTROL_H
 
 #include <QObject>
+#include <QPointer>
 
 namespace Tufao {
+
+class HttpServerRequest;
+class HttpServerResponse;
 
 class WorkerThreadControl : public QObject
 {
         Q_OBJECT
     public:
         explicit WorkerThreadControl(QObject *parent = 0);
+        void cleanup();
         
     signals:
         
     public slots:
+        void onRequestReady(HttpServerRequest &request,
+                            HttpServerResponse &response);
         void onResponseFinished();
         void onRequestDestroyed();
         void onRequestClosed();
+
+    private:
+        QPointer<HttpServerRequest> currentRequest;
+        QPointer<HttpServerResponse> currentResponse;
         
 };
 

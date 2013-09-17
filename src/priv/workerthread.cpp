@@ -20,150 +20,62 @@
 
 #include <functional>
 #include <QtCore/QEventLoop>
-#include <QtCore/QRunnable>
-#include <QtCore/QMutex>
-#include <QtCore/QWaitCondition>
 #include <QtCore/QCoreApplication>
-#include <QtNetwork/QAbstractSocket>
 
+#include "../abstractconnectionhandler.h"
 #include "../abstracthttpserverrequesthandler.h"
+
 #include "httpserverrequest.h"
 #include "httpserverresponse.h"
-#include "workerthreadevent.h"
-#include "workerthreadcontrol.h"
-#include "threadedhttprequestdispatcher.h"
+#include "workerrunnable.h"
+#include "workerthreadpool.h"
 
 namespace Tufao {
 
-WorkerThread::WorkerThread(int id,
-                           std::function<AbstractHttpServerRequestHandler* (void **)> factory,
-                           std::function<void (void **customData)> cleanup,
-                           ThreadedHttpRequestDispatcher::Priv *parent)
-    : QThread(parent->pub),id(id),shutdownRequested(false), factory(factory),cleanup(cleanup),dispatcher(parent)
+TUFAO_EXPORT QDebug tDebug ();
+
+WorkerThread::WorkerThread(int id
+                           , WorkerThreadData::ConnHandlerFactory connHandlerFactory
+                           , WorkerThreadData::RequestHandlerFactory reqHandlerFactory
+                           , WorkerThreadData::CleanupHandlerFactory cleanup
+                           , WorkerThreadPool *parent)
+    : QThread(parent)
+    ,id(id)
+    ,controller(0)
+    ,connHandlerFactory(connHandlerFactory)
+    ,reqHandlerFactory(reqHandlerFactory)
+    ,cleanup(cleanup)
+    ,dispatcher(parent)
 {
 
 }
 
-void WorkerThread::handleRequest(WorkerThread::Request r)
+void WorkerThread::handleRequest(qintptr r)
 {
-    mutex.lock();
-
-    myRequest = r;
-
-    Q_ASSERT_X(myRequest.response->parent() == myRequest.request
-               ,Q_FUNC_INFO
-               ,"Response HAS to be a child of Request");
-
-    myRequest.request->moveToThread(this);
-    myRequest.response->moveToThread(this);
-    mutex.unlock();
-
-    //wake the thread up
-    m_wait.wakeAll();
+    controller->handleConnection(r);
 }
 
 void WorkerThread::shutdown()
 {
-    mutex.lock();
-    shutdownRequested = true;
-    mutex.unlock();
-    m_wait.wakeAll();
+    controller->staticMetaObject.invokeMethod(controller,"onShutdownRequested",Qt::QueuedConnection);
 }
 
-int WorkerThread::threadId()
+WorkerRunnable::Load WorkerThread::workLoad()
 {
-    return id;
+    return controller->workLoad();
 }
 
 void WorkerThread::run()
 {
     void* customData = 0; //Custom data storage room
-    AbstractHttpServerRequestHandler* handler = factory(&customData);
 
-    //Tell the dispatcher we are here
-    QCoreApplication::postEvent(dispatcher->pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadStarted,this));
+    AbstractConnectionHandler* handler = connHandlerFactory( );
+    reqHandlerFactory(handler, &customData);
 
-    WorkerThreadControl controller;
+    controller = new WorkerRunnable(this,handler,handler);
+    dispatcher->registerIdleThread(this);
 
-    //lock the mutex only in the first run, later the mutex will be locked
-    //at the end of the loop
-    mutex.lock();
-    forever{
-
-        tDebug()<<"Goes to sleep";
-        m_wait.wait(&mutex);
-
-        if(shutdownRequested){
-            mutex.unlock();
-            break;
-        }else{
-            tDebug()<<"Woke up";
-
-            QPointer<HttpServerRequest>  request  = myRequest.request;
-            QPointer<HttpServerResponse> response = myRequest.response;
-
-            myRequest.request.clear();
-            myRequest.response.clear();
-
-            mutex.unlock();
-
-            //make sure eventloop is exited when the request is done
-            connect(request.data(),&HttpServerRequest::close,&controller,&WorkerThreadControl::onRequestClosed);
-            connect(request.data(),&HttpServerRequest::destroyed,&controller,&WorkerThreadControl::onRequestDestroyed);
-            connect(response.data(),&HttpServerResponse::finished,&controller,&WorkerThreadControl::onResponseFinished);
-
-            //deliver all events to the internal socket
-            //QCoreApplication::processEvents();
-
-            //Tell the dispatcher we are working
-            QCoreApplication::postEvent(dispatcher->pub,new WorkerThreadEvent(WorkerThreadEvent::ThreadRunning,this));
-
-            bool handled = handler->handleRequest(*request,*response);
-
-
-            //If the request was handled the user should have called end()
-            if(!handled){
-                //our request was not handled who needs to clean it up?
-                response->end();
-            }
-
-#if 1
-            tDebug()<<"Enters Eventloop";
-            /*enter eventloop in case the request is handled async
-             *or needs to be deleted
-             */
-            exec();
-#endif
-
-            tDebug()<<"Leaves Eventloop";
-
-            //maybe request was deleted while in the eventloop
-            if(request){
-                //undo connections
-                disconnect(request.data(),0,&controller,0);
-
-                if(response){
-                    response->flush();
-                    disconnect(response.data(),0,&controller,0);
-                }
-
-#if 1
-                //push request object back to the dispatcher's thread
-                request->moveToThread(dispatcher->pub->thread());
-#else
-                //force quit, to prevent SEGFAULT
-                request->socket().close();
-                QCoreApplication::sendPostedEvents(request);
-#endif
-
-            }
-
-            mutex.lock();
-            dispatcher->takeWorkingThread(this);
-
-            //mutex is unlocked after we went to sleep
-        }
-    }
+    exec();
 
     tDebug()<<"!!!!!!!!!!!!THREAD GOES DOWN";
     //clean up all ressources
@@ -178,7 +90,6 @@ void WorkerThread::run()
         }
     }
     delete handler;
-
 }
 
 } //namespace Tufao
