@@ -29,7 +29,7 @@ set(tufao_SRC
     httpconnectionhandler.cpp
     httpsconnectionhandler.cpp
     threadedhttpserver.cpp
-    #threadedhttppluginserver.cpp
+    threadedhttppluginserver.cpp
 
 )
 

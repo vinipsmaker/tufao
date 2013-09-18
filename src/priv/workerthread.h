@@ -47,9 +47,9 @@ class WorkerThread : public QThread
 
     public:
         WorkerThread(int id
-                     ,WorkerThreadData::ConnHandlerFactory connHandlerFactory
-                     ,WorkerThreadData::RequestHandlerFactory reqHandlerfactory
-                     ,WorkerThreadData::CleanupHandlerFactory cleanup
+                     ,const WorkerThreadData::ConnHandlerFactory &connHandlerFactory
+                     ,const WorkerThreadData::RequestHandlerFactory &reqHandlerfactory
+                     ,const WorkerThreadData::CleanupHandlerFactory &cleanup
                      ,WorkerThreadPool* parent);
 
         void handleRequest   (qintptr r);

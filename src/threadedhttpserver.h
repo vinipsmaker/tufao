@@ -11,6 +11,7 @@ class AbstractConnectionHandler;
 class ThreadedHttpServer : public QObject
 {
     public:
+        struct Priv;
         /*!
          It's a simple typedef for the type of handler factory accepted by the
          ThreadedHttpServer.
@@ -128,8 +129,12 @@ class ThreadedHttpServer : public QObject
     protected slots:
         void onNewConnection(qintptr socketDescriptor);
 
+    protected:
+        explicit ThreadedHttpServer(Priv* priv, QObject* parent = 0);
+        Priv *_priv();
+        const Priv *_priv() const;
+
     private:
-        struct Priv;
         Priv *priv;
 };
 

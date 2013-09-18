@@ -15,7 +15,6 @@ WorkerThreadPool::WorkerThreadPool(QObject *parent)
     , poolSize(10)
     , deferredDispatch(false)
 {
-    QTimer::singleShot(0,this,SLOT(startThreads()));
 }
 
 void WorkerThreadPool::dispatchRequests()
@@ -85,8 +84,8 @@ void WorkerThreadPool::stopAllThreads()
 
     //quit all threads
     QMutexLocker l(&threadListMutex);
-    for(int i= 0; i < idleThreads.size(); i++){
-        WorkerThread* th = idleThreads.takeAt(i);
+    for(int i= 0; i < threads.size(); i++){
+        WorkerThread* th = threads.takeAt(i);
         th->shutdown();
         bool finished = th->wait(timeout);
         if(!finished){
@@ -109,17 +108,22 @@ void WorkerThreadPool::pauseDispatch(const bool pause)
         staticMetaObject.invokeMethod(this,"dispatchRequests",Qt::QueuedConnection);
 }
 
-void WorkerThreadPool::setConnectionHandlerFactory(WorkerThreadData::ConnHandlerFactory factory)
+bool WorkerThreadPool::isInitialized() const
+{
+    return (threads.size() > 0);
+}
+
+void WorkerThreadPool::setConnectionHandlerFactory(const WorkerThreadData::ConnHandlerFactory &factory)
 {
     threadInit.connHandlerFactory = factory;
 }
 
-void WorkerThreadPool::setRequestHandlerFactory(WorkerThreadData::RequestHandlerFactory factory)
+void WorkerThreadPool::setRequestHandlerFactory(const WorkerThreadData::RequestHandlerFactory &factory)
 {
     threadInit.reqHandlerfactory = factory;
 }
 
-void WorkerThreadPool::setCleanupHandlerFactory(WorkerThreadData::CleanupHandlerFactory factory)
+void WorkerThreadPool::setCleanupHandlerFactory(const WorkerThreadData::CleanupHandlerFactory &factory)
 {
     threadInit.cleanup = factory;
 }
@@ -129,22 +133,19 @@ const WorkerThreadData::ConnHandlerFactory &WorkerThreadPool::connectionHandlerF
     return threadInit.connHandlerFactory;
 }
 
-void WorkerThreadPool::startThreads()
+const WorkerThreadData::RequestHandlerFactory &WorkerThreadPool::requestHandlerFactory() const
 {
-    threadListMutex.lock();
+    return threadInit.reqHandlerfactory;
+}
 
-    Q_ASSERT_X(threadInit.reqHandlerfactory,Q_FUNC_INFO,"You have to set a request handler factory");
+const WorkerThreadData::CleanupHandlerFactory &WorkerThreadPool::cleanupHandlerFactory() const
+{
+    return threadInit.cleanup;
+}
 
-    for(int i = 0; i < poolSize; i++){
-        WorkerThread *w = new WorkerThread(i,
-                 threadInit.connHandlerFactory,
-                 threadInit.reqHandlerfactory,
-                 threadInit.cleanup,
-                 this);
-        w->start();
-        threads.append(w);
-    }
-    threadListMutex.unlock();
+void WorkerThreadPool::start()
+{
+    extStart(threadInit.connHandlerFactory,threadInit.reqHandlerfactory,threadInit.cleanup);
 }
 
 /*!
@@ -206,6 +207,37 @@ void WorkerThreadPool::registerIdleThread(WorkerThread *thread)
 
     if(pendingConnections.size())
         staticMetaObject.invokeMethod(this,"dispatchRequests",Qt::QueuedConnection);
+}
+
+/*!
+ * \internal
+ * \brief WorkerThreadPool::extStart
+ *  Start the threadpool with special factories
+ * \param cf
+ * \param rF
+ * \param clF
+ */
+void WorkerThreadPool::extStart(const WorkerThreadData::ConnHandlerFactory &cF
+                                ,const  WorkerThreadData::RequestHandlerFactory &rF
+                                ,const  WorkerThreadData::CleanupHandlerFactory &clF)
+{
+    if(threads.size())
+        return;
+
+    threadListMutex.lock();
+
+    Q_ASSERT_X(rF,Q_FUNC_INFO,"You have to set a request handler factory");
+
+    for(int i = 0; i < poolSize; i++){
+        WorkerThread *w = new WorkerThread(i,
+                 cF,
+                 rF,
+                 clF,
+                 this);
+        w->start();
+        threads.append(w);
+    }
+    threadListMutex.unlock();
 }
 
 int WorkerThreadPool::getPoolSize() const

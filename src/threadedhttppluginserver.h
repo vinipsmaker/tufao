@@ -17,17 +17,10 @@ namespace Tufao {
 class ThreadedHttpPluginServer : public ThreadedHttpServer
 {
     Q_OBJECT
+
 public:
-    /*!
-     It's a simple typedef for the type of factory accepted by the
-     ThreadedHttpPluginServer.
-     */
-    typedef std::function<AbstractHttpServerRequestHandler* (AbstractHttpServerRequestHandler*,void**)>
-    Factory;
 
-    static AbstractHttpServerRequestHandler* defaultFactoy (AbstractHttpServerRequestHandler*handler, void**);
-
-    explicit ThreadedHttpPluginServer(Factory fact = defaultFactoy, QObject *parent = 0);
+    explicit ThreadedHttpPluginServer(QObject *parent = 0);
 
 
     /*!
@@ -49,10 +42,6 @@ public:
       setConfig
       */
     QString config() const;
-
-    // ThreadedHttpRequestDispatcher interface
-protected slots:
-    virtual void initializeThreads() Q_DECL_OVERRIDE;
 
 private:
     void changeConfig(const QString &file);

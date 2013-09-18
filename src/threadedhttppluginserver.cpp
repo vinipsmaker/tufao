@@ -1,19 +1,14 @@
 #include "priv/threadedhttppluginserver_p.h"
 #include "httpserverrequestrouter.h"
 #include <QPluginLoader>
+#include "abstractconnectionhandler.h"
 
 namespace Tufao {
 
-AbstractHttpServerRequestHandler *ThreadedHttpPluginServer::defaultFactoy(AbstractHttpServerRequestHandler *handler, void **)
-{
-    return handler;
-}
-
-ThreadedHttpPluginServer::ThreadedHttpPluginServer(Factory fact, QObject *parent)
-    : ThreadedHttpRequestDispatcher(new Priv(this),nullptr,parent)
+ThreadedHttpPluginServer::ThreadedHttpPluginServer(QObject *parent)
+    : ThreadedHttpServer(new Priv,parent)
 {
     ThreadedHttpPluginServer::Priv* p = ((Priv*)_priv());
-    p->factoryFunc = fact;
 
     connect(&p->configFile.watcher(), &QFileSystemWatcher::fileChanged,
             this, &ThreadedHttpPluginServer::onConfigFileChanged);
@@ -45,37 +40,63 @@ void ThreadedHttpPluginServer::loadConfig()
     ThreadedHttpPluginServer::Priv* p = ((Priv*)_priv());
 
     //reload config
-    initializeThreads();
+    p->startThreadPool();
 
-    p->deferredDispatch = false; //start request dispatching
-    p->dispatchRequests();
-
+    p->threadPool->pauseDispatch(false); //start request dispatching
 }
 
-void ThreadedHttpPluginServer::initializeThreads()
+void ThreadedHttpPluginServer::onConfigFileChanged()
 {
-    ThreadedHttpPluginServer::Priv* p = ((Priv*)_priv());
 
-    ThreadedHttpPluginServer::Factory userFactory = p->factoryFunc;
-    ThreadedHttpRequestDispatcher::CleanupFunc userCleanup = p->threadCleaner;
+    clear();
 
-    ConfigContent content;
-    if (!content.load(p->configFile.file())) {
-        qWarning("Tufao::ThreadedHttpPluginServer: Couldn't load new config from"
-                 " \"%s\"", qPrintable(p->configFile.file()));
+    if (!QFileInfo(((Priv*)_priv())->configFile.file()).exists()) {
         return;
     }
 
-    auto factory = [content,userFactory](void **customData){
+    loadConfig();
+}
 
-        HttpServerRequestRouter* router = new HttpServerRequestRouter();
+void ThreadedHttpPluginServer::clear()
+{
+    ThreadedHttpPluginServer::Priv* p = ((Priv*)_priv());
+
+    p->threadPool->pauseDispatch(true);
+    p->threadPool->stopAllThreads(); //shut down all threads
+
+    p->configFile.clear();
+    p->configContent.clear();
+}
+
+void ThreadedHttpPluginServer::Priv::startThreadPool()
+{
+    if(threadPool->isInitialized())
+        return;
+
+    WorkerThreadData::RequestHandlerFactory userFactory = threadPool->requestHandlerFactory();
+    WorkerThreadData::CleanupHandlerFactory userCleanup = threadPool->cleanupHandlerFactory();
+
+    ConfigContent content;
+    if (!content.load(configFile.file())) {
+        qWarning("Tufao::ThreadedHttpPluginServer: Couldn't load new config from"
+                 " \"%s\"", qPrintable(configFile.file()));
+        return;
+    }
+
+    auto factory = [content,userFactory](AbstractConnectionHandler* handler, void **customData){
+
+        HttpServerRequestRouter* router = new HttpServerRequestRouter(handler);
 
         ThreadData* data = new ThreadData;
         *customData = data;
 
         HttpPluginServer::Priv::loadNewConfig(router, content,data->plugins,data->handlers);
 
-        return userFactory(router,&data->userCustomData);
+        if(userFactory)
+            userFactory(handler,&data->userCustomData);
+
+        connect(handler,&AbstractConnectionHandler::requestReady,
+                router,&HttpServerRequestRouter::handleRequest);
     };
 
     auto cleanup = [userCleanup](void **customData){
@@ -109,36 +130,7 @@ void ThreadedHttpPluginServer::initializeThreads()
         *customData = 0;
     };
 
-    p->threadListMutex.lock();
-    for(unsigned int i = 0; i < p->numberOfThreads; i++){
-        WorkerThread *w = new WorkerThread(i,factory,cleanup,p);
-        w->start();
-        p->idleThreads.append(w);
-    }
-    p->threadListMutex.unlock();
-}
-
-void ThreadedHttpPluginServer::onConfigFileChanged()
-{
-
-    clear();
-
-    if (!QFileInfo(((Priv*)_priv())->configFile.file()).exists()) {
-        return;
-    }
-
-    loadConfig();
-}
-
-void ThreadedHttpPluginServer::clear()
-{
-    ThreadedHttpPluginServer::Priv* p = ((Priv*)_priv());
-
-    p->deferredDispatch = true; //stop request dispatching
-    p->stopAllThreads(); //shut down all threads
-
-    p->configFile.clear();
-    p->configContent.clear();
+    threadPool->extStart(threadPool->connectionHandlerFactory(),factory,cleanup);
 }
 
 } // namespace Tufao

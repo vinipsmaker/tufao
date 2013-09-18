@@ -1,5 +1,6 @@
 #include "priv/threadedhttpserver_p.h"
 #include <QScopedPointer>
+#include <QTimer>
 
 namespace Tufao {
 
@@ -7,12 +8,26 @@ ThreadedHttpServer::ConnectionHandlerFactory ThreadedHttpServer::Priv::defConnHd
     return new HttpConnectionHandler();
 };
 
-ThreadedHttpServer::Priv::Priv(ThreadedHttpServer *pub)
-    : threadPool(new WorkerThreadPool(pub))
+ThreadedHttpServer::Priv::Priv()
+    : threadPool(new WorkerThreadPool)
     , rejectRequests(false)
-    , pub(pub)
+    , pub(0)
 {
+}
+
+void ThreadedHttpServer::Priv::init(ThreadedHttpServer *pub)
+{
+    this->pub = pub;
+    threadPool->setParent(pub);
+
+    QObject::connect(&tcpServer, &TcpServerWrapper::newConnection,
+                    pub, &ThreadedHttpServer::onNewConnection);
+
     threadPool->setConnectionHandlerFactory(defaultConnectionHandlerFactory());
+}
+void ThreadedHttpServer::Priv::startThreadPool()
+{
+    threadPool->start();
 }
 
 ThreadedHttpServer::ConnectionHandlerFactory ThreadedHttpServer::defaultConnectionHandlerFactory()
@@ -20,11 +35,16 @@ ThreadedHttpServer::ConnectionHandlerFactory ThreadedHttpServer::defaultConnecti
     return Priv::defConnHdl;
 }
 
-ThreadedHttpServer::ThreadedHttpServer(QObject *parent)
-    : QObject(parent),priv(new Priv(this))
+ThreadedHttpServer::ThreadedHttpServer(Priv *priv, QObject *parent)
+    : QObject(parent),priv(priv)
 {
-    connect(&priv->tcpServer, &TcpServerWrapper::newConnection,
-            this, &ThreadedHttpServer::onNewConnection);
+    priv->init(this);
+}
+
+ThreadedHttpServer::ThreadedHttpServer(QObject *parent)
+    : ThreadedHttpServer(new Priv,parent)
+{
+    QTimer::singleShot(0,priv->threadPool,SLOT(start()));
 }
 
 ThreadedHttpServer::~ThreadedHttpServer()
@@ -78,7 +98,8 @@ void ThreadedHttpServer::restart()
 
     pool->pauseDispatch(true);
     pool->stopAllThreads();
-    pool->startThreads();
+
+    priv->startThreadPool();
 
     priv->rejectRequests   = false;
     pool->pauseDispatch(false);
@@ -99,6 +120,16 @@ void ThreadedHttpServer::onNewConnection(qintptr socketDescriptor)
     }
 
     priv->threadPool->handleConnection(socketDescriptor);
+}
+
+ThreadedHttpServer::Priv *ThreadedHttpServer::_priv()
+{
+    return priv;
+}
+
+const ThreadedHttpServer::Priv *ThreadedHttpServer::_priv() const
+{
+    return priv;
 }
 
 

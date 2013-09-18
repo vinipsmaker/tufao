@@ -29,18 +29,21 @@ class WorkerThreadPool : public QObject
     Q_OBJECT
 
     public:
-        WorkerThreadPool(QObject* parent);
+        WorkerThreadPool(QObject* parent = 0);
 
         bool handleConnection    (quintptr socketDesc);
         void shutdown            ();
         void stopAllThreads      ();
         void pauseDispatch       (const bool pause = true);
+        bool isInitialized       () const;
 
-        void setConnectionHandlerFactory (WorkerThreadData::ConnHandlerFactory factory);
-        void setRequestHandlerFactory    (WorkerThreadData::RequestHandlerFactory factory);
-        void setCleanupHandlerFactory    (WorkerThreadData::CleanupHandlerFactory factory);
+        void setConnectionHandlerFactory (const WorkerThreadData::ConnHandlerFactory &factory);
+        void setRequestHandlerFactory    (const WorkerThreadData::RequestHandlerFactory &factory);
+        void setCleanupHandlerFactory    (const WorkerThreadData::CleanupHandlerFactory &factory);
 
         const WorkerThreadData::ConnHandlerFactory &connectionHandlerFactory() const;
+        const WorkerThreadData::RequestHandlerFactory &requestHandlerFactory() const;
+        const WorkerThreadData::CleanupHandlerFactory &cleanupHandlerFactory() const;
 
         int getPoolSize() const;
         void setPoolSize(int value);
@@ -48,8 +51,10 @@ class WorkerThreadPool : public QObject
         void          unregisterIdleThread (WorkerThread* thread);
         void          registerIdleThread   (WorkerThread* thread);
 
+        void          extStart (const WorkerThreadData::ConnHandlerFactory &cF, const WorkerThreadData::RequestHandlerFactory &rF, const WorkerThreadData::CleanupHandlerFactory &clF );
+
     public slots:
-        void          startThreads     ();
+        void          start ();
 
     protected slots:
         void          dispatchRequests ();

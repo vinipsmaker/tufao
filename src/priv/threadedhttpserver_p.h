@@ -17,8 +17,13 @@
 namespace Tufao{
 
 struct ThreadedHttpServer::Priv{
-        Priv(ThreadedHttpServer* pub);
+        Priv();
+
+        void init (ThreadedHttpServer* pub);
+
         virtual ~Priv() = default;
+
+        virtual void startThreadPool ();
 
         TcpServerWrapper    tcpServer;
         WorkerThreadPool    *threadPool;

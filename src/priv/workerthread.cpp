@@ -35,9 +35,9 @@ namespace Tufao {
 TUFAO_EXPORT QDebug tDebug ();
 
 WorkerThread::WorkerThread(int id
-                           , WorkerThreadData::ConnHandlerFactory connHandlerFactory
-                           , WorkerThreadData::RequestHandlerFactory reqHandlerFactory
-                           , WorkerThreadData::CleanupHandlerFactory cleanup
+                           , const WorkerThreadData::ConnHandlerFactory &connHandlerFactory
+                           , const WorkerThreadData::RequestHandlerFactory &reqHandlerFactory
+                           , const WorkerThreadData::CleanupHandlerFactory &cleanup
                            , WorkerThreadPool *parent)
     : QThread(parent)
     ,id(id)

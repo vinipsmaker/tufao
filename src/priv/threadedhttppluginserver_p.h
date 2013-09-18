@@ -8,13 +8,16 @@
 namespace Tufao{
 
 struct ThreadedHttpPluginServer::Priv : public ThreadedHttpServer::Priv {
-    Priv(ThreadedHttpPluginServer* parent): ThreadedHttpRequestDispatcher::Priv(parent){}
+    Priv() = default;
     virtual ~Priv() = default;
 
-    ThreadedHttpPluginServer::Factory     factoryFunc;
 
     ConfigFile configFile;
     ConfigContent configContent;
+
+    // ThreadedHttpServer::Priv interface
+    public:
+    virtual void startThreadPool();
 };
 
 struct ThreadData{
