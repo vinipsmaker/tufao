@@ -60,6 +60,10 @@ void WorkerRunnable::handleConnection(qintptr socketDesc)
 
 void WorkerRunnable::onShutdownRequested()
 {
+    while(pendingConnections.size()){
+        int socketDesc = pendingConnections.dequeue();
+        connHandler->closePendingConnection(socketDesc);
+    }
     QThread::currentThread()->exit();
 }
 
@@ -99,6 +103,7 @@ void WorkerRunnable::onNewRequest(HttpServerRequest &request)
 
 void WorkerRunnable::onRequestReady()
 {
+    connect(sender(),SIGNAL(end()),this,SLOT(onRequestEnd()));
     tDebug()<<"onRequestReady";
 }
 

@@ -1,6 +1,5 @@
 #include "workerthreadpool.h"
 #include "workerthread.h"
-#include "workerthreadevent.h"
 #include "../abstractconnectionhandler.h"
 
 #include <functional>
@@ -161,7 +160,7 @@ WorkerThread *WorkerThreadPool::findResponsiveThread()
         qDebug()<<"[Main] Using Thread "<<wt->threadId()<<" from idle List";
         return wt;
     }else{
-        qDebug()<<"No Idle Threads trying to find a responsive one";
+        qDebug()<<"[Main] No Idle Threads trying to find a responsive one";
 
         int myThread = -1;
         for(int i = 0; i < threads.size(); i++){
