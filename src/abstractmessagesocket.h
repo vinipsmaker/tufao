@@ -67,17 +67,38 @@ public:
 signals:
     /*!
       This signal should be emitted when the connection is open.
+
+      \note
+      __This signal might be unsafe__ (read this: \ref safe-signal)!\n\n
+
+      Unless you know what subclass of AbstractMessageSocket is being used
+      __AND__ this subclass explicitly documents the opposite (signal is safe),
+      you should assume that this signal is unsafe.
       */
     void connected();
 
     /*!
       This signal should be emitted when the connection is closed or when fails
       to connect.
+
+      \note
+      __This signal might be unsafe__ (read this: \ref safe-signal)!\n\n
+
+      Unless you know what subclass of AbstractMessageSocket is being used
+      __AND__ this subclass explicitly documents the opposite (signal is safe),
+      you should assume that this signal is unsafe.
       */
     void disconnected();
 
     /*!
       This signal should be emitted each time a new message is available.
+
+      \note
+      __This signal might be unsafe__ (read this: \ref safe-signal)!\n\n
+
+      Unless you know what subclass of AbstractMessageSocket is being used
+      __AND__ this subclass explicitly documents the opposite (signal is safe),
+      you should assume that this signal is unsafe.
       */
     void newMessage(QByteArray msg);
 
