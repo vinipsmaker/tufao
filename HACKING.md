@@ -150,3 +150,24 @@ Did you make a modification to Tufão and think its worth to go upstream?
   * Send a [pull request](http://archlinux.me/dusty/2012/03/18/contributing-to-git-projects-on-github/)
   * Send the patch to the [mailing list](https://github.com/vinipsmaker/tufao/wiki/Contact)
     (tip: use the command _git format-patch_ to generate the patches)
+
+# Preparing a new release
+
+  * It's stable ;)
+    * Correctly compile on all plataforms
+    * New features are working
+    * Old features continue to work
+  * Every new feature is correctly documented with a _\since_ command
+  * The new features are documented under the release notes of _README.md_ file
+  * There are examples of the new features under _examples_ folder (optional)
+  * Put a new application template to demonstrate the new features on
+    _tufao-qtcreator-plugin_ (optional)
+  * Create a commit to bump the release version (see script
+    _scripts/change-version.sh_)
+  * Create a signed git tag
+  * Sync the online documentation to reflect the new release
+    * Do **NOT** include the _html/index.qhp_ file
+  * Announce the release on the mailing list
+  * If the release is special (e.g. a major version bump), announce it on KDE
+    and Qt forums too
+  * Party time!
