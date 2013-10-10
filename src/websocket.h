@@ -482,8 +482,8 @@ signals:
     void pong(QByteArray data);
 
 public slots:
-    void close() Q_DECL_OVERRIDE;
-    bool sendMessage(const QByteArray &msg) Q_DECL_OVERRIDE;
+    void close() override;
+    bool sendMessage(const QByteArray &msg) override;
 
     /*!
       Sends a binary message over the connection.

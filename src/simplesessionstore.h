@@ -77,48 +77,48 @@ public:
     /*!
      * Implements SessionStore::hasSession.
      */
-    bool hasSession(const HttpServerRequest &request) const Q_DECL_OVERRIDE;
+    bool hasSession(const HttpServerRequest &request) const override;
 
     /*!
      * Implements SessionStore::removeSession.
      */
     void removeSession(const HttpServerRequest &request,
-                       HttpServerResponse &response) Q_DECL_OVERRIDE;
+                       HttpServerResponse &response) override;
 
     /*!
      * Implements SessionStore::properties.
      */
     QList<QByteArray> properties(const HttpServerRequest &request,
                                  const HttpServerResponse &response)
-    const Q_DECL_OVERRIDE;
+    const override;
 
     /*!
      * Implements SessionStore::hasProperty.
      */
     bool hasProperty(const HttpServerRequest &request,
                      const HttpServerResponse &response,
-                     const QByteArray &key) const Q_DECL_OVERRIDE;
+                     const QByteArray &key) const override;
 
     /*!
      * Implements SessionStore::property
      */
     QVariant property(const HttpServerRequest &request,
                       HttpServerResponse &response,
-                      const QByteArray &key) const Q_DECL_OVERRIDE;
+                      const QByteArray &key) const override;
 
     /*!
      * Implements SessionStore::setProperty.
      */
     void setProperty(const HttpServerRequest &request,
                      HttpServerResponse &response, const QByteArray &key,
-                     const QVariant &value) Q_DECL_OVERRIDE;
+                     const QVariant &value) override;
 
     /*!
      * Implements SessionStore::removeProperty.
      */
     void removeProperty(const HttpServerRequest &request,
                         HttpServerResponse &response,
-                        const QByteArray &key) Q_DECL_OVERRIDE;
+                        const QByteArray &key) override;
 
     /*!
      * Returns a reference to the same store every time it's called. It acts

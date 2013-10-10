@@ -184,7 +184,7 @@ public slots:
       1.0
       */
     bool handleUpgrade(Tufao::HttpServerRequest &request,
-                       const QByteArray &head) Q_DECL_OVERRIDE;
+                       const QByteArray &head) override;
 
 private:
     struct Priv;

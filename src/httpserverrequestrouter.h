@@ -217,7 +217,7 @@ public slots:
       1.0
       */
     bool handleRequest(Tufao::HttpServerRequest &request,
-                       Tufao::HttpServerResponse &response) Q_DECL_OVERRIDE;
+                       Tufao::HttpServerResponse &response) override;
 
 private:
     struct Priv;
