@@ -82,7 +82,7 @@ public:
       \p handler is used as the internal handler backend, ownership is transfered to the httpserver
       \p parent is passed to the QObject constructor.
       */
-    explicit HttpServer(HttpConnectionHandler* handler,QObject *parent = 0);
+    explicit HttpServer(HttpConnectionHandler *handler, QObject *parent = 0);
 
     /*!
       Destroys the object.
@@ -171,7 +171,6 @@ public:
      */
     static UpgradeHandler defaultUpgradeHandler();
 
-
     /*!
       Returns the internaly used connection handler
      */
@@ -213,11 +212,10 @@ public slots:
       */
     void close();
 
-
 protected slots:
     void onNewConnection(qintptr socketDescriptor);
 
-    private:
+private:
     struct Priv;
     Priv *priv;
 };
