@@ -316,7 +316,7 @@ void HttpPluginServer::Priv::loadNewConfig(HttpServerRequestRouter *router, cons
         QPluginLoader *loader = new QPluginLoader(p.path);
         auto warn = [&p,loader]() {
             qWarning("Tufao::HttpPluginServer: Couldn't load plugin"
-                     " \"%s\"", qPrintable(p.path));
+                     " \"%s\" \"%s\"", qPrintable(p.path),qPrintable(loader->errorString()));
             loader->deleteLater();
         };
 
