@@ -476,6 +476,9 @@ signals:
 
       Pong frames are sent in response to ping frames.
 
+      \note
+      __This signal is unsafe__ (read this: \ref safe-signal)!
+
       \sa
       WebSocket::ping
       */

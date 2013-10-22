@@ -30,7 +30,6 @@ set(tufao_SRC
     httpsconnectionhandler.cpp
     threadedhttpserver.cpp
     threadedhttppluginserver.cpp
-
 )
 
 add_definitions(-DTUFAO_LIBRARY
