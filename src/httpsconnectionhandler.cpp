@@ -23,7 +23,7 @@
 namespace Tufao {
 
 HttpsConnectionHandler::HttpsConnectionHandler(QObject *parent) :
-    HttpConnectionHandler(new Priv(),parent)
+    HttpConnectionHandler(new HttpsConnectionHandler::Priv(),parent)
 {
 
 }

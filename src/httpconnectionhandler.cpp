@@ -23,7 +23,7 @@
 
 namespace Tufao {
 
-inline HttpConnectionHandler::Priv::Priv() :
+HttpConnectionHandler::Priv::Priv() :
     upgradeHandler(defaultUpgradeHandler)
 {}
 

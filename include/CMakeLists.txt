@@ -1,7 +1,7 @@
 # Extra include files
 
 install(DIRECTORY .
-    DESTINATION "${includedir}/Tufao"
+    DESTINATION "${includedir}"
     COMPONENT development
     PATTERN CMakeLists.txt EXCLUDE
 )

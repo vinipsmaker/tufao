@@ -150,7 +150,7 @@ SessionSettings SessionStore::defaultSettings()
     return settings;
 }
 
-inline QByteArray SessionStore::signSession(const QByteArray &message) const
+QByteArray SessionStore::signSession(const QByteArray &message) const
 {
     if (priv->macSecret.isEmpty())
         return message;
@@ -158,7 +158,7 @@ inline QByteArray SessionStore::signSession(const QByteArray &message) const
     return message + ':' + hmacSha1(priv->macSecret, message);
 }
 
-inline QByteArray SessionStore::unsignSession(const QByteArray &message) const
+QByteArray SessionStore::unsignSession(const QByteArray &message) const
 {
     if (priv->macSecret.isEmpty())
         return message;
