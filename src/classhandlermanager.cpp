@@ -213,8 +213,8 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
 			int methodType = method.parameterType(argumentIndex);
 			if(variants[argumentIndex].canConvert(methodType)) {
 				variants[argumentIndex].convert(methodType);
-				argumentTable[argumentIndex] = * new QGenericArgument(variants[argumentIndex].typeName(),
-																						variants[argumentIndex].data());
+				argumentTable[argumentIndex] = QGenericArgument(variants[argumentIndex].typeName(),
+																				variants[argumentIndex].data());
 				qDebug() << "Converted "
 							<< arguments.value(parameterName)
 							<< " to type "
@@ -227,11 +227,6 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
 							  << " to type " << QVariant::typeToName(methodType);
 			}
 			argumentIndex+=1;
-		}
-		while(argumentIndex < 10) {
-			argumentTable[argumentIndex] = * new QGenericArgument();
-
-			argumentIndex++;
 		}
 		if(canHandle) {
 			variants[3].convert(QMetaType::Int);
@@ -250,10 +245,6 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
 							  argumentTable[9]
 							  );
 			handled = true;
-
-//			for(int index = 2; index < 10; index++) {
-//				delete &(argumentTable[index]);
-//			}
 		}
 	} else {
 		qWarning() << "Cound not find a method named with a matching signature.";
