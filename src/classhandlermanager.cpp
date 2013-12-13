@@ -253,9 +253,14 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
 					qWarning() << "Can not convert " << argument << " to type " << QVariant::typeToName(methodType);
 				}
 			}
-			argumentIndex++;
+			argumentIndex+=1;
 		}
 		if(canHandle) {
+			QString string;
+			qDebug() << string.sprintf("%8p", argumentTable[0].data());
+			qDebug() << string.sprintf("%8p", argumentTable[1].data());
+			qDebug() << string.sprintf("%8p", argumentTable[2].data());
+			qDebug() << string.sprintf("%8p", argumentTable[3].data());
 			// Check & insert context if necessary
 			method.invoke(handler->handler,
 							  Qt::DirectConnection,
