@@ -114,7 +114,7 @@ enum class HttpResponseStatus
     INSUFFICIENT_STORAGE            = 507,
     LOOP_DETECTED                   = 508,
     BANDWIDTH_LIMIT_EXCEEDED        = 509,
-    NOT_EXTENDED                    = 510
+	 NOT_EXTENDED                    = 510
 };
 
 /*!

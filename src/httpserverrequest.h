@@ -54,6 +54,7 @@ enum class HttpVersion
 class TUFAO_EXPORT HttpServerRequest : public QObject
 {
     Q_OBJECT
+	 Q_PROPERTY(QString context READ context WRITE setContext)
 public:
 
     /*!
@@ -261,6 +262,18 @@ public:
      */
     void setCustomData(const QVariant &data);
 
+	 /*!
+	  * \brief context the setter for the request context (first path component).
+	  * \param context the context.
+	  * \since 1.1
+	  */
+	 void setContext(const QString context);
+	 /*!
+	  * \brief context the accessor for the context.
+	  * \return the contet of the request.
+	  */
+	 QString context(void) const;
+
 signals:
     /*!
       This signal is emitted when most of the data about the request is
@@ -348,6 +361,7 @@ private:
 
     struct Priv;
     Priv *priv;
+	 QString m_context;
 
     friend struct Tufao::HttpServerRequest::Priv;
 };

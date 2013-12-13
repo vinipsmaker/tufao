@@ -37,13 +37,32 @@ namespace Tufao {
 class ClassHandler;
 
 /*!
- * \brief The ClassHandlerManager class
+ * \brief This class serves as the HttpServerRequestHandler for all ClassHandler plugins.
+ *
+ * <p>This class is used to mange one or more ClassHandler plugins.  To use this class, you simply instantiate and
+ * register with the HttpServerRequestRouter.  You can specify that an instane of this class is only to manager
+ * plugins with a particular IID, and you can also assign a context (the first path component of a URL).</p>
+ *
+ * <p>If you specify a context at creation time, only URL's with that string as the first path component
+ * (case-sensitive) will recive dispatches.</p>
+ *
+ * <p>Static plugins will be registered be the first instance of this class created, regardless of if they specify an
+ * IID (as IID is not available at runtime for static plugins).  Otehrwise, only plugins that have a matching IID
+ * to the plginID provided will be loaded by this instance.</p>
+ *
+ * <p>To have a single instance load and regiser all plugins, simply leave the pluginID blank.<p>
+ *
+ * <p>If context is used, in your ClassHandler instances you will likely need to pass the value of the context out into
+ * your response so that things like URL's in HTML or Ajaz calls can prepend the context to their paths; otherwise
+ * the calls will fail.</p>
+ *
  * \include ClassHandlerManager
  * \since 1.1
  */
 class ClassHandlerManager : public QObject, public AbstractHttpServerRequestHandler
 {
 	Q_OBJECT
+	Q_PROPERTY(QString context READ context)
 public:
 	/*!
 	 * \brief Constructs a ClassHandlerManager object.
@@ -60,6 +79,8 @@ public:
 	  Destroys the object.
 	  */
 	virtual ~ClassHandlerManager();
+
+	QString context(void) const;
 
 	/*!
 	 * \brief Adds a non-standard path to the search paths.
@@ -106,8 +127,6 @@ private:
 
 	int selectMethod(const QString className, const QString methodName, const QHash<QString, QString> arguments) const;
 
-	//! The contect - first path component of the URI - this manager is responsible for.  May be empty.
-	QString context;
 	//! Maps a class name or pluginID to the PluginDescriptor for the plugin.
 	QHash<QString, ClassHandlerManager::PluginDescriptor *> handlers;
 	//! The IID of the plugins this manager will load.  May be empty.
@@ -115,6 +134,8 @@ private:
 	//! The paths dearched to find plugins.
 	static QStringList pluginLocations;
 
+	//! The contect - first path component of the URI - this manager is responsible for.  May be empty.
+	QString m_context;
 };
 
 } // namespace Tufao

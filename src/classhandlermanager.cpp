@@ -52,8 +52,8 @@ QStringList ClassHandlerManager::pluginLocations;
 /* ****************************************************************************************************************** */
 ClassHandlerManager::ClassHandlerManager(QString pluginID, QString context, QObject * parent) :
 	QObject(parent),
-	context(context),
-	pluginID(pluginID)
+	pluginID(pluginID),
+	m_context(context)
 {
 	// Set up the search locations
 	if(pluginLocations.isEmpty()) {
@@ -162,6 +162,15 @@ ClassHandlerManager::~ClassHandlerManager()
 
 /* ****************************************************************************************************************** */
 #pragma mark -
+#pragma mark Accessors & mutators
+/* ****************************************************************************************************************** */
+QString ClassHandlerManager::context(void) const
+{
+	return m_context;
+}
+
+/* ****************************************************************************************************************** */
+#pragma mark -
 #pragma mark Static Methods
 /* ****************************************************************************************************************** */
 void ClassHandlerManager::addPluginLocation(const QString location)
@@ -200,8 +209,8 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
 			QString argument = arguments.value(parameterName);
 			QVariant variant = QVariant::fromValue(argument);
 			int methodType = method.parameterType(argumentIndex);
-			/* The if checks that follow are because I can not get the else (which was the original single implementation)
-			 * to work for Qt data types. It seems to so far be working for the request & response.  More testing needed.
+			/*
+			 * The following if/else is stil a work in progrss..
 			 */
 			if(methodType == QMetaType::Bool) {
 				if (variant.canConvert(QMetaType::Bool)) {
@@ -241,13 +250,13 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
 					argumentTable[argumentIndex] = QGenericArgument(variant.typeName(), variant.data());
 					qDebug() << "Converted " << argument << " to type " << QVariant::typeToName(methodType) << " index " <<argumentIndex;
 				} else {
-					canHandle = false;
 					qWarning() << "Can not convert " << argument << " to type " << QVariant::typeToName(methodType);
 				}
 			}
 			argumentIndex++;
 		}
 		if(canHandle) {
+			// Check & insert context if necessary
 			method.invoke(handler->handler,
 							  Qt::DirectConnection,
 							  argumentTable[0],
@@ -274,6 +283,7 @@ void ClassHandlerManager::registerHandler(ClassHandler * handler)
 {
 	// Only process plugins that have not already been registered.
 	if (!handlers.contains(handler->objectName())){
+		qDebug() << "Registering " << handler->objectName() << " as a handler.";
 		 bool canDispathTo = false;
 		 const QMetaObject* metaObject = handler->metaObject();
 		 for(int methodIndex = metaObject->methodOffset(); methodIndex < metaObject->methodCount(); ++methodIndex) {
@@ -299,6 +309,7 @@ void ClassHandlerManager::registerHandler(ClassHandler * handler)
 					 pluginDescriptor->methodNames.append(QString::fromLatin1(method.name()));
 
 					 QString signature = QString::fromLatin1(method.methodSignature());
+					 qDebug() << signature << " is a dispatchable endpoint.";
 				 }
 			 }
 		 }
@@ -338,7 +349,7 @@ bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufa
 
 
 	//Is the request for our context?
-	bool useContext = !context.isEmpty();
+	bool useContext = !m_context.isEmpty();
 	// There must be at least two path components (class & method), and 3 if a context is specified.
 	int minimumPathComponents = useContext ? 3 : 2;
 	if (pathComponents.length() < minimumPathComponents) {
@@ -349,7 +360,10 @@ bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufa
 		qWarning() << "Request was dispatched to handler, but too many path components found.  The path components are"
 					  << pathComponents;
 	} else {
-		if(!useContext || context == pathComponents[0]) {
+		if(!useContext || m_context == pathComponents[0]) {
+			// Add the context to the request
+			request.setContext(m_context);
+
 			int pathIndex = useContext ? 1 : 0;
 			QString className = pathComponents[pathIndex++];
 			QString methodName = pathComponents[pathIndex++];
