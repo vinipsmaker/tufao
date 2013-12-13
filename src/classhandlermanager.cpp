@@ -202,65 +202,39 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
 		argumentTable[0] = Q_ARG(Tufao::HttpServerRequest, request);
 		argumentTable[1] = Q_ARG(Tufao::HttpServerResponse, response);
 
+		// We need this to keep objects in scope until the actual invoke() call.
+		QVariant variants[10];
+
 		int argumentIndex = 2;
 		while(argumentIndex < method.parameterCount()){
 			QString parameterName = method.parameterNames()[argumentIndex];
 			qDebug() << "Processing " << parameterName;
-			QString argument = arguments.value(parameterName);
-			QVariant variant = QVariant::fromValue(argument);
+			variants[argumentIndex] = QVariant::fromValue(arguments.value(parameterName));
 			int methodType = method.parameterType(argumentIndex);
-			/*
-			 * The following if/else is stil a work in progrss..
-			 */
-			if(methodType == QMetaType::Bool) {
-				if (variant.canConvert(QMetaType::Bool)) {
-					argumentTable[argumentIndex] = Q_ARG(bool, variant.toBool());
-					qDebug() << "Processed bool " << variant.toBool() <<  "at index " << argumentIndex;
-				} else {
-					canHandle = false;
-					qWarning() << "Can not convert " << argument << " to type bool";
-				}
-			} else if(methodType == QMetaType::Int) {
-				if (variant.canConvert(QMetaType::Int)) {
-					argumentTable[argumentIndex] = Q_ARG(int, variant.toInt());
-					qDebug() << "Processed int " << variant.toInt() <<  "at index " << argumentIndex;
-				} else {
-					canHandle = false;
-					qWarning() << "Can not convert " << argument << " to type int";
-				}
-			} else if(methodType == QMetaType::Double) {
-				if (variant.canConvert(QMetaType::Double)) {
-					argumentTable[argumentIndex] = Q_ARG(double, variant.toDouble());
-					qDebug() << "Processed double " << variant.toDouble() <<  "at index " << argumentIndex;
-				} else {
-					canHandle = false;
-					qWarning() << "Can not convert " << argument << " to type long";
-				}
-			} else if(methodType == QMetaType::QString) {
-				if (variant.canConvert(QMetaType::QString)) {
-					argumentTable[argumentIndex] = Q_ARG(QString, variant.toString());
-					qDebug() << "Processed QString " << variant.toString() <<  "at index " << argumentIndex;
-				} else {
-					canHandle = false;
-					qWarning() << "Can not convert " << argument << " to type QString";
-				}
+			if(variants[argumentIndex].canConvert(methodType)) {
+				variants[argumentIndex].convert(methodType);
+				argumentTable[argumentIndex] = * new QGenericArgument(variants[argumentIndex].typeName(),
+																						variants[argumentIndex].data());
+				qDebug() << "Converted "
+							<< arguments.value(parameterName)
+							<< " to type "
+							<< QVariant::typeToName(methodType)
+							<< " index "
+							<< argumentIndex;
 			} else {
-				if(variant.canConvert(methodType)) {
-					variant.convert(methodType);
-					argumentTable[argumentIndex] = QGenericArgument(variant.typeName(), variant.data());
-					qDebug() << "Converted " << argument << " to type " << QVariant::typeToName(methodType) << " index " <<argumentIndex;
-				} else {
-					qWarning() << "Can not convert " << argument << " to type " << QVariant::typeToName(methodType);
-				}
+				qWarning() << "Can not convert "
+							  << arguments.value(parameterName)
+							  << " to type " << QVariant::typeToName(methodType);
 			}
 			argumentIndex+=1;
 		}
+		while(argumentIndex < 10) {
+			argumentTable[argumentIndex] = * new QGenericArgument();
+
+			argumentIndex++;
+		}
 		if(canHandle) {
-			QString string;
-			qDebug() << string.sprintf("%8p", argumentTable[0].data());
-			qDebug() << string.sprintf("%8p", argumentTable[1].data());
-			qDebug() << string.sprintf("%8p", argumentTable[2].data());
-			qDebug() << string.sprintf("%8p", argumentTable[3].data());
+			variants[3].convert(QMetaType::Int);
 			// Check & insert context if necessary
 			method.invoke(handler->handler,
 							  Qt::DirectConnection,
@@ -276,6 +250,10 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
 							  argumentTable[9]
 							  );
 			handled = true;
+
+//			for(int index = 2; index < 10; index++) {
+//				delete &(argumentTable[index]);
+//			}
 		}
 	} else {
 		qWarning() << "Cound not find a method named with a matching signature.";
