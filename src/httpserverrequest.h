@@ -54,7 +54,6 @@ enum class HttpVersion
 class TUFAO_EXPORT HttpServerRequest : public QObject
 {
     Q_OBJECT
-	 Q_PROPERTY(QString context READ context WRITE setContext)
 public:
 
     /*!
@@ -361,7 +360,6 @@ private:
 
     struct Priv;
     Priv *priv;
-	 QString m_context;
 
     friend struct Tufao::HttpServerRequest::Priv;
 };

@@ -15,6 +15,11 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
 find_package(CXX11 REQUIRED)
 
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  SET(APPLE 1)
+ENDIF()
+
+
 get_target_property(QMAKE_EXECUTABLE Qt5::qmake LOCATION)
 function(QUERY_QMAKE VAR RESULT)
     exec_program("${QMAKE_EXECUTABLE}" ARGS "-query ${VAR}" RETURN_VALUE return_code OUTPUT_VARIABLE output)
@@ -47,6 +52,9 @@ set(TUFAO_LIBRARY "tufao${TUFAO_VERSION_MAJOR}")
 
 # Build options
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
+IF(APPLE)
+ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
+ENDIF()
 
 # Install info
 set(includedir include/tufao-${TUFAO_VERSION_MAJOR})

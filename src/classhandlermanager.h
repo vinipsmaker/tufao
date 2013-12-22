@@ -120,10 +120,10 @@ private:
 	void registerHandler(ClassHandler * handler);
 
 	bool processRequest(HttpServerRequest & request,
-							  HttpServerResponse & response,
-							  const QString className,
-							  const QString methodName,
-							  const QHash<QString, QString> arguments);
+						HttpServerResponse & response,
+						const QString className,
+						const QString methodName,
+						const QHash<QString, QString> arguments);
 
 	int selectMethod(const QString className, const QString methodName, const QHash<QString, QString> arguments) const;
 

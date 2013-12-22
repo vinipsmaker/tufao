@@ -185,10 +185,10 @@ void ClassHandlerManager::addPluginLocation(const QString location)
 #pragma mark Private Methods
 /* ****************************************************************************************************************** */
 bool ClassHandlerManager::processRequest(HttpServerRequest & request,
-													  HttpServerResponse & response,
-													  const QString className,
-													  const QString methodName,
-													  const QHash<QString, QString> arguments)
+										 HttpServerResponse & response,
+										 const QString className,
+										 const QString methodName,
+										 const QHash<QString, QString> arguments)
 {
 	bool handled = false;
 	bool canHandle = true;
@@ -214,17 +214,17 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
 			if(variants[argumentIndex].canConvert(methodType)) {
 				variants[argumentIndex].convert(methodType);
 				argumentTable[argumentIndex] = QGenericArgument(variants[argumentIndex].typeName(),
-																				variants[argumentIndex].data());
+																variants[argumentIndex].data());
 				qDebug() << "Converted "
-							<< arguments.value(parameterName)
-							<< " to type "
-							<< QVariant::typeToName(methodType)
-							<< " index "
-							<< argumentIndex;
+						 << arguments.value(parameterName)
+						 << " to type "
+						 << QVariant::typeToName(methodType)
+						 << " index "
+						 << argumentIndex;
 			} else {
 				qWarning() << "Can not convert "
-							  << arguments.value(parameterName)
-							  << " to type " << QVariant::typeToName(methodType);
+						   << arguments.value(parameterName)
+						   << " to type " << QVariant::typeToName(methodType);
 			}
 			argumentIndex+=1;
 		}
@@ -232,18 +232,18 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
 			variants[3].convert(QMetaType::Int);
 			// Check & insert context if necessary
 			method.invoke(handler->handler,
-							  Qt::DirectConnection,
-							  argumentTable[0],
-							  argumentTable[1],
-							  argumentTable[2],
-							  argumentTable[3],
-							  argumentTable[4],
-							  argumentTable[5],
-							  argumentTable[6],
-							  argumentTable[7],
-							  argumentTable[8],
-							  argumentTable[9]
-							  );
+						  Qt::DirectConnection,
+						  argumentTable[0],
+						  argumentTable[1],
+						  argumentTable[2],
+						  argumentTable[3],
+						  argumentTable[4],
+						  argumentTable[5],
+						  argumentTable[6],
+						  argumentTable[7],
+						  argumentTable[8],
+						  argumentTable[9]
+						  );
 			handled = true;
 		}
 	} else {
@@ -295,8 +295,8 @@ void ClassHandlerManager::registerHandler(ClassHandler * handler)
 }
 
 int ClassHandlerManager::selectMethod(const QString className,
-												  const QString methodName,
-												  const QHash<QString, QString> arguments) const
+									  const QString methodName,
+									  const QHash<QString, QString> arguments) const
 {
 	int methodIndex = -1;
 	uint parameterHash = qHash(methodName);
@@ -328,11 +328,11 @@ bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufa
 	int minimumPathComponents = useContext ? 3 : 2;
 	if (pathComponents.length() < minimumPathComponents) {
 		qWarning() << "Request was dispatched to handler, but too few path components found.  The path components are"
-					  << pathComponents;
+				   << pathComponents;
 	} else if(pathComponents.length() > minimumPathComponents  + 16) {
 		// We also can not have too many arguments; 16 is max, as that is 8 argumetns plus request & response
 		qWarning() << "Request was dispatched to handler, but too many path components found.  The path components are"
-					  << pathComponents;
+				   << pathComponents;
 	} else {
 		if(!useContext || m_context == pathComponents[0]) {
 			// Add the context to the request

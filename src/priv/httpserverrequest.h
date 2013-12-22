@@ -51,7 +51,8 @@ struct HttpServerRequest::Priv
         useTrailers(false),
         whatEmit(0),
         responseOptions(0),
-        timeout(0)
+		timeout(0),
+		context("")
     {
         http_parser_init(&parser, HTTP_REQUEST);
         timer.setSingleShot(true);
@@ -87,6 +88,7 @@ struct HttpServerRequest::Priv
 
     int timeout;
     QTimer timer;
+	QString context;
 
     static const http_parser_settings httpSettingsInstance;
 };
