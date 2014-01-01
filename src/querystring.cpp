@@ -22,11 +22,15 @@
 namespace Tufao {
 namespace QueryString {
 
+/*!
+ * Escapes a query item key or value.
+ */
 inline QByteArray escape(const QByteArray &string, bool percentEncoding,
                          char percent)
 {
     if (percentEncoding)
-        return string.toPercentEncoding(QByteArray(), QByteArray(), percent);
+        return string.toPercentEncoding(" ", QByteArray(), percent)
+            .replace(' ', '+');
     else
         return string;
 }
@@ -48,11 +52,17 @@ QByteArray stringify(const QMap<QByteArray, QByteArray> &map, char sep, char eq,
     return ret;
 }
 
-inline QByteArray unescape(const QByteArray &string, bool percentEncoding,
+/*!
+ * Unescapes a query item key or value.
+ */
+inline QByteArray unescape(QByteArray string, bool percentEncoding,
                            char percent)
 {
-    return QByteArray(percentEncoding ? QByteArray::fromPercentEncoding(string, percent)
-                                      : string);
+    return QByteArray(percentEncoding
+                      ? QByteArray::fromPercentEncoding(string.replace('+',
+                                                                       ' '),
+                                                        percent)
+                      : string);
 }
 
 QMap<QByteArray, QByteArray> parse(const QByteArray &string, char sep, char eq,

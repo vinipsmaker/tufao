@@ -38,6 +38,10 @@ namespace QueryString {
 /*!
   Serialize an object to a query string.
 
+  If you enable \p percentEncoding, then the implementation will follow the
+  [application/x-www-form-urlencoded](http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1)
+  spec.
+
   \param map The object to be serialized.
   \param sep The separator character.
   \param eq The assignment character.
@@ -55,6 +59,10 @@ TUFAO_EXPORT QByteArray stringify(const QMap<QByteArray, QByteArray> &map,
 
 /*!
   Deserialize a query string to an object.
+
+  If you enable \p percentEncoding, then the implementation will follow the
+  [application/x-www-form-urlencoded](http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1)
+  spec.
 
   \param string The string to parse.
   \param sep The separator character.

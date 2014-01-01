@@ -42,6 +42,13 @@ void QueryStringTest::parse_data()
         QTest::newRow("name=tux&type&age=")
             << QByteArray("name=tux&type&age=") << map;
     }
+    {
+        QMap<QByteArray, QByteArray> map;
+        map[" +"] = "+ ";
+
+        // Tests a query string with a significant plus
+        QTest::newRow("+%2B=%2B+") << QByteArray("+%2B=%2B+") << map;
+    }
 }
 
 void QueryStringTest::parse()
@@ -66,6 +73,12 @@ void QueryStringTest::stringify_data()
 
         QTest::newRow("age=20&name=tux&typ%C3%A9=peng%C3%BCin")
             << QByteArray("age=20&name=tux&typ%C3%A9=peng%C3%BCin") << map;
+    }
+    {
+        QMap<QByteArray, QByteArray> map;
+        map[" +"] = "+ ";
+
+        QTest::newRow("+%2B=%2B+") << QByteArray("+%2B=%2B+") << map;
     }
 }
 
