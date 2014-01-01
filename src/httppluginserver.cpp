@@ -83,15 +83,18 @@ bool HttpPluginServer::handleRequest(HttpServerRequest *request,
                                      HttpServerResponse *response,
                                      const QStringList &args)
 {
+#if EXCEPTIONS_ON
     try {
+#endif // EXCEPTIONS_ON
         return priv->router.handleRequest(request, response, args);
+#if EXCEPTIONS_ON
     } catch (...) {
         qWarning("One plugin is throwing an unhandled exception");
         response->writeHead(HttpServerResponse::INTERNAL_SERVER_ERROR);
         response->end();
         return true;
     }
-
+#endif // EXCEPTIONS_ON
 }
 
 void HttpPluginServer::reloadConfig()

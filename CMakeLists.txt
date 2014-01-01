@@ -44,6 +44,10 @@ option(USE_QT5
     "Use Qt5 to build Tufão" OFF
 )
 
+option(DISABLE_EXCEPTIONS
+    "Whether Tufão should completely avoid using exceptions" OFF
+)
+
 set(BUFFER_SIZE 128 CACHE STRING
     "The default buffer size (in bytes) used by Tufão")
 add_definitions(-DBUFFER_SIZE=${BUFFER_SIZE})

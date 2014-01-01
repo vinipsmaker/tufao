@@ -55,6 +55,12 @@ add_definitions(-DTUFAO_LIBRARY
     -Wall
 )
 
+if (DISABLE_EXCEPTIONS)
+    add_definitions(-DEXCEPTIONS_ON=0)
+else (DISABLE_EXCEPTIONS)
+    add_definitions(-DEXCEPTIONS_ON=1)
+endif (DISABLE_EXCEPTIONS)
+
 if (USE_QT5)
     qt5_wrap_cpp(tufao_MOC ${tufao_MOC_HDRS}
         OPTIONS

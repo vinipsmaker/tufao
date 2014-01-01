@@ -65,6 +65,7 @@ OPTIONS can be null or have a combination of the following values:
   * -DGENERATE_DOC=YES generate documentation using Doxygen
   * -DENABLE_TESTS=YES generate and run tests
   * -DUSE_QT5=YES build Tufão against Qt5 (see below for more info)
+  * -DDISABLE_EXCEPTIONS=YES will completely disable exceptions during build
 
 OPTIONS available on Windows:
 
@@ -97,6 +98,16 @@ If you intend to create a CPack-based installer, just run:
 
     # To create a Windows NSIS-based installer:
     cpack -GNSIS
+
+### Tufão and exceptions
+
+Tufão doesn't throw any exceptions or use exceptions internally. But Tufão's
+plugin system will _handle_ exceptions thrown by plugins. The handling is very
+basic and only included as an extra safety (you shouldn't rely on it).
+
+Besides, some projects cannot have **any** feature from exception handling. If
+your project is one of these, just see Tufão configure flags above to learn how
+you can completely disable exception handling within Tufão.
 
 ### Tufão 0.x and Qt 5
 
