@@ -229,7 +229,6 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
 			argumentIndex+=1;
 		}
 		if(canHandle) {
-			variants[3].convert(QMetaType::Int);
 			// Check & insert context if necessary
 			method.invoke(handler->handler,
 						  Qt::DirectConnection,
