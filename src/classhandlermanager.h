@@ -61,81 +61,81 @@ class ClassHandler;
  */
 class ClassHandlerManager : public QObject, public AbstractHttpServerRequestHandler
 {
-	Q_OBJECT
-	Q_PROPERTY(QString context READ context)
+    Q_OBJECT
+    Q_PROPERTY(QString context READ context)
 public:
-	/*!
-	 * \brief Constructs a ClassHandlerManager object.
-	 *
-	 * \param pluginID if provided, this instance will only load plugins whose IID matches.
-	 * \param context if provided, this is the context (first path component of the URI) for the plugins managed by this
-	 * instance.  Before dispatching a request to one of the plugins, the cotext is checked, and only if it matches does
-	 * the request get dispatched.
-	 * \param parent is passed to the QObject constructor.
-	 */
-	explicit ClassHandlerManager(QString pluginID = "", QString context="", QObject * parent = 0);
+    /*!
+    * \brief Constructs a ClassHandlerManager object.
+    *
+    * \param pluginID if provided, this instance will only load plugins whose IID matches.
+    * \param context if provided, this is the context (first path component of the URI) for the plugins managed by this
+    * instance.  Before dispatching a request to one of the plugins, the cotext is checked, and only if it matches does
+    * the request get dispatched.
+    * \param parent is passed to the QObject constructor.
+    */
+    explicit ClassHandlerManager(QString pluginID = "", QString context="", QObject * parent = 0);
 
-	/*!
-	  Destroys the object.
-	  */
-	virtual ~ClassHandlerManager();
+    /*!
+    Destroys the object.
+    */
+    virtual ~ClassHandlerManager();
 
-	QString context(void) const;
+    QString context(void) const;
 
-	/*!
-	 * \brief Adds a non-standard path to the search paths.
-	 * By default, the standard locations are searched for plugins.  The standard paths are the system
-	 * library paths with a Tufao sub-directory, the executable path, and the applications configutation directory; on
-	 * linux, ~/.tufao, and on Mac both /Library/Application Support/Tufao and ~/Library/Application Support/Tufao.  Each
-	 * of these directories is search to see if it has a plugins sud-directoy, and if it does, all dynamic libraries in
-	 * each matching directroy is examined to determine if it is a plugin.
-	 * \param location an absolute path to be added to the search paths for plugins.
-	 */
-	static void addPluginLocation(const QString location);
+    /*!
+    * \brief Adds a non-standard path to the search paths.
+    * By default, the standard locations are searched for plugins.  The standard paths are the system
+    * library paths with a Tufao sub-directory, the executable path, and the applications configutation directory; on
+    * linux, ~/.tufao, and on Mac both /Library/Application Support/Tufao and ~/Library/Application Support/Tufao.  Each
+    * of these directories is search to see if it has a plugins sud-directoy, and if it does, all dynamic libraries in
+    * each matching directroy is examined to determine if it is a plugin.
+    * \param location an absolute path to be added to the search paths for plugins.
+    */
+    static void addPluginLocation(const QString location);
 
 public slots:
-	 bool handleRequest(HttpServerRequest & request, HttpServerResponse & response) override;
+    bool handleRequest(HttpServerRequest & request, HttpServerResponse & response) override;
 
 private:
-	struct PluginDescriptor
-	{
-		friend class ClassHandlerManager;
-		PluginDescriptor(){;}
-		//! the refernece to the handler itself.
-		ClassHandler * handler;
-		//! The name of the object this handler is for.
-		QString className;
-		//! Maps the hash of the parameter names and method name, to the method index in the ClassHandler.
-		QHash<uint, int> methods;
-		//! A list of all of the method names the plugin can dispatch to.
-		QList<QString> methodNames;
-	};
+    struct PluginDescriptor
+    {
+        friend class ClassHandlerManager;
+        PluginDescriptor(){;}
+        //! the refernece to the handler itself.
+        ClassHandler * handler;
+        //! The name of the object this handler is for.
+        QString className;
+        //! Maps the hash of the parameter names and method name, to the method index in the ClassHandler.
+        QHash<uint, int> methods;
+        //! A list of all of the method names the plugin can dispatch to.
+        QList<QString> methodNames;
+    };
 
-	/*!
-	 * \brief register a handler.
-	 * This method is responsible for finding all of the public slots in the handler, and creating a PluginDescriptor
-	 * to add to the handlers hash.
-	 * \param handler the handler to register.
-	 */
-	void registerHandler(ClassHandler * handler);
+    /*!
+    * \brief register a handler.
+    * This method is responsible for finding all of the public slots in the handler, and creating a PluginDescriptor
+    * to add to the handlers hash.
+    * \param handler the handler to register.
+    */
+    void registerHandler(ClassHandler * handler);
 
-	bool processRequest(HttpServerRequest & request,
-						HttpServerResponse & response,
-						const QString className,
-						const QString methodName,
-						const QHash<QString, QString> arguments);
+    bool processRequest(HttpServerRequest & request,
+                        HttpServerResponse & response,
+                        const QString className,
+                        const QString methodName,
+                        const QHash<QString, QString> arguments);
 
-	int selectMethod(const QString className, const QString methodName, const QHash<QString, QString> arguments) const;
+    int selectMethod(const QString className, const QString methodName, const QHash<QString, QString> arguments) const;
 
-	//! Maps a class name or pluginID to the PluginDescriptor for the plugin.
-	QHash<QString, ClassHandlerManager::PluginDescriptor *> handlers;
-	//! The IID of the plugins this manager will load.  May be empty.
-	QString pluginID;
-	//! The paths dearched to find plugins.
-	static QStringList pluginLocations;
+    //! Maps a class name or pluginID to the PluginDescriptor for the plugin.
+    QHash<QString, ClassHandlerManager::PluginDescriptor *> handlers;
+    //! The IID of the plugins this manager will load.  May be empty.
+    QString pluginID;
+    //! The paths dearched to find plugins.
+    static QStringList pluginLocations;
 
-	//! The contect - first path component of the URI - this manager is responsible for.  May be empty.
-	QString m_context;
+    //! The contect - first path component of the URI - this manager is responsible for.  May be empty.
+    QString m_context;
 };
 
 } // namespace Tufao

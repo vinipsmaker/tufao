@@ -31,17 +31,17 @@ namespace Tufao {
 //! Contains information about a ClassHandler plugin.
 struct ClassHandlerPluginInfo
 {
-	ClassHandlerPluginInfo(){;}
-	//! The plugin ID. It MUST match the lib file name (case sensitive).
-	QString id;
-	//! The displayed name, e.g. "ServerSettings".
-	QString displayedName;
-	//! The comma separated list of authors, e.g. "Timothy Reaves".
-	QString authors;
-	//! The contact email or URL.
-	QString    contact;
-	//! The HTML description of the plugin.
-	QString description;
+    ClassHandlerPluginInfo(){;}
+    //! The plugin ID. It MUST match the lib file name (case sensitive).
+    QString id;
+    //! The displayed name, e.g. "ServerSettings".
+    QString displayedName;
+    //! The comma separated list of authors, e.g. "Timothy Reaves".
+    QString authors;
+    //! The contact email or URL.
+    QString    contact;
+    //! The HTML description of the plugin.
+    QString description;
 };
 
 
@@ -62,7 +62,7 @@ struct ClassHandlerPluginInfo
  *
  * <p>This is achieved by breaking the URL paths up into a parameter list, and then invoking a method on the subclass
  * and passing the parameters to that method. So a URL request like:
- *        <tt>/forum/read/forumName/someForumName/threadName/someThreadName/page/6</tt>
+ *      <tt>/forum/read/forumName/someForumName/threadName/someThreadName/page/6</tt>
  * would call a method Forum::read(QString forumName, QString threadName, int pageNumber) as
  * read("someForumName", "someThreadName", 6);. (please read below for a more accurate description).  This would take a
  * user to a forum named <em>someForumName</em>, to a topic named <em>someThreadName</em>, to the <em>6</em>th page of
@@ -111,10 +111,10 @@ struct ClassHandlerPluginInfo
  *
  * <p>In the above example, the actual declaration of the method would be:
  * <tt>void read(Tufao::HttpServerRequest & request,
- *               Tufao::HttpServerResponse & response,
- *               QString forumName,
- *               QString threadName,
- *               int pageNumber)</tt>.  The parameter names are used to match the path components in the URL.  This means
+ *           Tufao::HttpServerResponse & response,
+ *           QString forumName,
+ *           QString threadName,
+ *           int pageNumber)</tt>.  The parameter names are used to match the path components in the URL.  This means
  * that a URL will always have an <em>even number</em> of path components after the class name; half for the name of
  * the parameters, and the other half for the values.  If a value cannot be converted to the type of the parameter,
  * the request is not handled, and a message logged.  So the request would end up passing to the next registered
@@ -166,17 +166,17 @@ struct ClassHandlerPluginInfo
 
 class ClassHandler : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	virtual ~ClassHandler(){}
+    virtual ~ClassHandler(){}
 
-	//! Clean up resource; called automatically before plugin is unloaded.
-	virtual void deinit() = 0;
-	//! Initialize an instance for use; alled automatically when plugin is registered.
-	virtual void init() = 0;
+    //! Clean up resource; called automatically before plugin is unloaded.
+    virtual void deinit() = 0;
+    //! Initialize an instance for use; alled automatically when plugin is registered.
+    virtual void init() = 0;
 
-	//! Get information about the plugin.
-	virtual ClassHandlerPluginInfo getPluginInfo() const = 0;
+    //! Get information about the plugin.
+    virtual ClassHandlerPluginInfo getPluginInfo() const = 0;
 
 };
 
