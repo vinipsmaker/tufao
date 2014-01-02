@@ -397,6 +397,10 @@ bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufa
                         pathIndex += 2;
                     }
                     wasHandled = processRequest(request, response, className, methodName, arguments);
+                } else {
+                    if(handlers.contains(className)) {
+                        qWarning() << "The class" << className << "has no method named" << methodName;
+                    }
                 }
             } else {
                 qWarning() << "Can not dispath as an odd number of parameter components were supplied.";
