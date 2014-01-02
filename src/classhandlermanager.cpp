@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QMetaObject>
@@ -40,6 +41,7 @@
 #include <QVariant>
 
 #include "httpserverrequest.h"
+#include "headers.h"
 
 namespace Tufao {
 
@@ -184,6 +186,59 @@ void ClassHandlerManager::addPluginLocation(const QString location)
 #pragma mark -
 #pragma mark Private Methods
 /* ****************************************************************************************************************** */
+void ClassHandlerManager::dispatchVoidMethod(QMetaMethod method,
+                                             ClassHandler * handler,
+                                             const QGenericArgument * args) const
+{
+    method.invoke(handler,
+                  Qt::DirectConnection,
+                  args[0],
+                  args[1],
+                  args[2],
+                  args[3],
+                  args[4],
+                  args[5],
+                  args[6],
+                  args[7],
+                  args[8],
+                  args[9]
+                  );
+}
+
+void ClassHandlerManager::dispatchJSONMethod(HttpServerResponse & response,
+                                             QMetaMethod method,
+                                             ClassHandler *handler,
+                                             const QGenericArgument *args) const
+{
+    QJsonObject result;
+    bool wasInvoked = method.invoke(handler,
+                                    Qt::DirectConnection,
+                                    Q_RETURN_ARG(QJsonObject, result),
+                                    args[0],
+                                    args[1],
+                                    args[2],
+                                    args[3],
+                                    args[4],
+                                    args[5],
+                                    args[6],
+                                    args[7],
+                                    args[8],
+                                    args[9]
+                                    );
+    if(wasInvoked) {
+        HttpResponseStatus status = HttpResponseStatus::OK;
+        QJsonObject jsonResponse = result;
+        if(result.contains(HttpResponseStatusKey)) {
+            status = HttpResponseStatus(result[HttpResponseStatusKey].toInt());
+            jsonResponse = result[JsonResponseKey].toObject();
+        }
+
+        response.writeHead(status);
+        response.headers().replace("Content-Type", "application/json; charset=utf-8");
+        response.end(QJsonDocument(jsonResponse).toJson());
+    }
+}
+
 bool ClassHandlerManager::processRequest(HttpServerRequest & request,
                                          HttpServerResponse & response,
                                          const QString className,
@@ -229,20 +284,11 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
             argumentIndex+=1;
         }
         if(canHandle) {
-            // Check & insert context if necessary
-            method.invoke(handler->handler,
-                          Qt::DirectConnection,
-                          argumentTable[0],
-                          argumentTable[1],
-                          argumentTable[2],
-                          argumentTable[3],
-                          argumentTable[4],
-                          argumentTable[5],
-                          argumentTable[6],
-                          argumentTable[7],
-                          argumentTable[8],
-                          argumentTable[9]
-                          );
+            if(method.returnType() == QMetaType::QJsonObject) {
+                this->dispatchJSONMethod(response, method, handler->handler, argumentTable);
+            } else {
+                this->dispatchVoidMethod(method, handler->handler, argumentTable);
+            }
             handled = true;
         }
     } else {

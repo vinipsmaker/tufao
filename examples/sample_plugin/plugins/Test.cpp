@@ -27,6 +27,8 @@
 #include <Tufao/HttpServerResponse>
 
 #include <QDebug>
+#include <QJsonArray>
+#include <QJsonValue>
 
 /* ****************************************************************************************************************** */
 #pragma mark -
@@ -46,9 +48,30 @@ Test::~Test()
 #pragma mark -
 #pragma mark Slots
 /* ****************************************************************************************************************** */
-QJsonDocument Test::test1(QString chapter, int pageNumber)
+QJsonObject Test::test1(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response)
 {
-	return QJsonDocument();
+    Q_UNUSED(request)
+    Q_UNUSED(response)
+    QJsonObject responsePayload;
+    responsePayload["FirstName"] = QString("John");
+    responsePayload["LastName"] = QString("Doe");
+    responsePayload["Age"] = 43;
+    QJsonObject address;
+    address["Street"] = QString("Downing Street 10");
+    address["City"] = QString("London");
+    address["Country"] = QString("Great Britain");
+    responsePayload["Address"] = address;
+    QJsonArray numbers;
+    numbers.append(QString("+44 1234567"));
+    numbers.append(QString("+44 2345678"));
+    responsePayload["Phone numbers"] = numbers;
+
+    QJsonObject jsonResponse;
+    jsonResponse[Tufao::HttpResponseStatusKey] = int(Tufao::HttpResponseStatus::OK);
+    jsonResponse[Tufao::JsonResponseKey] = responsePayload;
+
+    return jsonResponse;
+
 }
 
 void Test::test2(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response, QString chapter, int pageNumber)

@@ -25,7 +25,7 @@
 
 #include <Tufao/ClassHandler>
 
-#include <QJsonDocument>
+#include <QJsonObject>
 #include <QObject>
 
 namespace Tufao {
@@ -47,8 +47,8 @@ public:
 	virtual Tufao::ClassHandlerPluginInfo getPluginInfo() const;
 
 public slots:
-	QJsonDocument test1(QString chapter, int pageNumber);
-	void test2(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response, QString chapter, int pageNumber);
+    QJsonObject test1(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response);
+    void test2(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response, QString chapter, int pageNumber);
 	void test3(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response);
 	void test4(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response, QString chapter);
 	void test5(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response, QString chapter, QString pageNumber);

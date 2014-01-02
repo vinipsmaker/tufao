@@ -125,6 +125,12 @@ private:
                         const QString methodName,
                         const QHash<QString, QString> arguments);
 
+    void dispatchVoidMethod(QMetaMethod method, ClassHandler * handler, const QGenericArgument * args) const;
+    void dispatchJSONMethod(HttpServerResponse & response,
+                            QMetaMethod method,
+                            ClassHandler * handler,
+                            const QGenericArgument * args) const;
+
     int selectMethod(const QString className, const QString methodName, const QHash<QString, QString> arguments) const;
 
     //! Maps a class name or pluginID to the PluginDescriptor for the plugin.
