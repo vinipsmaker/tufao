@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -227,15 +228,19 @@ void ClassHandlerManager::dispatchJSONMethod(HttpServerResponse & response,
                                     );
     if(wasInvoked) {
         HttpResponseStatus status = HttpResponseStatus::OK;
-        QJsonObject jsonResponse = result;
+        QJsonDocument jsonDocument;
         if(result.contains(HttpResponseStatusKey)) {
             status = HttpResponseStatus(result[HttpResponseStatusKey].toInt());
-            jsonResponse = result[JsonResponseKey].toObject();
+            //The response will either be an JsonObject, or a JsonArray
+            if(result[JsonResponseKey].isArray()) {
+                jsonDocument.setArray(result[JsonResponseKey].toArray());
+            } else {
+                jsonDocument = QJsonDocument(result[JsonResponseKey].toObject());
+            }
         }
-
         response.writeHead(status);
-        response.headers().replace("Content-Type", "application/json; charset=utf-8");
-        response.end(QJsonDocument(jsonResponse).toJson());
+        response.headers().replace("Content-Type", "application/json");
+        response.end(jsonDocument.toJson());
     }
 }
 
@@ -263,19 +268,19 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
         int argumentIndex = 2;
         while(argumentIndex < method.parameterCount()){
             QString parameterName = method.parameterNames()[argumentIndex];
-            qDebug() << "Processing " << parameterName;
+            // qDebug() << "Processing " << parameterName;
             variants[argumentIndex] = QVariant::fromValue(arguments.value(parameterName));
             int methodType = method.parameterType(argumentIndex);
             if(variants[argumentIndex].canConvert(methodType)) {
                 variants[argumentIndex].convert(methodType);
                 argumentTable[argumentIndex] = QGenericArgument(variants[argumentIndex].typeName(),
                                                                 variants[argumentIndex].data());
-                qDebug() << "Converted "
-                         << arguments.value(parameterName)
-                         << " to type "
-                         << QVariant::typeToName(methodType)
-                         << " index "
-                         << argumentIndex;
+                // qDebug() << "Converted "
+                //          << arguments.value(parameterName)
+                //          << " to type "
+                //          << QVariant::typeToName(methodType)
+                //          << " index "
+                //          << argumentIndex;
             } else {
                 qWarning() << "Can not convert "
                            << arguments.value(parameterName)
