@@ -32,6 +32,8 @@
 
 namespace Tufao {
 
+Q_GLOBAL_STATIC(QMutex,pluginLoaderMutex)
+
 TUFAO_EXPORT QDebug tDebug ();
 
 WorkerThread::WorkerThread(int id
@@ -69,11 +71,15 @@ void WorkerThread::run()
 {
     void* customData = 0; //Custom data storage room
 
+    pluginLoaderMutex()->lock();
+
     AbstractConnectionHandler* handler = connHandlerFactory( );
     reqHandlerFactory(handler, &customData);
 
     controller = new WorkerRunnable(this,handler,handler);
     dispatcher->registerIdleThread(this);
+
+    pluginLoaderMutex()->unlock();
 
     exec();
 
