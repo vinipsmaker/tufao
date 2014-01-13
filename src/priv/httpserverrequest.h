@@ -51,8 +51,7 @@ struct HttpServerRequest::Priv
         useTrailers(false),
         whatEmit(0),
         responseOptions(0),
-		timeout(0),
-		context("")
+        timeout(0)
     {
         http_parser_init(&parser, HTTP_REQUEST);
         timer.setSingleShot(true);
