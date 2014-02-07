@@ -22,7 +22,6 @@
 #include "priv/asctime.h"
 
 #include <QtCore/QLocale>
-#include <QtCore/QDebug>
 
 namespace Tufao {
 
@@ -55,14 +54,6 @@ QDateTime Headers::toDateTime(const QByteArray &headerValue,
     }
 
     return defaultValue;
-}
-
-QDebug operator<<(QDebug dbg, const Headers &headers)
-{
-    for (Headers::const_iterator i = headers.begin(); i != headers.end();++i)
-        dbg.nospace() << i.key() << ": " << i.value() << endl;
-
-    return dbg.space();
 }
 
 } // namespace Tufao
