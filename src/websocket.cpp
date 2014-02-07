@@ -292,22 +292,6 @@ QString WebSocket::errorString() const
     }
 }
 
-QHostAddress WebSocket::peerAddress() const
-{
-    if (!priv->socket)
-        return QHostAddress::Null;
-
-    return priv->socket->peerAddress();
-}
-
-quint16 WebSocket::peerPort() const
-{
-    if (!priv->socket)
-        return 0;
-
-    return priv->socket->peerPort();
-}
-
 QList<QByteArray> WebSocket::supportedProtocols(const Headers &headers)
 {
     QList<QByteArray> values;
