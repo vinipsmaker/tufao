@@ -171,9 +171,12 @@ You can also see Tufão documentation integrated in QtAssistant.
 
 ## NEWS
 
-Version 1.1 (unreleased)
+Version 1.1
 
   * Add ability to ignore a set of SSL errors in WebSocket
+  * Documentation updates
+  * Bugfix in AbstractHttpServerRequestHandler (thanks to Benjamin Zeller)
+  * Updated Ryan Dahl's HTTP parser to version 2.2.1
 
 Version 1.0
 
