@@ -232,7 +232,7 @@ inline QByteArray SimpleSessionStore::createSession() const
 #if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
     return static_cast<QString>(QUuid::createUuid()).toUtf8();
 #else
-    return QUuid::createUuid().toByteArray();
+    return static_cast<QString>(QUuid::createUuid()).toUtf8();
 #endif
 }
 
