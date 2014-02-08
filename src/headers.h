@@ -68,8 +68,6 @@ struct Headers: public QMultiMap<IByteArray, QByteArray>
                                              = QDateTime());
 };
 
-TUFAO_EXPORT QDebug operator<<(QDebug dbg, const Headers &headers);
-
 } // namespace Tufao
 
 #endif // TUFAO_HEADERS_H
