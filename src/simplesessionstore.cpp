@@ -230,7 +230,7 @@ void SimpleSessionStore::onTimer()
 
 inline QByteArray SimpleSessionStore::createSession() const
 {
-    return QUuid::createUuid().toByteArray();
+    return static_cast<QString>(QUuid::createUuid()).toUtf8();
 }
 
 } // namespace Tufao
