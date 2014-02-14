@@ -238,6 +238,7 @@ public:
     }
 
 private:
+    // See also boost::container::flat_map
     QList<QPair<T, T>> edges;
     // Nodes referenced, but not added explicitly by addNode
     QSet<T> unsatisfiedDependencies;
