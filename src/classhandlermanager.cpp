@@ -45,10 +45,9 @@ namespace Tufao {
 // Initialize static members.
 QStringList ClassHandlerManager::pluginLocations;
 
-/* ****************************************************************************************************************** */
-#pragma mark -
-#pragma mark Object lifecycle
-/* ****************************************************************************************************************** */
+/* ************************************************************************** */
+/* Object lifecycle                                                           */
+/* ************************************************************************** */
 ClassHandlerManager::ClassHandlerManager(QString pluginID, QString context, QObject * parent) :
     QObject(parent),
     pluginID(pluginID),
@@ -159,19 +158,17 @@ ClassHandlerManager::~ClassHandlerManager()
     handlers.clear();
 }
 
-/* ****************************************************************************************************************** */
-#pragma mark -
-#pragma mark Accessors & mutators
-/* ****************************************************************************************************************** */
+/* ************************************************************************** */
+/* Accessors & mutators                                                       */
+/* ************************************************************************** */
 QString ClassHandlerManager::context(void) const
 {
     return m_context;
 }
 
-/* ****************************************************************************************************************** */
-#pragma mark -
-#pragma mark Static Methods
-/* ****************************************************************************************************************** */
+/* ************************************************************************** */
+/* Static Methods                                                             */
+/* ************************************************************************** */
 void ClassHandlerManager::addPluginLocation(const QString location)
 {
     if(!pluginLocations.contains(location)){
@@ -179,10 +176,9 @@ void ClassHandlerManager::addPluginLocation(const QString location)
     }
 }
 
-/* ****************************************************************************************************************** */
-#pragma mark -
-#pragma mark Private Methods
-/* ****************************************************************************************************************** */
+/* ************************************************************************** */
+/* Private Methods                                                            */
+/* ************************************************************************** */
 void ClassHandlerManager::dispatchVoidMethod(QMetaMethod method,
                                              ClassHandler * handler,
                                              const QGenericArgument * args) const
@@ -358,10 +354,9 @@ int ClassHandlerManager::selectMethod(const QString className,
     return methodIndex;
 }
 
-/* ****************************************************************************************************************** */
-#pragma mark -
-#pragma mark Override Tufao::AbstractHttpServerRequestHandler Methods
-/* ****************************************************************************************************************** */
+/* ************************************************************************** */
+/* Override Tufao::AbstractHttpServerRequestHandler Methods                   */
+/* ************************************************************************** */
 bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response)
 {
     bool wasHandled = false;
