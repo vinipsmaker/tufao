@@ -25,7 +25,7 @@ const http_parser_settings HttpServerRequest::Priv::httpSettingsInstance
 
 HttpServerRequest::HttpServerRequest(QAbstractSocket &socket, QObject *parent) :
     QObject(parent),
-	 priv(new Priv(this, socket))
+    priv(new Priv(this, socket))
 {
     connect(&socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(&socket, SIGNAL(disconnected()), this, SIGNAL(close()));
