@@ -155,7 +155,6 @@ ClassHandlerManager::~ClassHandlerManager()
     foreach (ClassHandlerManager::PluginDescriptor * descriptor, handlers) {
         delete descriptor;
     }
-    handlers.clear();
 }
 
 /* ************************************************************************** */
