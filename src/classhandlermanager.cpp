@@ -360,7 +360,7 @@ int ClassHandlerManager::selectMethod(const QString className,
 bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response)
 {
     bool wasHandled = false;
-    QStringList pathComponents = request.url().toString().split("/", QString::SkipEmptyParts);
+    QStringList pathComponents = request.url().path().split("/", QString::SkipEmptyParts);
 
 
     //Is the request for our context?
