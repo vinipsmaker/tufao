@@ -73,7 +73,9 @@ public:
     * the request get dispatched.
     * \param parent is passed to the QObject constructor.
     */
-    explicit ClassHandlerManager(QString pluginID = "", QString context="", QObject * parent = 0);
+    explicit ClassHandlerManager(const QString &pluginID = QString{},
+                                 const QString &context = QString{},
+                                 QObject * parent = 0);
 
     /*!
     Destroys the object.
@@ -133,15 +135,11 @@ private:
 
     int selectMethod(const QString className, const QString methodName, const QHash<QString, QString> arguments) const;
 
-    //! Maps a class name or pluginID to the PluginDescriptor for the plugin.
-    QHash<QString, ClassHandlerManager::PluginDescriptor *> handlers;
-    //! The IID of the plugins this manager will load.  May be empty.
-    QString pluginID;
     //! The paths dearched to find plugins.
     static QStringList pluginLocations;
 
-    //! The contect - first path component of the URI - this manager is responsible for.  May be empty.
-    QString m_context;
+    struct Priv;
+    Priv *priv;
 };
 
 } // namespace Tufao

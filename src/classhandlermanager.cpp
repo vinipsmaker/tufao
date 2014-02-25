@@ -15,7 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this library.  If not, see <http://www.gnu.org/licenses/>.
   */
-#include "classhandlermanager.h"
+#include "priv/classhandlermanager.h"
 
 #include "classhandler.h"
 
@@ -48,10 +48,11 @@ QStringList ClassHandlerManager::pluginLocations;
 /* ************************************************************************** */
 /* Object lifecycle                                                           */
 /* ************************************************************************** */
-ClassHandlerManager::ClassHandlerManager(QString pluginID, QString context, QObject * parent) :
+ClassHandlerManager::ClassHandlerManager(const QString &pluginID,
+                                         const QString &context,
+                                         QObject * parent) :
     QObject(parent),
-    pluginID(pluginID),
-    m_context(context)
+    priv{new Priv{pluginID, context}}
 {
     // Set up the search locations
     if(pluginLocations.isEmpty()) {
@@ -152,9 +153,10 @@ ClassHandlerManager::ClassHandlerManager(QString pluginID, QString context, QObj
 
 ClassHandlerManager::~ClassHandlerManager()
 {
-    foreach (ClassHandlerManager::PluginDescriptor * descriptor, handlers) {
+    foreach (ClassHandlerManager::PluginDescriptor *descriptor, priv->handlers) {
         delete descriptor;
     }
+    delete priv;
 }
 
 /* ************************************************************************** */
@@ -162,7 +164,7 @@ ClassHandlerManager::~ClassHandlerManager()
 /* ************************************************************************** */
 QString ClassHandlerManager::context(void) const
 {
-    return m_context;
+    return priv->context;
 }
 
 /* ************************************************************************** */
@@ -245,7 +247,8 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
     bool canHandle = true;
     int methodIndex = selectMethod(className, methodName, arguments);
     if(methodIndex > -1) {
-        ClassHandlerManager::PluginDescriptor * handler = handlers[className];
+        ClassHandlerManager::PluginDescriptor *handler
+            = priv->handlers[className];
         QMetaMethod method = handler->handler->metaObject()->method(methodIndex);
 
         // Create the arguments
@@ -297,7 +300,7 @@ bool ClassHandlerManager::processRequest(HttpServerRequest & request,
 void ClassHandlerManager::registerHandler(ClassHandler * handler)
 {
     // Only process plugins that have not already been registered.
-    if (!handlers.contains(handler->objectName())){
+    if (!priv->handlers.contains(handler->objectName())){
         qDebug() << "Registering " << handler->objectName() << " as a handler.";
         bool canDispathTo = false;
         const QMetaObject* metaObject = handler->metaObject();
@@ -308,10 +311,12 @@ void ClassHandlerManager::registerHandler(ClassHandler * handler)
                 QList<QByteArray> parameterNames = method.parameterNames();
                 if(parameterNames[0] == QByteArray("request") && parameterNames[1] == QByteArray("response")) {
                     canDispathTo = true;
-                    ClassHandlerManager::PluginDescriptor * pluginDescriptor = handlers[handler->objectName()];
+                    ClassHandlerManager::PluginDescriptor *pluginDescriptor
+                        = priv->handlers[handler->objectName()];
                     if(pluginDescriptor == NULL) {
                         pluginDescriptor = new ClassHandlerManager::PluginDescriptor();
-                        handlers[handler->objectName()] = pluginDescriptor;
+                        priv->handlers[handler->objectName()]
+                            = pluginDescriptor;
                     }
                     pluginDescriptor->className = handler->objectName();
                     pluginDescriptor->handler = handler;
@@ -346,7 +351,7 @@ int ClassHandlerManager::selectMethod(const QString className,
     foreach (QString key, arguments.keys()) {
         parameterHash += qHash(key);
     }
-    PluginDescriptor * pluginDescriptor = handlers[className];
+    PluginDescriptor *pluginDescriptor = priv->handlers[className];
     if (pluginDescriptor->methods.contains(parameterHash)) {
         methodIndex = pluginDescriptor->methods.value(parameterHash);
     }
@@ -363,7 +368,7 @@ bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufa
 
 
     //Is the request for our context?
-    bool useContext = !m_context.isEmpty();
+    bool useContext = !priv->context.isEmpty();
     // There must be at least two path components (class & method), and 3 if a context is specified.
     int minimumPathComponents = useContext ? 3 : 2;
     if (pathComponents.length() < minimumPathComponents) {
@@ -374,9 +379,9 @@ bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufa
         qWarning() << "Request was dispatched to handler, but too many path components found.  The path components are"
                    << pathComponents;
     } else {
-        if(!useContext || m_context == pathComponents[0]) {
+        if(!useContext || priv->context == pathComponents[0]) {
             // Add the context to the request
-            request.setContext(m_context);
+            request.setContext(priv->context);
 
             int pathIndex = useContext ? 1 : 0;
             QString className = pathComponents[pathIndex++];
@@ -384,7 +389,9 @@ bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufa
             // We need to have an even number of path components left
             if((pathComponents.length() - pathIndex) % 2 == 0) {
                 // See if we have a class handler with a matching method
-                if(handlers.contains(className) && handlers[className]->methodNames.contains(methodName)) {
+                if (priv->handlers.contains(className)
+                    && (priv->handlers[className]->methodNames
+                        .contains(methodName))) {
                     // Convert the remaining path components into an argument hash
                     QHash<QString, QString> arguments;
                     while(pathIndex < pathComponents.length()){
@@ -393,7 +400,7 @@ bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufa
                     }
                     wasHandled = processRequest(request, response, className, methodName, arguments);
                 } else {
-                    if(handlers.contains(className)) {
+                    if (priv->handlers.contains(className)) {
                         qWarning() << "The class" << className << "has no method named" << methodName;
                     }
                 }
