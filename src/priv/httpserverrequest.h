@@ -87,6 +87,7 @@ struct HttpServerRequest::Priv
 
     int timeout;
     QTimer timer;
+	QString context;
 
     static const http_parser_settings httpSettingsInstance;
 };

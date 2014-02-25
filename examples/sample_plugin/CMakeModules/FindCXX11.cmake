@@ -12,15 +12,13 @@ include(CheckCXXSourceCompiles)
 include(FindPackageHandleStandardArgs)
 
 set(CXX11_FLAG_CANDIDATES
-	 #Gnu and Intel Linux and Max
+    #Gnu and Intel Linux
     "-std=c++11"
     "-std=c++0x"
     #Microsoft Visual Studio, and everything that automatically accepts C++11
     " "
     #Intel windows
     "/Qstd=c++0x"
-	 #Mac
-	 "-stdlib=libc++"
     )
 
 set(CXX11_TEST_SOURCE

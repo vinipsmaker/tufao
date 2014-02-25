@@ -25,7 +25,7 @@ const http_parser_settings HttpServerRequest::Priv::httpSettingsInstance
 
 HttpServerRequest::HttpServerRequest(QAbstractSocket &socket, QObject *parent) :
     QObject(parent),
-    priv(new Priv(this, socket))
+	 priv(new Priv(this, socket))
 {
     connect(&socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(&socket, SIGNAL(disconnected()), this, SIGNAL(close()));
@@ -390,6 +390,16 @@ int HttpServerRequest::Priv::on_message_complete(http_parser *parser)
         request->priv->whatEmit |= Priv::END;
     }
     return 0;
+}
+
+void HttpServerRequest::setContext(const QString context)
+{
+	priv->context = context;
+}
+
+QString HttpServerRequest::context(void) const
+{
+	return priv->context;
 }
 
 } // namespace Tufao
