@@ -117,10 +117,6 @@ enum class HttpResponseStatus
     NOT_EXTENDED                    = 510
 };
 
-
-extern const QString HttpResponseStatusKey;
-extern const QString JsonResponseKey;
-
 /*!
   The Tufao::HttpServerResponse is used to respond to a
   Tufao::HttpServerRequest.

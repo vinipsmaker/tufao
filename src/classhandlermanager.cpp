@@ -221,13 +221,13 @@ void ClassHandlerManager::dispatchJSONMethod(HttpServerResponse & response,
     if(wasInvoked) {
         HttpResponseStatus status = HttpResponseStatus::OK;
         QJsonDocument jsonDocument;
-        if(result.contains(HttpResponseStatusKey)) {
-            status = HttpResponseStatus(result[HttpResponseStatusKey].toInt());
+        if(result.contains(ClassHandler::HttpResponseStatusKey)) {
+            status = HttpResponseStatus(result[ClassHandler::HttpResponseStatusKey].toInt());
             //The response will either be an JsonObject, or a JsonArray
-            if(result[JsonResponseKey].isArray()) {
-                jsonDocument.setArray(result[JsonResponseKey].toArray());
+            if(result[ClassHandler::JsonResponseKey].isArray()) {
+                jsonDocument.setArray(result[ClassHandler::JsonResponseKey].toArray());
             } else {
-                jsonDocument = QJsonDocument(result[JsonResponseKey].toObject());
+                jsonDocument = QJsonDocument(result[ClassHandler::JsonResponseKey].toObject());
             }
         }
         response.writeHead(status);

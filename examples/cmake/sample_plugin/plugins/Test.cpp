@@ -65,8 +65,8 @@ QJsonObject Test::test1(Tufao::HttpServerRequest & request, Tufao::HttpServerRes
     responsePayload["Phone numbers"] = numbers;
 
     QJsonObject jsonResponse;
-    jsonResponse[Tufao::HttpResponseStatusKey] = int(Tufao::HttpResponseStatus::OK);
-    jsonResponse[Tufao::JsonResponseKey] = responsePayload;
+    jsonResponse[HttpResponseStatusKey] = int(Tufao::HttpResponseStatus::OK);
+    jsonResponse[JsonResponseKey] = responsePayload;
 
     return jsonResponse;
 

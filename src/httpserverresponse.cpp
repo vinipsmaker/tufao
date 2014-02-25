@@ -28,8 +28,6 @@ static const char lastChunk[] = "0\r\n";
 #define LAST_CHUNK lastChunk, sizeof(lastChunk) - 1
 
 namespace Tufao {
-const QString HttpResponseStatusKey = "HttpResponseStatus";
-const QString JsonResponseKey = "JsonResponse";
 
 HttpServerResponse::HttpServerResponse(QIODevice &device, Options options,
                                        QObject *parent) :

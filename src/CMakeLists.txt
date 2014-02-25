@@ -22,6 +22,7 @@ set(tufao_SRC
     urlrewriterhandler.cpp
     httpupgraderouter.cpp
 	 classhandlermanager.cpp
+    classhandler.cpp
 )
 
 add_definitions(-DTUFAO_LIBRARY

@@ -177,6 +177,8 @@ public:
     //! Get information about the plugin.
     virtual ClassHandlerPluginInfo getPluginInfo() const = 0;
 
+    static const QString HttpResponseStatusKey;
+    static const QString JsonResponseKey;
 };
 
 } // namespace Tufao
