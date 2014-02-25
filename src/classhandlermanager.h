@@ -23,12 +23,12 @@
 #ifndef TUFAO_CLASSHANDLERMANAGER_H
 #define TUFAO_CLASSHANDLERMANAGER_H
 
-#include <QObject>
-#include <QList>
-#include <QHash>
-#include <QMap>
-#include <QMultiHash>
-#include <QStringList>
+#include <QtCore/QObject>
+#include <QtCore/QList>
+#include <QtCore/QHash>
+#include <QtCore/QMap>
+#include <QtCore/QMultiHash>
+#include <QtCore/QStringList>
 
 #include "abstracthttpserverrequesthandler.h"
 

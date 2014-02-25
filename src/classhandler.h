@@ -23,7 +23,7 @@
 #ifndef TUFAO_CLASSHANDLER_H
 #define TUFAO_CLASSHANDLER_H
 
-#include <QtPlugin>
+#include <QtCore/QtPlugin>
 
 namespace Tufao {
 
