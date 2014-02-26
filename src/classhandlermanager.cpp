@@ -43,6 +43,11 @@
 namespace Tufao {
 
 // Initialize static members.
+
+/* \warning the variable is never fully initialized.
+ * `QCoreApplication::applicationDirPath()` (aka the install location), which
+ * can only be retrieved at runtime, after the QCoreApplication was constructed,
+ * is never present in this list. */
 QStringList ClassHandlerManager::pluginLocations = []() {
     QStringList ret;
 
@@ -63,12 +68,6 @@ QStringList ClassHandlerManager::pluginLocations = []() {
         if(testDir.exists()){
             ret.append(testDir.absolutePath());
         }
-    }
-
-    // Finally, the install location
-    QFileInfo installDir(QCoreApplication::applicationDirPath());
-    if(installDir.isDir()) {
-        ret.append(installDir.absolutePath());
     }
 
     return ret;
@@ -95,16 +94,26 @@ ClassHandlerManager::ClassHandlerManager(const QString &pluginID,
     // Then list dynamic libraries from the plugins/ directory
     QStringList contents;
     // retrieve a list of all dynamic libraries from the search paths
-    foreach (QString path, pluginLocations) {
-        QFileInfo thisPath(QDir(path).filePath("plugins"));
-        if(thisPath.isDir()){
-            QDir thisDir(thisPath.absoluteFilePath());
-            qDebug() << "Search " << thisPath.absolutePath() << " for plugins.";
-            foreach (const QString entry, thisDir.entryList()) {
-                if (QLibrary::isLibrary(entry))
-                    contents.append(thisDir.filePath(entry));
+    {
+        auto retrieveDynlib = [&contents](const QString &path) {
+            QFileInfo thisPath(QDir(path).filePath("plugins"));
+            if (thisPath.isDir()) {
+                QDir thisDir(thisPath.absoluteFilePath());
+                qDebug() << "Search " << thisPath.absolutePath()
+                         << " for plugins.";
+                for (const QString &entry: thisDir.entryList()) {
+                    if (QLibrary::isLibrary(entry))
+                        contents.append(thisDir.filePath(entry));
+                }
             }
-        }
+        };
+
+        for (const QString &path: pluginLocations)
+            retrieveDynlib(path);
+
+        QFileInfo installDir(QCoreApplication::applicationDirPath());
+        if (installDir.isDir())
+            retrieveDynlib(installDir.absolutePath());
     }
 
     // Check each dynamic library to see if it is a plugin
