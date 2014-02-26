@@ -369,7 +369,7 @@ bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufa
     const QString originalPath = originalUrl.path();
 
     if (!priv->context.isEmpty()) {
-        if (!(originalPath.size()
+        if (!(originalPath.size() > priv->context.size()
               && originalPath.startsWith(priv->context)
               && originalPath[priv->context.size()] == '/')) {
             return false;
