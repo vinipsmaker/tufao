@@ -29,6 +29,7 @@
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonValue>
+#include <QUrl>
 
 /* ************************************************************************** */
 /* Object lifecycle                                                           */
