@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	QCoreApplication qtApplication(argc, argv);
 	Tufao::HttpServer server;
 
-	Tufao::ClassHandlerManager classHandler("tufao.Test/1.0", "context");
+	Tufao::ClassHandlerManager classHandler("tufao.Test/1.0", "/context");
 
 	Tufao::HttpServerRequestRouter router{
 		{QRegularExpression{"^/$"}, Tufao::UrlRewriterHandler::handler(QUrl("/index.html"))},

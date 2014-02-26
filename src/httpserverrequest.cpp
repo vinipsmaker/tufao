@@ -392,14 +392,4 @@ int HttpServerRequest::Priv::on_message_complete(http_parser *parser)
     return 0;
 }
 
-void HttpServerRequest::setContext(const QString context)
-{
-	priv->context = context;
-}
-
-QString HttpServerRequest::context(void) const
-{
-	return priv->context;
-}
-
 } // namespace Tufao

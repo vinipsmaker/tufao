@@ -74,9 +74,10 @@ QJsonObject Test::test1(Tufao::HttpServerRequest & request, Tufao::HttpServerRes
 
 void Test::test2(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response, QString chapter, int pageNumber)
 {
-	if(!request.context().isEmpty()){
-		qDebug() << "The context for this plugin is: " << request.context();
-	}
+    qDebug() << "I don't know if my view from the environment is the same,"
+        " because namespaces transparently override what I can see.";
+    qDebug() << "I think I'm handling this url: " << request.url();
+
 	response.writeHead(Tufao::HttpResponseStatus::OK);
 	response.headers().replace("Content-Type", "text/html; charset=utf-8");
 	QString html("<html><head><title>Plugin Test</title></head><body>"
@@ -89,9 +90,10 @@ void Test::test2(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse &
 
 void Test::test3(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response)
 {
-	if(!request.context().isEmpty()){
-		qDebug() << "The context for this plugin is: " << request.context();
-	}
+    qDebug() << "I don't know if my view from the environment is the same,"
+        " because namespaces transparently override what I can see.";
+    qDebug() << "I think I'm handling this url: " << request.url();
+
 	response.writeHead(Tufao::HttpResponseStatus::OK);
 	response.headers().replace("Content-Type", "text/html; charset=utf-8");
 	response << "<html><head><title>Plugin Test</title></head><body>"
@@ -101,9 +103,10 @@ void Test::test3(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse &
 
 void Test::test4(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response, QString chapter)
 {
-	if(!request.context().isEmpty()){
-		qDebug() << "The context for this plugin is: " << request.context();
-	}
+    qDebug() << "I don't know if my view from the environment is the same,"
+        " because namespaces transparently override what I can see.";
+    qDebug() << "I think I'm handling this url: " << request.url();
+
 	response.writeHead(Tufao::HttpResponseStatus::OK);
 	response.headers().replace("Content-Type", "text/html; charset=utf-8");
 	QString html("<html><head><title>Plugin Test</title></head><body>"
@@ -115,9 +118,10 @@ void Test::test4(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse &
 
 void Test::test5(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response, QString chapter, QString pageNumber)
 {
-	if(!request.context().isEmpty()){
-		qDebug() << "The context for this plugin is: " << request.context();
-	}
+    qDebug() << "I don't know if my view from the environment is the same,"
+        " because namespaces transparently override what I can see.";
+    qDebug() << "I think I'm handling this url: " << request.url();
+
 	qDebug() << QString("==> %1,%2").arg(chapter).arg(pageNumber);
 	response.writeHead(Tufao::HttpResponseStatus::OK);
 	response.headers().replace("Content-Type", "text/html; charset=utf-8");
@@ -130,9 +134,10 @@ void Test::test5(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse &
 
 void Test::test6(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response, int chapter, int pageNumber)
 {
-	if(!request.context().isEmpty()){
-		qDebug() << "The context for this plugin is: " << request.context();
-	}
+    qDebug() << "I don't know if my view from the environment is the same,"
+        " because namespaces transparently override what I can see.";
+    qDebug() << "I think I'm handling this url: " << request.url();
+
 	qDebug() << QString("==> %1,%2").arg(chapter).arg(pageNumber);
 	response.writeHead(Tufao::HttpResponseStatus::OK);
 	response.headers().replace("Content-Type", "text/html; charset=utf-8");

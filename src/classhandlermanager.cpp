@@ -363,55 +363,91 @@ int ClassHandlerManager::selectMethod(const QString className,
 /* ************************************************************************** */
 bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response)
 {
-    bool wasHandled = false;
-    QStringList pathComponents = request.url().path().split("/", QString::SkipEmptyParts);
+    /* Apply context and resume request dispatching or abort if request has
+       different context */
+    const QUrl originalUrl = request.url();
+    const QString originalPath = originalUrl.path();
 
-
-    //Is the request for our context?
-    bool useContext = !priv->context.isEmpty();
-    // There must be at least two path components (class & method), and 3 if a context is specified.
-    int minimumPathComponents = useContext ? 3 : 2;
-    if (pathComponents.length() < minimumPathComponents) {
-        qWarning() << "Request was dispatched to handler, but too few path components found.  The path components are"
-                   << pathComponents;
-    } else if(pathComponents.length() > minimumPathComponents  + 16) {
-        // We also can not have too many arguments; 16 is max, as that is 8 argumetns plus request & response
-        qWarning() << "Request was dispatched to handler, but too many path components found.  The path components are"
-                   << pathComponents;
-    } else {
-        if(!useContext || priv->context == pathComponents[0]) {
-            // Add the context to the request
-            request.setContext(priv->context);
-
-            int pathIndex = useContext ? 1 : 0;
-            QString className = pathComponents[pathIndex++];
-            QString methodName = pathComponents[pathIndex++];
-            // We need to have an even number of path components left
-            if((pathComponents.length() - pathIndex) % 2 == 0) {
-                // See if we have a class handler with a matching method
-                if (priv->handlers.contains(className)
-                    && (priv->handlers[className]->methodNames
-                        .contains(methodName))) {
-                    // Convert the remaining path components into an argument hash
-                    QHash<QString, QString> arguments;
-                    while(pathIndex < pathComponents.length()){
-                        arguments[pathComponents[pathIndex]] = pathComponents[pathIndex + 1];
-                        pathIndex += 2;
-                    }
-                    wasHandled = processRequest(request, response, className, methodName, arguments);
-                } else {
-                    if (priv->handlers.contains(className)) {
-                        qWarning() << "The class" << className << "has no method named" << methodName;
-                    }
-                }
-            } else {
-                qWarning() << "Can not dispath as an odd number of parameter components were supplied.";
-            }
-
+    if (!priv->context.isEmpty()) {
+        if (!(originalPath.size()
+              && originalPath.startsWith(priv->context)
+              && originalPath[priv->context.size()] == '/')) {
+            return false;
         }
     }
 
-    return wasHandled;
+    const QString namespacedPath = [&originalPath,this]() {
+        return originalPath.mid(priv->context.size());
+    }();
+
+    /* The user MUST NOT view the original url. This design ease the
+       implementation of nested handlers.
+
+       request.setUrl(namespacedUrl) MUST be called before pass the request to
+       the user and the previous url (originalUrl) MUST be restored if the
+       dispatch failed and we'll return the request to HttpServerRequestRouter.
+     */
+    const QUrl namespacedUrl = [&originalUrl,&namespacedPath]() {
+        QUrl ret = originalUrl;
+        ret.setPath(namespacedPath);
+        return ret;
+    }();
+
+    QStringList pathComponents = namespacedPath.split("/", QString::SkipEmptyParts);
+
+
+    // There must be at least two path components (class & method), and 3 if a
+    // context is specified.
+    const int minimumPathComponents = 2;
+    if (pathComponents.length() < minimumPathComponents) {
+        qWarning() << "Request was dispatched to handler, but too few path"
+            " components found.  The path components are"
+                   << pathComponents;
+        return false;
+    }
+
+    if (pathComponents.length() > minimumPathComponents  + 16) {
+        // We also can not have too many arguments; 16 is max, as that is 8
+        // argumetns plus request & response
+        qWarning() << "Request was dispatched to handler, but too many path"
+            " components found.  The path components are"
+                   << pathComponents;
+        return false;
+    }
+
+    int pathIndex = 0;
+    QString className = pathComponents[pathIndex++];
+    QString methodName = pathComponents[pathIndex++];
+    // We need to have an even number of path components left
+    if ((pathComponents.length() - pathIndex) % 2 != 0) {
+        qWarning() << "Can not dispath as an odd number of parameter components"
+            " were supplied.";
+        return false;
+    }
+
+    // See if we have a class handler with a matching method
+    if (!(priv->handlers.contains(className)
+          && priv->handlers[className]->methodNames.contains(methodName))) {
+        if (priv->handlers.contains(className)) {
+            qWarning() << "The class" << className << "has no method named"
+                       << methodName;
+        }
+    }
+
+    // Convert the remaining path components into an argument hash
+    QHash<QString, QString> arguments;
+    while(pathIndex < pathComponents.length()){
+        arguments[pathComponents[pathIndex]] = pathComponents[pathIndex + 1];
+        pathIndex += 2;
+    }
+
+    request.setUrl(namespacedUrl);
+    if (!processRequest(request, response, className, methodName, arguments)) {
+        request.setUrl(originalUrl);
+        return false;
+    }
+
+    return true;
 }
 
 } // namespace Tufao
