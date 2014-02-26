@@ -111,7 +111,6 @@ public slots:
 private:
     struct PluginDescriptor
     {
-        friend class ClassHandlerManager;
         PluginDescriptor(){;}
         //! the refernece to the handler itself.
         ClassHandler * handler;
