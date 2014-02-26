@@ -25,9 +25,9 @@ namespace Tufao {
 
 struct ClassHandlerManager::Priv
 {
-    Priv(const QString &pluginID, const QString &context) :
+    Priv(const QString &pluginID, const QString &urlNamespace) :
         pluginID(pluginID),
-        context(context)
+        urlNamespace(urlNamespace)
     {}
 
     //! Maps a class name or pluginID to the PluginDescriptor for the plugin.
@@ -35,7 +35,7 @@ struct ClassHandlerManager::Priv
     //! The IID of the plugins this manager will load.  May be empty.
     QString pluginID;
     //! The contect - first path component of the URI - this manager is responsible for.  May be empty.
-    QString context;
+    QString urlNamespace;
 };
 
 } // namespace Tufao

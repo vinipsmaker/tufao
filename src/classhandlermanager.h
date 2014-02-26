@@ -41,10 +41,18 @@ class ClassHandler;
  *
  * <p>This class is used to mange one or more ClassHandler plugins.  To use this class, you simply instantiate and
  * register with the HttpServerRequestRouter.  You can specify that an instane of this class is only to manager
- * plugins with a particular IID, and you can also assign a context (the first path component of a URL).</p>
+ * plugins with a particular IID, and you can also assign a urlNamespace (the
+ * path's prefix of a URL).</p>
  *
- * <p>If you specify a context at creation time, only URL's with that string as the first path component
- * (case-sensitive) will recive dispatches.</p>
+ * <p>If you specify a urlNamespace at creation time, only URL's whose path have
+ * that string as the prefix (case-sensitive) will receive dispatches. It's
+ * important to use a string that begins with "/" as the urlNamespace.</p>
+ *
+ * <p>Also, requests whose url's path start with urlNamespace, but have some
+ * character different than '/' following are not considered to be within the
+ * same urlNamespace and will be ignored. This means that if you choose
+ * "/forum" as urlNamespace, requests to "/forumb" will be ignored. You're
+ * safe.</p>
  *
  * <p>Static plugins will be registered be the first instance of this class created, regardless of if they specify an
  * IID (as IID is not available at runtime for static plugins).  Otehrwise, only plugins that have a matching IID
@@ -52,9 +60,10 @@ class ClassHandler;
  *
  * <p>To have a single instance load and regiser all plugins, simply leave the pluginID blank.<p>
  *
- * <p>If context is used, in your ClassHandler instances you will likely need to pass the value of the context out into
- * your response so that things like URL's in HTML or Ajaz calls can prepend the context to their paths; otherwise
- * the calls will fail.</p>
+ * <p>If urlNamespace is used, in your ClassHandler instances you will likely
+ * need to pass the value of the urlNamespace out into your response so that
+ * things like URL's in HTML or Ajaz calls can prepend the urlNamespace to their
+ * paths; otherwise the calls will fail.</p>
  *
  * \include ClassHandlerManager
  * \since 1.1
@@ -62,19 +71,20 @@ class ClassHandler;
 class ClassHandlerManager : public QObject, public AbstractHttpServerRequestHandler
 {
     Q_OBJECT
-    Q_PROPERTY(QString context READ context)
+    Q_PROPERTY(QString urlNamespace READ urlNamespace)
 public:
     /*!
     * \brief Constructs a ClassHandlerManager object.
     *
     * \param pluginID if provided, this instance will only load plugins whose IID matches.
-    * \param context if provided, this is the context (first path component of the URI) for the plugins managed by this
+    * \param urlNamespace if provided, this is the urlNamespace (requests whose
+    *   url's path start with urlNamespace) for the plugins managed by this
     * instance.  Before dispatching a request to one of the plugins, the cotext is checked, and only if it matches does
     * the request get dispatched.
     * \param parent is passed to the QObject constructor.
     */
     explicit ClassHandlerManager(const QString &pluginID = QString{},
-                                 const QString &context = QString{},
+                                 const QString &urlNamespace = QString{},
                                  QObject * parent = 0);
 
     /*!
@@ -82,7 +92,7 @@ public:
     */
     virtual ~ClassHandlerManager();
 
-    QString context(void) const;
+    QString urlNamespace() const;
 
     /*!
     * \brief Adds a non-standard path to the search paths.

@@ -49,10 +49,10 @@ QStringList ClassHandlerManager::pluginLocations;
 /* Object lifecycle                                                           */
 /* ************************************************************************** */
 ClassHandlerManager::ClassHandlerManager(const QString &pluginID,
-                                         const QString &context,
+                                         const QString &urlNamespace,
                                          QObject * parent) :
     QObject(parent),
-    priv{new Priv{pluginID, context}}
+    priv{new Priv{pluginID, urlNamespace}}
 {
     // Set up the search locations
     if(pluginLocations.isEmpty()) {
@@ -162,9 +162,9 @@ ClassHandlerManager::~ClassHandlerManager()
 /* ************************************************************************** */
 /* Accessors & mutators                                                       */
 /* ************************************************************************** */
-QString ClassHandlerManager::context(void) const
+QString ClassHandlerManager::urlNamespace() const
 {
-    return priv->context;
+    return priv->urlNamespace;
 }
 
 /* ************************************************************************** */
@@ -363,21 +363,21 @@ int ClassHandlerManager::selectMethod(const QString className,
 /* ************************************************************************** */
 bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufao::HttpServerResponse & response)
 {
-    /* Apply context and resume request dispatching or abort if request has
-       different context */
+    /* Apply urlNamespace and resume request dispatching or abort if request has
+       a different urlNamespace */
     const QUrl originalUrl = request.url();
     const QString originalPath = originalUrl.path();
 
-    if (!priv->context.isEmpty()) {
-        if (!(originalPath.size() > priv->context.size()
-              && originalPath.startsWith(priv->context)
-              && originalPath[priv->context.size()] == '/')) {
+    if (!priv->urlNamespace.isEmpty()) {
+        if (!(originalPath.size() > priv->urlNamespace.size()
+              && originalPath.startsWith(priv->urlNamespace)
+              && originalPath[priv->urlNamespace.size()] == '/')) {
             return false;
         }
     }
 
     const QString namespacedPath = [&originalPath,this]() {
-        return originalPath.mid(priv->context.size());
+        return originalPath.mid(priv->urlNamespace.size());
     }();
 
     /* The user MUST NOT view the original url. This design ease the
@@ -396,8 +396,7 @@ bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufa
     QStringList pathComponents = namespacedPath.split("/", QString::SkipEmptyParts);
 
 
-    // There must be at least two path components (class & method), and 3 if a
-    // context is specified.
+    // There must be at least two path components (class & method)
     const int minimumPathComponents = 2;
     if (pathComponents.length() < minimumPathComponents) {
         qWarning() << "Request was dispatched to handler, but too few path"
