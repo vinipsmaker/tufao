@@ -95,15 +95,6 @@ ClassHandlerManager::ClassHandlerManager(const QString &pluginID,
 ///
     // Then list dynamic libraries from the plugins/ directory
     QStringList contents;
-#ifdef Q_OS_WIN
-    QString pluginExtension = ".dll";
-#else
-#ifdef Q_OS_MAC
-    QString pluginExtension = ".dylib";
-#else
-    QString pluginExtension = ".so";
-#endif
-#endif
     // retrieve a list of all dynamic libraries from the search paths
     foreach (QString path, pluginLocations) {
         QFileInfo thisPath(QDir(path).filePath("plugins"));
@@ -111,9 +102,8 @@ ClassHandlerManager::ClassHandlerManager(const QString &pluginID,
             QDir thisDir(thisPath.absoluteFilePath());
             qDebug() << "Search " << thisPath.absolutePath() << " for plugins.";
             foreach (const QString entry, thisDir.entryList()) {
-                if (!(entry == "..") && !(entry == ".") && entry.endsWith(pluginExtension)){
+                if (QLibrary::isLibrary(entry))
                     contents.append(thisDir.filePath(entry));
-                }
             }
         }
     }
