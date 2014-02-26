@@ -43,7 +43,36 @@
 namespace Tufao {
 
 // Initialize static members.
-QStringList ClassHandlerManager::pluginLocations;
+QStringList ClassHandlerManager::pluginLocations = []() {
+    QStringList ret;
+
+    // Add standard locations to pluginLocations
+    // First, the typical app config dir's
+#ifdef Q_OS_WIN
+    // Code can be added here, but, for the time being, I'm leaving it empty.
+#elif defined(Q_OS_MAC)
+    ret.append(QDir::homePath() + "/Library/Application Support/Tufao");
+    ret.append("/Library/Application Support/Tufao");
+#else
+    ret.append(QDir::homePath() + "/.tufao");
+#endif
+
+    // The standard library locations
+    for (const QString &libraryPath: QCoreApplication::libraryPaths()) {
+        QDir testDir(libraryPath + QDir::separator() + "Tufao");
+        if(testDir.exists()){
+            ret.append(testDir.absolutePath());
+        }
+    }
+
+    // Finally, the install location
+    QFileInfo installDir(QCoreApplication::applicationDirPath());
+    if(installDir.isDir()) {
+        ret.append(installDir.absolutePath());
+    }
+
+    return ret;
+}();
 
 /* ************************************************************************** */
 /* Object lifecycle                                                           */
@@ -54,36 +83,6 @@ ClassHandlerManager::ClassHandlerManager(const QString &pluginID,
     QObject(parent),
     priv{new Priv{pluginID, urlNamespace}}
 {
-    // Set up the search locations
-    if(pluginLocations.isEmpty()) {
-        // Add standard locations to pluginLocations
-        // First, the typical app config dir's
-#ifdef Q_OS_WIN
-        // Code can be added here, but, for the time being, I'm leaving it empty.
-#elif defined(Q_OS_MAC)
-        pluginLocations.append(QDir::homePath() + "/Library/Application Support/Tufao");
-        pluginLocations.append("/Library/Application Support/Tufao");
-#else
-        pluginLocations.append(QDir::homePath() + "/.tufao");
-#endif
-
-        // The standard library locations
-        foreach (QString libraryPath, QCoreApplication::libraryPaths()) {
-            QDir testDir(libraryPath + QDir::separator() + "Tufao");
-            if(testDir.exists()){
-                pluginLocations.append(testDir.absolutePath());
-            }
-        }
-
-        // Finally, the install location
-        QFileInfo installDir(QCoreApplication::applicationDirPath());
-        if(installDir.isDir()) {
-            pluginLocations.append(installDir.absolutePath());
-        }
-
-        qDebug() << "pluginLocations:" << pluginLocations;
-    }
-
     // Now load the plugin of interest
     // First list all static plugins.
     foreach (QObject * pluginInterface, QPluginLoader::staticInstances()){
