@@ -25,6 +25,8 @@
 
 #include <QtCore/QtPlugin>
 
+#define TUFAO_CLASSHANDLER_IID "Tufao::ClassHandler/1.0"
+
 namespace Tufao {
 
 //! @struct ClassHandlerPluginInfo
@@ -183,6 +185,6 @@ public:
 
 } // namespace Tufao
 
-Q_DECLARE_INTERFACE(Tufao::ClassHandler, "tufao.ClassHandler/1.0")
+Q_DECLARE_INTERFACE(Tufao::ClassHandler, TUFAO_CLASSHANDLER_IID)
 
 #endif // TUFAO_CLASSHANDLER_H
