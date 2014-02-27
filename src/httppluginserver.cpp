@@ -30,6 +30,8 @@ HttpPluginServer::HttpPluginServer(QObject *parent):
 {
     connect(&priv->configFile.watcher(), &QFileSystemWatcher::fileChanged,
             this, &HttpPluginServer::onConfigFileChanged);
+    connect(&priv->configFile.watcher(),&QFileSystemWatcher::directoryChanged,
+            this, &HttpPluginServer::onConfigDirChanged);
 }
 
 HttpPluginServer::HttpPluginServer(const QString &configFile, QObject *parent):
@@ -73,10 +75,26 @@ bool HttpPluginServer::handleRequest(HttpServerRequest &request,
 void HttpPluginServer::onConfigFileChanged()
 {
     if (!QFileInfo(priv->configFile.file()).exists()) {
-        clear();
+        if (priv->configContent.monitoringBehaviour()
+            == ConfigContent::MonitoringBehaviour::BASIC ) {
+            clear();
+        } else {
+            QString file = priv->configFile.file();
+            clear();
+            priv->configFile.setDir(file);
+        }
         return;
     }
 
+    reloadConfig();
+}
+
+void HttpPluginServer::onConfigDirChanged()
+{
+    if (!QFileInfo(priv->configFile.file()).exists())
+        return;
+
+    priv->configFile.setFile(priv->configFile.file());
     reloadConfig();
 }
 

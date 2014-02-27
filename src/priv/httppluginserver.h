@@ -62,6 +62,15 @@ public:
         return true;
     }
 
+    bool setDir(const QString &file/*not dir*/)
+    {
+        if (!setFile(QFileInfo(file).path()))
+            return false;
+
+        file_ = file;
+        return true;
+    }
+
     QString file() const
     {
         return file_;
@@ -81,6 +90,12 @@ private:
 class ConfigContent
 {
 public:
+    enum class MonitoringBehaviour
+    {
+        BASIC,
+        FULL
+    };
+
     struct Plugin
     {
         Plugin() = default;
@@ -140,6 +155,9 @@ public:
         plugins_.clear();
         requests_.clear();
 
+        monitoringBehaviour_ = doc.object()["version"].toDouble() == 1.
+            ? MonitoringBehaviour::FULL : MonitoringBehaviour::BASIC;
+
         QHash<QString, Plugin> plugins;
 
         for (const auto &element: doc.object()["plugins"].toArray()) {
@@ -182,6 +200,14 @@ public:
         return true;
     }
 
+    /*!
+     * This property is special and isn't cleared through clear().
+     */
+    MonitoringBehaviour monitoringBehaviour() const
+    {
+        return monitoringBehaviour_;
+    }
+
     // The list is sorted by loading order
     const QList<Plugin> &plugins() const
     {
@@ -218,8 +244,10 @@ private:
         // >> check version
         {
             auto version = root["version"];
-            if (!version.isDouble() || version.toDouble() != 0.)
+            if (!version.isDouble()
+                || (version.toDouble() != 0. && version.toDouble() != 1.)) {
                 return false;
+            }
         }
 
         // >> check plugins
@@ -339,6 +367,7 @@ private:
         return true;
     }
 
+    MonitoringBehaviour monitoringBehaviour_;
     QList<Plugin> plugins_;
     QList<Request> requests_;
 };

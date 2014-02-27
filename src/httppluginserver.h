@@ -124,6 +124,30 @@ public:
       6. You remove the config file.
        1. HttpPluginServer object come back to the default-constructed state.
 
+          <h2>version: 0</h2>
+
+          If the last config had "version: 0", then it means no more monitoring
+          either (this is what default-constructed state means).
+
+          <h2>version: 1</h2>
+
+          If the last config had "version: 1", then HttpPluginServer will (after
+          the cleanup) start to monitor the containing folder, waiting until a
+          config file with the same name is available again to resume its
+          operation.
+
+          \note
+          A later call to HttpPluginServer::setConfig can be used to stop the
+          monitoring.
+
+          &nbsp;
+
+          \note
+          If the containing dir is also erased, HttpPluginServer can do nothing
+          and the monitoring will stop.
+
+      &nbsp;
+
       The file format
       ===============
 
@@ -140,6 +164,10 @@ public:
       - _version_: It must indicate the version of the configuration file. The
         list of acceptable values are:
        - _0_: Version recognizable by Tufão 1.x, starting from 1.0
+       - _1_: Version recognizable by Tufão 1.x, starting from 1.2. The only
+         difference is the autoreloading behaviour. If you delete the config
+         file, Tufão will start to monitor the containing folder and resume the
+         normal operation as soon as the file is added to the folder again.
       - _plugins_: This attribute stores metadata about the plugins. All plugins
         specified here will be loaded, even if they aren't used in the request
         router. The value of this field must be an array and each element of
@@ -178,7 +206,7 @@ public:
       An example follows:
 
           {
-              version: 0,
+              version: 1,
               plugins: [
                   {
                       name: "home",
@@ -263,6 +291,7 @@ public slots:
 private:
     void changeConfig(const QString &file);
     void onConfigFileChanged();
+    void onConfigDirChanged();
     void clear();
     void reloadConfig();
 
