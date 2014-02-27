@@ -161,7 +161,7 @@ struct ClassHandlerPluginInfo
  *
  *
  * \include ClassHandler
- * \since 1.1
+ * \since 1.2
  */
 
 

@@ -66,7 +66,7 @@ class ClassHandler;
  * paths; otherwise the calls will fail.</p>
  *
  * \include ClassHandlerManager
- * \since 1.1
+ * \since 1.2
  */
 class ClassHandlerManager : public QObject, public AbstractHttpServerRequestHandler
 {
