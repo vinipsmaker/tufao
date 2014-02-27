@@ -171,6 +171,15 @@ You can also see Tufão documentation integrated in QtAssistant.
 
 ## NEWS
 
+Version 1.2
+  * New class to handle REST api introduced (thanks to Timothy Reaves)
+    * The class has its own plugin system, partly incompatible with Tufão's
+      default
+  * Tufão's plugin system improved to better track files deletion.
+    * It requires no code changes, but you still need to do a one-line change
+      to the config file, because I was worried about backwards compatibility.
+    * See HttpPluginServer::setConfig for details
+
 Version 1.1
 
   * Add ability to ignore a set of SSL errors in WebSocket
