@@ -21,6 +21,8 @@ set(tufao_SRC
     notfoundhandler.cpp
     urlrewriterhandler.cpp
     httpupgraderouter.cpp
+	 classhandlermanager.cpp
+    classhandler.cpp
 )
 
 add_definitions(-DTUFAO_LIBRARY
