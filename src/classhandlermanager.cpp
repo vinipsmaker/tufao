@@ -374,9 +374,9 @@ bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufa
     const QString originalPath = originalUrl.path();
 
     if (!priv->urlNamespace.isEmpty()) {
-        if (!(originalPath.size() > priv->urlNamespace.size()
-              && originalPath.startsWith(priv->urlNamespace)
-              && originalPath[priv->urlNamespace.size()] == '/')) {
+        if (originalPath.size() <= priv->urlNamespace.size()
+            || !originalPath.startsWith(priv->urlNamespace)
+            || originalPath[priv->urlNamespace.size()] != '/') {
             return false;
         }
     }
