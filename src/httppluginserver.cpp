@@ -86,8 +86,10 @@ inline void HttpPluginServer::clear()
     priv->configContent.clear();
     priv->router.clear();
 
-    for (const auto &p: priv->plugins)
+    for (const auto &p: priv->plugins) {
+        p->unload();
         p->deleteLater();
+    }
 
     priv->plugins.clear();
 }
@@ -108,29 +110,36 @@ inline void HttpPluginServer::reloadConfig()
     // Reset the request handlers
     priv->router.clear();
 
-    for (const auto &p: priv->plugins)
+    for (const auto &p: priv->plugins) {
+        p->unload();
         p->deleteLater();
+    }
 
     priv->plugins.clear();
 
     // Load the new config
     for (const auto &p: priv->configContent.plugins()) {
         QPluginLoader *loader = new QPluginLoader(p.path, this);
-        auto warn = [&p,loader]() {
+        auto warn = [&p]() {
             qWarning("Tufao::HttpPluginServer: Couldn't load plugin"
                      " \"%s\"", qPrintable(p.path));
+        };
+        auto warnAndClear = [&warn,loader]() {
+            warn();
+            loader->unload();
             loader->deleteLater();
         };
 
         if (!loader->load()) {
             warn();
+            loader->deleteLater();
             continue;
         }
 
         auto plugin = qobject_cast<HttpServerPlugin*>(loader->instance());
 
         if (!plugin) {
-            warn();
+            warnAndClear();
             continue;
         }
 
@@ -149,7 +158,7 @@ inline void HttpPluginServer::reloadConfig()
             }
 
             if (!ok) {
-                warn();
+                warnAndClear();
                 continue;
             }
 
