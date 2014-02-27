@@ -36,6 +36,8 @@
 #include <QtCore/QString>
 #include <QtCore/QUrl>
 #include <QtCore/QVariant>
+#include <QtCore/QMutex>
+#include <QtCore/QMutexLocker>
 
 #include "httpserverrequest.h"
 #include "headers.h"
@@ -72,6 +74,7 @@ QStringList ClassHandlerManager::pluginLocations = []() {
 
     return ret;
 }();
+QMutex pluginLocationsMutex;
 
 /* ************************************************************************** */
 /* Object lifecycle                                                           */
@@ -95,6 +98,8 @@ ClassHandlerManager::ClassHandlerManager(const QString &pluginID,
     QStringList contents;
     // retrieve a list of all dynamic libraries from the search paths
     {
+        QMutexLocker guard(&pluginLocationsMutex);
+
         auto retrieveDynlib = [&contents](const QString &path) {
             QFileInfo thisPath(QDir(path).filePath("plugins"));
             if (thisPath.isDir()) {
@@ -170,6 +175,8 @@ QString ClassHandlerManager::urlNamespace() const
 /* ************************************************************************** */
 void ClassHandlerManager::addPluginLocation(const QString location)
 {
+    QMutexLocker guard(&pluginLocationsMutex);
+
     if(!pluginLocations.contains(location)){
         pluginLocations.append(location);
     }
