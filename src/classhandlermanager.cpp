@@ -429,13 +429,14 @@ bool ClassHandlerManager::handleRequest(Tufao::HttpServerRequest & request, Tufa
         return false;
     }
 
-    // See if we have a class handler with a matching method
-    if (!(priv->handlers.contains(className)
-          && priv->handlers[className]->methodNames.contains(methodName))) {
-        if (priv->handlers.contains(className)) {
-            qWarning() << "The class" << className << "has no method named"
-                       << methodName;
-        }
+    // See if we have a class handler
+    if (!priv->handlers.contains(className))
+        return false;
+
+    // See if we have a matching method
+    if (!priv->handlers[className]->methodNames.contains(methodName)) {
+        qWarning() << "The class" << className << "has no method named"
+                   << methodName;
     }
 
     // Convert the remaining path components into an argument hash
