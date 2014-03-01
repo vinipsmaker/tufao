@@ -87,6 +87,9 @@ public:
       HttpPluginServer will watch the file for changes and reload its config
       when the file changes.
 
+      \warning
+      HttpPluginServer can't monitor file links correctly.
+
       \note
       The old config is cleared even if it fails to set the new config.
 
