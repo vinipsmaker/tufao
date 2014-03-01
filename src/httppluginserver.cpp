@@ -103,6 +103,7 @@ inline void HttpPluginServer::clear()
     priv->configFile.clear();
     priv->configContent.clear();
     priv->router.clear();
+    priv->handlers.clear();
 
     for (const auto &p: priv->plugins) {
         p->unload();
@@ -127,6 +128,7 @@ inline void HttpPluginServer::reloadConfig()
 
     // Reset the request handlers
     priv->router.clear();
+    priv->handlers.clear();
 
     for (const auto &p: priv->plugins) {
         p->unload();
