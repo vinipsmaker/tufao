@@ -15,8 +15,6 @@ system (signals & slots). It features:
   * Flexible request router
   * Static file server with support for conditional requests, partial download
     and automatic mime detection
-  * Plugin-based server to allow change the running code without restart the
-    application
   * Flexible and secure session support
   * [QtCreator's plugin](https://github.com/vinipsmaker/tufao-qtcreatorplugin)
     to allow create new applications rapidly

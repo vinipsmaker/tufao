@@ -11,7 +11,6 @@ set(tufao_SRC
     abstractmessagesocket.cpp
     httpfileserver.cpp
     httpserverrequestrouter.cpp
-    httppluginserver.cpp
     headers.cpp
     priv/rfc1123.cpp
     priv/rfc1036.cpp
@@ -21,8 +20,6 @@ set(tufao_SRC
     notfoundhandler.cpp
     urlrewriterhandler.cpp
     httpupgraderouter.cpp
-	 classhandlermanager.cpp
-    classhandler.cpp
 )
 
 add_definitions(-DTUFAO_LIBRARY

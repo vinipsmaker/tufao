@@ -6,7 +6,6 @@ set(tests
     ibytearray
     headers
     httpfileserver
-    httppluginserver
     websocket
     sessionsettings
     httpserverrequestrouter

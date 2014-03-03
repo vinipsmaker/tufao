@@ -39,8 +39,6 @@
     - Flexible request router
     - Static file server with support for conditional requests, partial download
       and automatic mime detection
-    - Plugin-based server to allow change the running code without restart the
-      application
     - Flexible and secure session support
     - QtCreator's plugin to allow create new applications rapidly
     - Timeout support
@@ -124,7 +122,7 @@
 
   \includelineno applicationdefaultmain.cpp
 
-  A main file with 32 lines of code. It's a bunch of code, but they'll prove
+  A main file with 28 lines of code. It's a bunch of code, but they'll prove
   their value.
 
   Tufão provides a web framework and has its own HTTP server (based on Ryan
@@ -139,9 +137,9 @@
   But you need to promisse that you'll use Tufão facilities and read the
   documentation.
 
-  To use the Tufão HTTP server, we instantiate, as show in the line 24, a
-  Tufao::HttpServer, put it to listen on port 8080, as show in the line 29, and
-  start a event loop, as show in the line 31. This server will expose all we
+  To use the Tufão HTTP server, we instantiate, as show in the line 20, a
+  Tufao::HttpServer, put it to listen on port 8080, as show in the line 25, and
+  start a event loop, as show in the line 27. This server will expose all we
   need to this introduction.
 
   The Tufao::HttpServer will emit the Tufao::HttpServer::requestReady signal
@@ -151,7 +149,7 @@
 
   > [Divide and conquer](https://en.wikipedia.org/wiki/Divide_and_conquer)
 
-  What I mean is that every request **IS** differente and every on needs a
+  What I mean is that every request **IS** different and every one needs a
   different handler. The convention is to serve different content under
   different paths. This is what we'll do.
 
@@ -163,21 +161,13 @@
   handlers and mapped paths to them. If a request comes to a handler unable to
   handle it, the request is delegated to another handler in the chain.
 
-  In the code, we have one router (line 18) and three handlers (lines 16/19, 20
-  and 21). In line 26-27, we bind the router and the server. The handlers, in
-  order, are:
+  In the code, we have one router (line 15) and two handlers (lines 16 and 17).
+  In line 22-23, we bind the router and the server. The handlers, in order, are:
 
-    - Tufao::HttpPluginServer: Uses plugins to handle the requests. A plugin
-      mechanism is what allows you to change the running code without restart
-      the application. In this code, we use the file routes.json to configure
-      the plugins.
     - Tufao::HttpFileServer: Serve static files. We use the folder _public_ as
       root dir.
     - Tufao::NotFoundHandler: A handler that responds to every request with a
       404 status code.
-
-  See \ref pluginsystem to learn how to create and attach plugins to the running
-  application.
 
   If you access http://localhost:8080/ you'll see a message telling you that the
   page wasn't found. Create a folder called public in the working dir of the
@@ -193,8 +183,7 @@
 
   Now access the page <http://localhost:8080/index.html> and see the result. As
   an exercise, I left the task to add a
-  [favicon](https://en.wikipedia.org/wiki/Favicon) to your application using the
-  \ref pluginsystem.
+  [favicon](https://en.wikipedia.org/wiki/Favicon) to your application.
 
   \subsection tufao-build Build system integration
 
