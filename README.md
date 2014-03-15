@@ -158,9 +158,16 @@ To install to a different prefix, run:
 
 To use Tufão in your Qt projects, just edit your .pro file and add the line:
 
-    CONFIG += TUFAO1
+    CONFIG += C++11 TUFAO1
 
 You can find some examples in the examples folder.
+
+If you're planning to use OS X, then the following line is [also](
+http://qt-project.org/forums/viewthread/24551) [required](
+http://qt-project.org/doc/qt-4.8/qmake-variable-reference.html#qmake-macosx-deployment-target),
+as reported by some users:
+
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
 Tufão has PKG-CONFIG support also. Its module name is 'tufao1'.
 
