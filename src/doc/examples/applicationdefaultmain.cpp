@@ -1,6 +1,5 @@
 #include <QCoreApplication>
 
-#include <Tufao/HttpPluginServer>
 #include <Tufao/HttpFileServer>
 #include <Tufao/NotFoundHandler>
 
@@ -13,10 +12,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    HttpPluginServer plugins{"routes.json"};
-
     HttpServerRequestRouter router{
-        {QRegularExpression{""}, plugins},
         {QRegularExpression{""}, HttpFileServer::handler("public")},
         {QRegularExpression{""}, NotFoundHandler::handler()}
     };

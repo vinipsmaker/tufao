@@ -38,6 +38,8 @@ class HttpServerResponse;
   The Tufao::AbstractConnectionHandler class provides an abstract implementation of
   a connection handler. A connection handler receives incoming socket descriptors
   and prepares it for useage inside Tufao.
+
+  \since 2.0
   */
 
 class TUFAO_EXPORT AbstractConnectionHandler : public QObject
@@ -107,9 +109,6 @@ protected:
       Don't delete the request or the response object, they will be deleted when
       the connection closes. If you need delete them before, just close the
       connection or call the QObject::deleteLater.
-
-      \since
-      1.0
     */
     virtual void checkContinue(HttpServerRequest &request,
                                HttpServerResponse &response) = 0;
@@ -151,9 +150,6 @@ signals:
       \param request An instance of Tufao::HttpServerRequest
 
       \param response An instance of Tufao::HttpServerResponse
-
-      \since
-      1.0
     */
     void requestReady(HttpServerRequest &request,
                       HttpServerResponse &response);

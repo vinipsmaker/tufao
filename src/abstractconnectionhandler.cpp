@@ -30,10 +30,11 @@ AbstractConnectionHandler::Priv::Priv() : timeout(120000){}
 AbstractConnectionHandler::Priv::~Priv(){}
 
 
-AbstractConnectionHandler::AbstractConnectionHandler(AbstractConnectionHandler::Priv *priv, QObject *parent)
-    : QObject(parent),priv(priv)
+AbstractConnectionHandler::AbstractConnectionHandler(AbstractConnectionHandler::Priv
+                                                     *priv, QObject *parent) :
+    QObject(parent),
+    priv(priv)
 {
-
 }
 
 AbstractConnectionHandler::Priv *AbstractConnectionHandler::_priv()
@@ -46,7 +47,9 @@ const AbstractConnectionHandler::Priv *AbstractConnectionHandler::_priv() const
     return priv;
 }
 
-AbstractConnectionHandler::AbstractConnectionHandler(QObject *parent) : AbstractConnectionHandler(new Priv(),parent){}
+AbstractConnectionHandler::AbstractConnectionHandler(QObject *parent) :
+    AbstractConnectionHandler(new Priv(), parent)
+{}
 
 AbstractConnectionHandler::~AbstractConnectionHandler()
 {
@@ -65,7 +68,7 @@ int AbstractConnectionHandler::timeout() const
 
 void AbstractConnectionHandler::handleConnection(QAbstractSocket *connection)
 {
-    HttpServerRequest *handle = new HttpServerRequest(*connection,this);
+    HttpServerRequest *handle = new HttpServerRequest(*connection, this);
     connection->setParent(handle);
 
     if (priv->timeout)
@@ -73,7 +76,8 @@ void AbstractConnectionHandler::handleConnection(QAbstractSocket *connection)
 
     connect(handle, &HttpServerRequest::ready,
             this,   &AbstractConnectionHandler::onRequestReady);
-    connect(handle, &HttpServerRequest::upgrade, this, &AbstractConnectionHandler::onUpgrade);
+    connect(handle, &HttpServerRequest::upgrade,
+            this, &AbstractConnectionHandler::onUpgrade);
     connect(connection, &QAbstractSocket::disconnected,
             handle, &QObject::deleteLater);
 
@@ -90,7 +94,7 @@ void AbstractConnectionHandler::onRequestReady()
 
     QAbstractSocket &socket = request->socket();
     HttpServerResponse *response
-            = new HttpServerResponse(socket, request->responseOptions(), request);
+        = new HttpServerResponse(socket, request->responseOptions(), request);
 
     connect(&socket, &QAbstractSocket::disconnected,
             response, &QObject::deleteLater);

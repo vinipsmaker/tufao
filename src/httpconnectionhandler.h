@@ -40,6 +40,9 @@ namespace Tufao {
 
   \sa
   Tufao::HttpServerResponse
+
+  \since
+  2.0
   */
 
 class TUFAO_EXPORT HttpConnectionHandler : public AbstractConnectionHandler
@@ -54,9 +57,6 @@ class TUFAO_EXPORT HttpConnectionHandler : public AbstractConnectionHandler
           \sa
           AbstractHttpUpgradeHandler
           setUpgradeHandler
-
-          \since
-          1.0
          */
         typedef std::function<void(HttpServerRequest &request, const QByteArray&)>
             UpgradeHandler;
@@ -78,9 +78,6 @@ class TUFAO_EXPORT HttpConnectionHandler : public AbstractConnectionHandler
 
           \sa
           defaultUpgradeHandler
-
-          \since
-          1.0
          */
         void setUpgradeHandler(UpgradeHandler functor);
 
@@ -88,9 +85,6 @@ class TUFAO_EXPORT HttpConnectionHandler : public AbstractConnectionHandler
           Returns the default http upgrade request's handler.
 
           The default handler closes the connection.
-
-          \since
-          1.0
          */
         static UpgradeHandler defaultUpgradeHandler();
         

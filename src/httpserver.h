@@ -173,6 +173,9 @@ public:
 
     /*!
       Returns the internaly used connection handler
+
+      \since
+      2.0
      */
     AbstractConnectionHandler *connectionHandler () const;
 
@@ -212,7 +215,7 @@ public slots:
       */
     void close();
 
-protected slots:
+private slots:
     void onNewConnection(qintptr socketDescriptor);
 
 private:

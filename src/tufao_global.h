@@ -36,7 +36,7 @@
 #endif
 
 #ifndef TUFAO_VERSION_MINOR
-#  define TUFAO_VERSION_MINOR 0
+#  define TUFAO_VERSION_MINOR 2
 #endif
 
 #endif // TUFAO_GLOBAL_H

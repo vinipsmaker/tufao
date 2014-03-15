@@ -55,6 +55,9 @@ namespace Tufao {
   \sa
   HttpsServer::setLocalCertificate
   HttpsServer::setPrivateKey
+
+  \since
+  2.0
   */
 
 class TUFAO_EXPORT HttpsConnectionHandler : public HttpConnectionHandler

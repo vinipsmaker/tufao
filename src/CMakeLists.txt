@@ -11,8 +11,6 @@ set(tufao_SRC
     abstractmessagesocket.cpp
     httpfileserver.cpp
     httpserverrequestrouter.cpp
-    httppluginserver.cpp
-    priv/httppluginserver_p.cpp
     headers.cpp
     priv/rfc1123.cpp
     priv/rfc1036.cpp
@@ -29,7 +27,6 @@ set(tufao_SRC
     httpconnectionhandler.cpp
     httpsconnectionhandler.cpp
     threadedhttpserver.cpp
-    threadedhttppluginserver.cpp
 )
 
 add_definitions(-DTUFAO_LIBRARY

@@ -396,10 +396,9 @@ protected:
      */
     SessionSettings settings;
 
+ private:
     QByteArray signSession(const QByteArray &message) const;
     QByteArray unsignSession(const QByteArray &message) const;
-
- private:
 
     struct Priv;
     Priv *priv;
