@@ -78,4 +78,5 @@ include(CPack)
 # Testing
 if(ENABLE_TESTS)
     include(CTest)
+    mark_as_advanced(BUILD_TESTING)
 endif()
