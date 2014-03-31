@@ -46,6 +46,7 @@ struct HttpServerResponse::Priv
     QIODevice &device;
     HttpResponseFormattingState formattingState;
     Tufao::HttpServerResponse::Options options;
+    int responseStatus;
     Headers headers;
 
     QByteArray http10Buffer;

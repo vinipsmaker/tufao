@@ -139,6 +139,7 @@ bool HttpServerResponse::writeHead(int statusCode, const QByteArray &reasonPhras
     priv->device.write(reasonPhrase);
     priv->device.write(CRLF);
     priv->formattingState = Priv::HEADERS;
+    priv->responseStatus = statusCode;
     return true;
 }
 
@@ -182,6 +183,7 @@ bool HttpServerResponse::writeHead(HttpResponseStatus statusCode,
         priv->device.write(CRLF);
     }
     priv->formattingState = Priv::HEADERS;
+    priv->responseStatus = int(statusCode);
     return true;
 }
 
@@ -203,12 +205,17 @@ bool HttpServerResponse::writeHead(HttpResponseStatus statusCode)
     priv->device.write(reasonPhrase(statusCode));
     priv->device.write(CRLF);
     priv->formattingState = Priv::HEADERS;
+    priv->responseStatus = int(statusCode);
     return true;
 }
 
 bool HttpServerResponse::write(const QByteArray &chunk)
 {
     if (!chunk.size())
+        return false;
+
+    /* Bad?! At least write the headers? */
+    if (priv->responseStatus == int(HttpResponseStatus::NO_CONTENT) && chunk.size())
         return false;
 
     if (priv->options.testFlag(HttpServerResponse::HTTP_1_0)) {
@@ -241,6 +248,7 @@ bool HttpServerResponse::write(const QByteArray &chunk)
                                   QByteArray::fromRawData(value,
                                                           sizeof(value) - 1));
         }
+
         priv->headers.insert("Transfer-Encoding", "chunked");
 
         for (Headers::iterator i = priv->headers.begin()
@@ -346,7 +354,9 @@ bool HttpServerResponse::end(const QByteArray &chunk)
                                                              - 1));
                 }
             }
-            {
+            if (priv->responseStatus == int(HttpResponseStatus::NO_CONTENT))
+                priv->headers.insert("Content-Length", "0");
+            else {
                 static const char key[] = "Transfer-Encoding",
                         value[] = "chunked";
                 priv->headers.insert(QByteArray::fromRawData(key,
@@ -376,6 +386,7 @@ bool HttpServerResponse::end(const QByteArray &chunk)
     }
     case Priv::MESSAGE_BODY:
     {
+        /* Check that no chunk has been specified for 204... */
         if (chunk.size()) {
             if (priv->options.testFlag(HttpServerResponse::HTTP_1_1)) {
                 priv->device.write(QByteArray::number(chunk.size(), 16));
@@ -392,7 +403,8 @@ bool HttpServerResponse::end(const QByteArray &chunk)
             priv->http10Buffer.clear();
         }
         if (priv->options.testFlag(HttpServerResponse::HTTP_1_1)) {
-            priv->device.write(LAST_CHUNK);
+            if (priv->responseStatus != int(HttpResponseStatus::NO_CONTENT))
+                priv->device.write(LAST_CHUNK);
             priv->formattingState = Priv::TRAILERS;
         } else {
             priv->device.close();
@@ -403,7 +415,8 @@ bool HttpServerResponse::end(const QByteArray &chunk)
     }
     case Priv::TRAILERS:
     {
-        priv->device.write(CRLF);
+        if (priv->responseStatus != int(HttpResponseStatus::NO_CONTENT))
+            priv->device.write(CRLF);
         if (!priv->options.testFlag(HttpServerResponse::KEEP_ALIVE))
             priv->device.close();
 
