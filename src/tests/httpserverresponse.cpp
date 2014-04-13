@@ -238,9 +238,7 @@ void HttpServerResponseTest::generalMessages_data()
             << PredictableHeaders() << QByteArray()
             << QByteArray("HTTP/1.1 200 OK\r\n"
                           "Connection: keep-alive\r\n"
-                          "Transfer-Encoding: chunked\r\n"
-                          "\r\n"
-                          "0\r\n"
+                          "Content-Length: 0\r\n"
                           "\r\n");
     }
     {
