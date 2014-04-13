@@ -335,40 +335,34 @@ bool HttpServerResponse::end(const QByteArray &chunk)
         return false;
     case Priv::HEADERS:
     {
+        bool continue_to_message_body
+            = chunk.size() || priv->http10Buffer.size();
+
         if (priv->options.testFlag(HttpServerResponse::HTTP_1_1)) {
-            {
-                static const char key[] = "Connection";
-                if (priv->options.testFlag(HttpServerResponse::KEEP_ALIVE)) {
-                    static const char value[] = "keep-alive";
-                    priv->headers
-                            .replace(QByteArray::fromRawData(key,
-                                                             sizeof(key) - 1),
-                                     QByteArray::fromRawData(value,
-                                                             sizeof(value)
-                                                             - 1));
-                } else {
-                    static const char value[] = "close";
-                    priv->headers
-                            .replace(QByteArray::fromRawData(key,
-                                                             sizeof(key) - 1),
-                                     QByteArray::fromRawData(value,
-                                                             sizeof(value)
-                                                             - 1));
-                }
+            static const char key[] = "Connection";
+            if (priv->options.testFlag(HttpServerResponse::KEEP_ALIVE)) {
+                static const char value[] = "keep-alive";
+                priv->headers
+                    .replace(QByteArray::fromRawData(key, sizeof(key) - 1),
+                             QByteArray::fromRawData(value, sizeof(value) - 1));
+            } else {
+                static const char value[] = "close";
+                priv->headers
+                    .replace(QByteArray::fromRawData(key, sizeof(key) - 1),
+                             QByteArray::fromRawData(value, sizeof(value) - 1));
             }
-            {
-                static const char key[] = "Transfer-Encoding",
-                        value[] = "chunked";
-                priv->headers.insert(QByteArray::fromRawData(key,
-                                                             sizeof(key) - 1),
-                                     QByteArray::fromRawData(value,
-                                                             sizeof(value)
-                                                             - 1));
-            }
+        }
+
+        if (priv->options.testFlag(HttpServerResponse::HTTP_1_1)
+            && continue_to_message_body) {
+            static const char key[] = "Transfer-Encoding", value[] = "chunked";
+            priv->headers
+                .insert(QByteArray::fromRawData(key, sizeof(key) - 1),
+                        QByteArray::fromRawData(value, sizeof(value) - 1));
         } else {
             static const char key[] = "Content-Length";
-            priv->headers.replace(QByteArray::fromRawData(key,
-                                                          sizeof(key) - 1),
+            priv->headers.replace(QByteArray
+                                  ::fromRawData(key, sizeof(key) - 1),
                                   QByteArray::number(priv->http10Buffer.size()
                                                      + chunk.size()));
         }
@@ -382,7 +376,18 @@ bool HttpServerResponse::end(const QByteArray &chunk)
         }
         priv->device.write(CRLF);
 
-        priv->formattingState = Priv::MESSAGE_BODY;
+        if (continue_to_message_body) {
+            priv->formattingState = Priv::MESSAGE_BODY;
+        } else {
+            if (priv->options.testFlag(HttpServerResponse::HTTP_1_0)
+                || !priv->options.testFlag(HttpServerResponse::KEEP_ALIVE)) {
+                priv->device.close();
+            }
+
+            priv->formattingState = Priv::END;
+            emit finished();
+            return true;
+        }
     }
     case Priv::MESSAGE_BODY:
     {
