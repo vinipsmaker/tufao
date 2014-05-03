@@ -24,6 +24,8 @@
 #include <QtCore/QMap>
 #include <QtCore/QQueue>
 
+#include <functional>
+
 namespace Tufao {
 
 class WorkerThread;
