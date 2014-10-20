@@ -35,14 +35,16 @@ int main(int argc, char *argv[])
     TcpServer server;
 
     server.run(4, 8080, []() {
-        QSharedPointer<Tufao::HttpServerRequestRouter>
-            router(new Tufao::HttpServerRequestRouter);
-
-        router->map({QRegularExpression{""},
-                    Tufao::HttpFileServer::handler("public")});
+        QSharedPointer<Tufao::HttpServerRequestRouter> router;
 
         return [router](Tufao::HttpServerRequest &request,
-                        Tufao::HttpServerResponse &response) {
+                        Tufao::HttpServerResponse &response) mutable {
+            if (!router) {
+                router.reset(new Tufao::HttpServerRequestRouter);
+                router->map({QRegularExpression{""},
+                            Tufao::HttpFileServer::handler("public")});
+            }
+
             if (!router->handleRequest(request, response)) {
                 response.writeHead(Tufao::HttpResponseStatus::NOT_FOUND);
                 response.headers().insert("Content-Type", "text/plain");
