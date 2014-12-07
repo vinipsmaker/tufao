@@ -9,7 +9,7 @@ set(TUFAO_VERSION ${TUFAO_VERSION_MAJOR}.${TUFAO_VERSION_MINOR}.${TUFAO_VERSION_
 set(TUFAO_BRIEF "An asynchronous web framework for C++ built on top of Qt")
 
 # Dependencies
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.11)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
@@ -80,3 +80,21 @@ if(ENABLE_TESTS)
     include(CTest)
     mark_as_advanced(BUILD_TESTING)
 endif()
+
+# cmake-modules
+set(TUFAO_CONFIG_INSTALL_DIR "${libdir}/cmake/Tufao")
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+  TufaoConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/TufaoConfig.cmake"
+  INSTALL_DESTINATION ${TUFAO_CONFIG_INSTALL_DIR}
+  PATH_VARS libdir
+            includedir)
+
+write_basic_config_version_file(TufaoConfigVersion.cmake VERSION ${TUFAO_VERSION} COMPATIBILITY ExactVersion)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/TufaoConfig.cmake
+              ${CMAKE_CURRENT_BINARY_DIR}/TufaoConfigVersion.cmake
+        DESTINATION ${TUFAO_CONFIG_INSTALL_DIR})
+
+install(EXPORT "${TUFAO_LIBRARY}-export" DESTINATION ${TUFAO_CONFIG_INSTALL_DIR} FILE TufaoTargets.cmake)

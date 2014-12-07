@@ -49,6 +49,20 @@ set_target_properties(
     AUTOMOC ON
 )
 
+if("${CMAKE_VERSION}" VERSION_LESS "2.8.12")
+  target_include_directories("${TUFAO_LIBRARY}" INTERFACE "${CMAKE_INSTALL_PREFIX}/${includedir}")
+  install(TARGETS "${TUFAO_LIBRARY}" EXPORT "${TUFAO_LIBRARY}-export"
+          LIBRARY DESTINATION "${libdir}"
+          PUBLIC_HEADER DESTINATION "${includedir}"
+  )
+else()
+  # Support relocatable packages. It can be usefull on Windows
+  install(TARGETS "${TUFAO_LIBRARY}" EXPORT "${TUFAO_LIBRARY}-export"
+          LIBRARY DESTINATION "${libdir}"
+          PUBLIC_HEADER DESTINATION "${includedir}" INCLUDES DESTINATION "${includedir}"
+  )
+endif()
+
 # Tests
 if(ENABLE_TESTS)
     enable_testing()
