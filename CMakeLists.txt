@@ -82,19 +82,19 @@ if(ENABLE_TESTS)
 endif()
 
 # cmake-modules
-set(TUFAO_CONFIG_INSTALL_DIR "${libdir}/cmake/Tufao")
+set(TUFAO_CONFIG_INSTALL_DIR "${libdir}/cmake/Tufao${TUFAO_VERSION_MAJOR}")
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
   TufaoConfig.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/TufaoConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/Tufao${TUFAO_VERSION_MAJOR}Config.cmake"
   INSTALL_DESTINATION ${TUFAO_CONFIG_INSTALL_DIR}
   PATH_VARS libdir
             includedir)
 
-write_basic_config_version_file(TufaoConfigVersion.cmake VERSION ${TUFAO_VERSION} COMPATIBILITY ExactVersion)
+write_basic_config_version_file(Tufao${TUFAO_VERSION_MAJOR}ConfigVersion.cmake VERSION ${TUFAO_VERSION} COMPATIBILITY ExactVersion)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/TufaoConfig.cmake
-              ${CMAKE_CURRENT_BINARY_DIR}/TufaoConfigVersion.cmake
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Tufao${TUFAO_VERSION_MAJOR}Config.cmake
+              ${CMAKE_CURRENT_BINARY_DIR}/Tufao${TUFAO_VERSION_MAJOR}ConfigVersion.cmake
         DESTINATION ${TUFAO_CONFIG_INSTALL_DIR})
 
-install(EXPORT "${TUFAO_LIBRARY}-export" DESTINATION ${TUFAO_CONFIG_INSTALL_DIR} FILE TufaoTargets.cmake)
+install(EXPORT "${TUFAO_LIBRARY}-export" DESTINATION ${TUFAO_CONFIG_INSTALL_DIR} FILE Tufao${TUFAO_VERSION_MAJOR}Targets.cmake)
