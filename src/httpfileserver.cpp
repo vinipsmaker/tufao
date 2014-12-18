@@ -359,7 +359,7 @@ inline bool HttpFileServer::handleRequest(HttpServerRequest &request,
         QDir::cleanPath(rootDir
                         + QDir::toNativeSeparators(request.url()
                                                    .path(QUrl::FullyDecoded)))};
-    if (!fileName.startsWith(rootDir + QDir::separator()))
+    if (!fileName.startsWith(rootDir + "/"))
         return false;
 
     {
