@@ -335,7 +335,7 @@ bool HttpFileServer::handleRequest(HttpServerRequest *request,
                                                      .path().toUtf8()));
     QString fileName(QDir::cleanPath(priv->rootDir
                                      + QDir::toNativeSeparators(resource)));
-    if (!fileName.startsWith(priv->rootDir + QDir::separator()))
+    if (!fileName.startsWith(priv->rootDir + '/'))
         return false;
 
     {
