@@ -337,8 +337,12 @@ void HttpFileServer::setBufferSize(qint64 size)
 std::function<bool(HttpServerRequest&, HttpServerResponse&)>
 HttpFileServer::handler(const QString &rootDir)
 {
-    return [rootDir](HttpServerRequest &request, HttpServerResponse &response) {
-        return handleRequest(request, response, rootDir);
+    QString dir = rootDir;
+    if (dir.endsWith(QDir::separator()))
+        dir.remove(dir.size() - 1, 1);
+
+    return [dir](HttpServerRequest &request, HttpServerResponse &response) {
+        return handleRequest(request, response, dir);
     };
 }
 
