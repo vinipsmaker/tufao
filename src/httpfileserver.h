@@ -130,6 +130,17 @@ public:
     static void setBufferSize(qint64 size);
 
     /*!
+      Returns true iff HttpFileServer::handleRequest will return true.
+      */
+    bool canHandleRequest(const HttpServerRequest &request);
+
+    /*!
+      Returns true iff HttpFileServer::handleRequest will return true.
+      */
+    static bool canHandleRequest(const HttpServerRequest &request,
+                                 const QString &root);
+
+    /*!
       Returns a handler that don't depends on another object. The purpose of
       this alternative handler is to free you of the worry of maintain the
       HttpFileServer's object (lifetime) while the functor object is being used.
