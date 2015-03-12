@@ -50,7 +50,11 @@ namespace Tufao {
  * `QCoreApplication::applicationDirPath()` (aka the install location), which
  * can only be retrieved at runtime, after the QCoreApplication was constructed,
  * is never present in this list. */
-QStringList ClassHandlerManager::pluginLocations = []() {
+QStringList ClassHandlerManager::pluginLocations;
+
+// Use lazy initialization to prevent weird MacOS behavour
+QStringList initPluginLocations()
+{
     QStringList ret;
 
     // Add standard locations to pluginLocations
@@ -73,7 +77,7 @@ QStringList ClassHandlerManager::pluginLocations = []() {
     }
 
     return ret;
-}();
+}
 QMutex pluginLocationsMutex;
 
 /* ************************************************************************** */
@@ -112,6 +116,9 @@ ClassHandlerManager::ClassHandlerManager(const QString &pluginID,
                 }
             }
         };
+
+        if (pluginLocations.isEmpty())
+            pluginLocations = initPluginLocations();
 
         for (const QString &path: pluginLocations)
             retrieveDynlib(path);
@@ -176,6 +183,9 @@ QString ClassHandlerManager::urlNamespace() const
 void ClassHandlerManager::addPluginLocation(const QString location)
 {
     QMutexLocker guard(&pluginLocationsMutex);
+
+    if (pluginLocations.isEmpty())
+        pluginLocations = initPluginLocations();
 
     if(!pluginLocations.contains(location)){
         pluginLocations.append(location);
