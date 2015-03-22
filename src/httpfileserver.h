@@ -131,11 +131,17 @@ public:
 
     /*!
       Returns true iff HttpFileServer::handleRequest will return true.
+
+      \since
+      1.3
       */
     bool canHandleRequest(const HttpServerRequest &request);
 
     /*!
       Returns true iff HttpFileServer::handleRequest will return true.
+
+      \since
+      1.3
       */
     static bool canHandleRequest(const HttpServerRequest &request,
                                  const QString &root);
