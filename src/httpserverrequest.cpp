@@ -297,7 +297,8 @@ int HttpServerRequest::Priv::on_headers_complete(http_parser *parser)
             MT("SUBSCRIBE"),
             MT("UNSUBSCRIBE"),
             MT("PATCH"),
-            MT("PURGE")
+            MT("PURGE"),
+            MT("MKCALENDAR")
         };
 
         const MT &m = methods[parser->method];
