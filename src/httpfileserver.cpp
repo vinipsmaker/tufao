@@ -354,14 +354,24 @@ bool HttpFileServer::handleRequest(HttpServerRequest &request,
     return handleRequest(request, response, priv->rootDir);
 }
 
-inline bool HttpFileServer::handleRequest(HttpServerRequest &request,
-                                          HttpServerResponse &response,
+inline static QString filenameFromRequest(const HttpServerRequest &request,
                                           const QString &rootDir)
 {
-    QString fileName{
+    return QString{
         QDir::cleanPath(rootDir
                         + QDir::toNativeSeparators(request.url()
                                                    .path(QUrl::FullyDecoded)))};
+}
+
+bool HttpFileServer::canHandleRequest(const HttpServerRequest &request)
+{
+    return canHandleRequest(request, priv->rootDir);
+}
+
+bool HttpFileServer::canHandleRequest(const HttpServerRequest &request,
+                                      const QString &rootDir)
+{
+    QString fileName = filenameFromRequest(request, rootDir);
     if (!fileName.startsWith(rootDir + "/"))
         return false;
 
@@ -371,6 +381,17 @@ inline bool HttpFileServer::handleRequest(HttpServerRequest &request,
             return false;
     }
 
+    return true;
+}
+
+inline bool HttpFileServer::handleRequest(HttpServerRequest &request,
+                                          HttpServerResponse &response,
+                                          const QString &rootDir)
+{
+    if (!canHandleRequest(request, rootDir))
+        return false;
+
+    QString fileName = filenameFromRequest(request, rootDir);
     serveFile(fileName, request, response);
     return true;
 }
