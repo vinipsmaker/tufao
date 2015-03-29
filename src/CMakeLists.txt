@@ -34,10 +34,6 @@ add_definitions(-DTUFAO_LIBRARY
 
 add_library("${TUFAO_LIBRARY}" SHARED ${tufao_SRC})
 
-target_compile_features("${TUFAO_LIBRARY}" PRIVATE
-  ${TUFAO_REQUIRED_COMPILE_FEATURES}
-)
-
 qt5_use_modules("${TUFAO_LIBRARY}" Core Network)
 
 set_target_properties(
@@ -47,6 +43,8 @@ set_target_properties(
     VERSION ${TUFAO_VERSION}
     VS_KEYWORD Qt4VSv1.0
     AUTOMOC ON
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
 )
 
 if("${CMAKE_VERSION}" VERSION_LESS "2.8.12")

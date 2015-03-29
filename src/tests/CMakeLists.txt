@@ -20,14 +20,13 @@ set(tests
 )
 
 macro(setup_test_target target)
-    target_compile_features("${target}" PRIVATE
-        ${TUFAO_REQUIRED_COMPILE_FEATURES}
-    )
     qt5_use_modules("${target}" Core Network Test)
     set_target_properties(
         "${target}"
         PROPERTIES
         AUTOMOC ON
+        CXX_STANDARD 11
+        CXX_STANDARD_REQUIRED ON
     )
     target_link_libraries("${target}" "${TUFAO_LIBRARY}")
 

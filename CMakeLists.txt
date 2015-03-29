@@ -9,7 +9,7 @@ set(TUFAO_VERSION ${TUFAO_VERSION_MAJOR}.${TUFAO_VERSION_MINOR}.${TUFAO_VERSION_
 set(TUFAO_BRIEF "An asynchronous web framework for C++ built on top of Qt")
 
 # Dependencies
-cmake_minimum_required(VERSION 3.2.1)
+cmake_minimum_required(VERSION 3.1.0)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
 
@@ -42,33 +42,6 @@ add_definitions(-DBUFFER_SIZE=${BUFFER_SIZE})
 
 # Build info
 set(TUFAO_LIBRARY "tufao${TUFAO_VERSION_MAJOR}")
-
-# Build options
-set(TUFAO_REQUIRED_COMPILE_FEATURES
-  cxx_auto_type
-  cxx_constexpr
-  cxx_decltype
-  cxx_defaulted_functions
-  cxx_delegating_constructors
-  cxx_deleted_functions
-  cxx_explicit_conversions
-  cxx_final
-  cxx_inheriting_constructors
-  cxx_inline_namespaces
-  cxx_lambdas
-  cxx_long_long_type
-  cxx_nullptr
-  cxx_override
-  cxx_range_for
-  cxx_raw_string_literals
-  cxx_right_angle_brackets
-  cxx_static_assert
-  cxx_strong_enums
-  cxx_thread_local
-  cxx_trailing_return_types
-  cxx_unicode_literals
-  cxx_variadic_templates
-)
 
 # Install info
 set(includedir include/tufao-${TUFAO_VERSION_MAJOR})
