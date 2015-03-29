@@ -19,6 +19,9 @@ set(tests
 )
 
 macro(setup_test_target target)
+    target_compile_features("${target}" PRIVATE
+        ${TUFAO_REQUIRED_COMPILE_FEATURES}
+    )
     qt5_use_modules("${target}" Core Network Test)
     set_target_properties(
         "${target}"

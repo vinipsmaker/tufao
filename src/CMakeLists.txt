@@ -38,6 +38,10 @@ add_definitions(-DTUFAO_LIBRARY
 
 add_library("${TUFAO_LIBRARY}" SHARED ${tufao_SRC})
 
+target_compile_features("${TUFAO_LIBRARY}" PRIVATE
+  ${TUFAO_REQUIRED_COMPILE_FEATURES}
+)
+
 qt5_use_modules("${TUFAO_LIBRARY}" Core Network)
 
 set_target_properties(

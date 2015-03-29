@@ -9,11 +9,9 @@ set(TUFAO_VERSION ${TUFAO_VERSION_MAJOR}.${TUFAO_VERSION_MINOR}.${TUFAO_VERSION_
 set(TUFAO_BRIEF "An asynchronous web framework for C++ built on top of Qt")
 
 # Dependencies
-cmake_minimum_required(VERSION 2.8.11)
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
+cmake_minimum_required(VERSION 3.2.1)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
-find_package(CXX11 REQUIRED)
 
 get_target_property(QMAKE_EXECUTABLE Qt5::qmake LOCATION)
 function(QUERY_QMAKE VAR RESULT)
@@ -46,7 +44,31 @@ add_definitions(-DBUFFER_SIZE=${BUFFER_SIZE})
 set(TUFAO_LIBRARY "tufao${TUFAO_VERSION_MAJOR}")
 
 # Build options
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
+set(TUFAO_REQUIRED_COMPILE_FEATURES
+  cxx_auto_type
+  cxx_constexpr
+  cxx_decltype
+  cxx_defaulted_functions
+  cxx_delegating_constructors
+  cxx_deleted_functions
+  cxx_explicit_conversions
+  cxx_final
+  cxx_inheriting_constructors
+  cxx_inline_namespaces
+  cxx_lambdas
+  cxx_long_long_type
+  cxx_nullptr
+  cxx_override
+  cxx_range_for
+  cxx_raw_string_literals
+  cxx_right_angle_brackets
+  cxx_static_assert
+  cxx_strong_enums
+  cxx_thread_local
+  cxx_trailing_return_types
+  cxx_unicode_literals
+  cxx_variadic_templates
+)
 
 # Install info
 set(includedir include/tufao-${TUFAO_VERSION_MAJOR})
