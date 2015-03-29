@@ -178,7 +178,12 @@ You can also see Tufão documentation integrated in QtAssistant.
 
 ## NEWS
 
+Version 1.3
+
+- Added `canHandleRequest` to HttpFileServer
+
 Version 1.2
+
   * New class to handle REST api introduced (thanks to Timothy Reaves)
     * The class has its own plugin system, partly incompatible with Tufão's
       default
@@ -284,11 +289,11 @@ Version 0.2:
 
 Here is a small roadmap for Tufão:
 
-1.1:
+1.4:
 
   * RPC support
   * Service discovery and description support
 
-1.1:
+1.5:
 
   * Forms and file uploads
