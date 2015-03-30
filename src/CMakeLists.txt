@@ -43,10 +43,18 @@ set_target_properties(
     VERSION ${TUFAO_VERSION}
     VS_KEYWORD Qt4VSv1.0
     AUTOMOC ON
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED ON
     INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${libdir}"
 )
+
+# CXX_STANDARD was introduced in CMake 3.1
+if("${CMAKE_VERSION}" VERSION_GREATER "3.0")
+    set_target_properties(
+        "${TUFAO_LIBRARY}"
+        PROPERTIES
+        CXX_STANDARD 11
+        CXX_STANDARD_REQUIRED ON
+    )
+endif()
 
 if("${CMAKE_VERSION}" VERSION_LESS "2.8.12")
   target_include_directories("${TUFAO_LIBRARY}" INTERFACE "${CMAKE_INSTALL_PREFIX}/${includedir}")
