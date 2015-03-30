@@ -27,6 +27,14 @@ query_qmake(QT_HOST_DATA QT_DATA_DIR)
 
 set(QT_MKSPECS_DIR ${QT_DATA_DIR}/mkspecs)
 
+# Debug version of library should have 'd' postfix on Windows
+# and '_debug' on Mac OS X
+if(WIN32)
+    set(CMAKE_DEBUG_POSTFIX "d")
+elseif(APPLE)
+    set(CMAKE_DEBUG_POSTFIX "_debug")
+endif()
+
 # Configure options
 option(GENERATE_DOC
     "Use Doxygen to generate the project documentation" OFF
