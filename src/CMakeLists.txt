@@ -45,6 +45,7 @@ set_target_properties(
     AUTOMOC ON
     CXX_STANDARD 11
     CXX_STANDARD_REQUIRED ON
+    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${libdir}"
 )
 
 if("${CMAKE_VERSION}" VERSION_LESS "2.8.12")
