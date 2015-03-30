@@ -24,9 +24,19 @@ macro(setup_test_target target)
         "${target}"
         PROPERTIES
         AUTOMOC ON
-        CXX_STANDARD 11
-        CXX_STANDARD_REQUIRED ON
     )
+
+    # CXX_STANDARD was introduced in CMake 3.1
+    if("${CMAKE_VERSION}" VERSION_GREATER "3.0")
+        set_target_properties(
+            "${target}"
+            PROPERTIES
+            CXX_STANDARD 11
+            CXX_STANDARD_REQUIRED ON
+        )
+endif()
+
+
     target_link_libraries("${target}" "${TUFAO_LIBRARY}")
 
     add_test(NAME "${target}"

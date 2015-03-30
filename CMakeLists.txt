@@ -9,9 +9,17 @@ set(TUFAO_VERSION ${TUFAO_VERSION_MAJOR}.${TUFAO_VERSION_MINOR}.${TUFAO_VERSION_
 set(TUFAO_BRIEF "An asynchronous web framework for C++ built on top of Qt")
 
 # Dependencies
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 2.8.11)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
+
+# CMake since 3.1 has ability to use particular C/C++ standarts.
+# For versions before 3.1 use FindCXX11 module as fallback.
+if("${CMAKE_VERSION}" VERSION_LESS "3.1")
+    set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
+    find_package(CXX11 REQUIRED)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
+endif()
 
 get_target_property(QMAKE_EXECUTABLE Qt5::qmake LOCATION)
 function(QUERY_QMAKE VAR RESULT)
