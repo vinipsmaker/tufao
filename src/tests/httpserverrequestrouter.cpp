@@ -14,7 +14,7 @@ struct Helper
 
 void HttpServerRequestRouterTest::mappings()
 {
-    constexpr auto size = 3;
+    Q_DECL_CONSTEXPR auto size = 3;
     bool active[size] = {true, true, true};
 
     HttpServerRequestRouter httpServerRequestRouter;

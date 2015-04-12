@@ -96,7 +96,7 @@ struct HttpServerRequest::Priv
 struct RawData
 {
     template<int N>
-    constexpr RawData(const char (&data)[N]) :
+    Q_DECL_CONSTEXPR RawData(const char (&data)[N]) :
         data(data),
         size(N - 1)
     {}
