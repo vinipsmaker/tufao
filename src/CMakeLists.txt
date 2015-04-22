@@ -64,12 +64,16 @@ if("${CMAKE_VERSION}" VERSION_LESS "2.8.12")
   target_include_directories("${TUFAO_LIBRARY}" INTERFACE "${CMAKE_INSTALL_PREFIX}/${includedir}")
   install(TARGETS "${TUFAO_LIBRARY}" EXPORT "${TUFAO_LIBRARY}-export"
           LIBRARY DESTINATION "${libdir}"
+          ARCHIVE DESTINATION "${libdir}"
+          RUNTIME DESTINATION bin
           PUBLIC_HEADER DESTINATION "${includedir}"
   )
 else()
   # Support relocatable packages. It can be usefull on Windows
   install(TARGETS "${TUFAO_LIBRARY}" EXPORT "${TUFAO_LIBRARY}-export"
           LIBRARY DESTINATION "${libdir}"
+          ARCHIVE DESTINATION "${libdir}"
+          RUNTIME DESTINATION bin
           PUBLIC_HEADER DESTINATION "${includedir}" INCLUDES DESTINATION "${includedir}"
   )
 endif()
