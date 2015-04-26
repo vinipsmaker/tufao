@@ -193,6 +193,8 @@ http_parser_settings HttpServerRequest::Priv::httpSettings()
 {
     http_parser_settings settings;
 
+    http_parser_settings_init(&settings);
+
     settings.on_message_begin
             = Tufao::HttpServerRequest::Priv::on_message_begin;
     settings.on_url = Tufao::HttpServerRequest::Priv::on_url;

@@ -64,8 +64,7 @@ do {                                                                 \
   return (V);                                                        \
 } while (0);
 #define REEXECUTE()                                                  \
-  --p;                                                               \
-  break;
+  goto reexecute;                                                    \
 
 
 #ifdef __GNUC__
@@ -697,6 +696,7 @@ size_t http_parser_execute (http_parser *parser,
     if (PARSING_HEADER(CURRENT_STATE()))
       COUNT_HEADER_SIZE(1);
 
+reexecute:
     switch (CURRENT_STATE()) {
 
       case s_dead:
@@ -1782,9 +1782,9 @@ size_t http_parser_execute (http_parser *parser,
 
         if (parser->flags & F_TRAILING) {
           /* End of a chunked request */
-          UPDATE_STATE(NEW_MESSAGE());
-          CALLBACK_NOTIFY(message_complete);
-          break;
+          UPDATE_STATE(s_message_done);
+          CALLBACK_NOTIFY_NOADVANCE(chunk_complete);
+          REEXECUTE();
         }
 
         UPDATE_STATE(s_headers_done);
@@ -1832,8 +1832,11 @@ size_t http_parser_execute (http_parser *parser,
 
         parser->nread = 0;
 
-        /* Exit, the rest of the connect is in a different protocol. */
-        if (parser->upgrade) {
+        int hasBody = parser->flags & F_CHUNKED ||
+          (parser->content_length > 0 && parser->content_length != ULLONG_MAX);
+        if (parser->upgrade && (parser->method == HTTP_CONNECT ||
+                                (parser->flags & F_SKIPBODY) || !hasBody)) {
+          /* Exit, the rest of the message is in a different protocol. */
           UPDATE_STATE(NEW_MESSAGE());
           CALLBACK_NOTIFY(message_complete);
           RETURN((p - data) + 1);
@@ -1915,6 +1918,10 @@ size_t http_parser_execute (http_parser *parser,
       case s_message_done:
         UPDATE_STATE(NEW_MESSAGE());
         CALLBACK_NOTIFY(message_complete);
+        if (parser->upgrade) {
+          /* Exit, the rest of the message is in a different protocol. */
+          RETURN((p - data) + 1);
+        }
         break;
 
       case s_chunk_size_start:
@@ -1994,6 +2001,7 @@ size_t http_parser_execute (http_parser *parser,
         } else {
           UPDATE_STATE(s_chunk_data);
         }
+        CALLBACK_NOTIFY(chunk_header);
         break;
       }
 
@@ -2033,6 +2041,7 @@ size_t http_parser_execute (http_parser *parser,
         STRICT_CHECK(ch != LF);
         parser->nread = 0;
         UPDATE_STATE(s_chunk_size_start);
+        CALLBACK_NOTIFY(chunk_complete);
         break;
 
       default:
@@ -2136,15 +2145,23 @@ http_parser_init (http_parser *parser, enum http_parser_type t)
   parser->http_errno = HPE_OK;
 }
 
+void
+http_parser_settings_init(http_parser_settings *settings)
+{
+  memset(settings, 0, sizeof(*settings));
+}
+
 const char *
 http_errno_name(enum http_errno err) {
-  assert(err < (sizeof(http_strerror_tab)/sizeof(http_strerror_tab[0])));
+  assert(((size_t) err) <
+      (sizeof(http_strerror_tab) / sizeof(http_strerror_tab[0])));
   return http_strerror_tab[err].name;
 }
 
 const char *
 http_errno_description(enum http_errno err) {
-  assert(err < (sizeof(http_strerror_tab)/sizeof(http_strerror_tab[0])));
+  assert(((size_t) err) <
+      (sizeof(http_strerror_tab) / sizeof(http_strerror_tab[0])));
   return http_strerror_tab[err].description;
 }
 
