@@ -1,5 +1,7 @@
 # Tufão - an asynchronous web framework for C++ built on top of Qt
 
+[![Join the chat at https://gitter.im/vinipsmaker/tufao](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vinipsmaker/tufao?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Tufão is a web framework for C++ that makes use of Qt's object communication
 system (signals & slots). It features:
 
