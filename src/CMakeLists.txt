@@ -51,9 +51,15 @@ set(tufao_MOC_HDRS
 )
 
 # Build info
-add_definitions(-DTUFAO_LIBRARY
-    -Wall
-)
+add_definitions(-DTUFAO_LIBRARY)
+if(!MSVC)
+    add_definitions(
+        -Wall
+        -Wextra
+#        -Wpedantic
+#        -Weffc++
+    )
+endif()
 
 if (DISABLE_EXCEPTIONS)
     add_definitions(-DEXCEPTIONS_ON=0)
