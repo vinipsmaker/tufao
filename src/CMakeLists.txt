@@ -25,12 +25,15 @@ set(tufao_SRC
     classhandler.cpp
 )
 
-add_definitions(-DTUFAO_LIBRARY
-    -Wall
-    -Wextra
-#    -Wpedantic
-#    -Weffc++
-)
+add_definitions(-DTUFAO_LIBRARY)
+if(!MSVC)
+    add_definitions(
+        -Wall
+        -Wextra
+#        -Wpedantic
+#        -Weffc++
+    )
+endif()
 
 add_library("${TUFAO_LIBRARY}" SHARED ${tufao_SRC})
 
