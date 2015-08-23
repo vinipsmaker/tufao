@@ -30,7 +30,7 @@ set(tufao_SRC
 )
 
 add_definitions(-DTUFAO_LIBRARY)
-if(!MSVC)
+if(NOT MSVC)
     add_definitions(
         -Wall
         -Wextra
