@@ -52,7 +52,7 @@ set(tufao_MOC_HDRS
 
 # Build info
 add_definitions(-DTUFAO_LIBRARY)
-if(!MSVC)
+if(NOT MSVC)
     add_definitions(
         -Wall
         -Wextra
