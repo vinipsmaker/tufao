@@ -290,6 +290,10 @@ int HttpServerRequest::Priv::on_headers_complete(http_parser *parser)
             MT("PROPPATCH"),
             MT("SEARCH"),
             MT("UNLOCK"),
+            MT("BIND"),
+            MT("REBIND"),
+            MT("UNBIND"),
+            MT("ACL"),
             MT("REPORT"),
             MT("MKACTIVITY"),
             MT("CHECKOUT"),
@@ -300,7 +304,9 @@ int HttpServerRequest::Priv::on_headers_complete(http_parser *parser)
             MT("UNSUBSCRIBE"),
             MT("PATCH"),
             MT("PURGE"),
-            MT("MKCALENDAR")
+            MT("MKCALENDAR"),
+            MT("LINK"),
+            MT("UNLINK")
         };
 
         const MT &m = methods[parser->method];
