@@ -71,8 +71,8 @@ ranges(const Tufao::Headers &headers, qulonglong fileSize)
 
                 bool ok[2];
                 QPair<qulonglong, qulonglong>
-                        range(rangeSpec.toULongLong(ok),
-                              rangeSpec.mid(1 + i).toULongLong());
+                        range(rangeSpec.mid(0, i).toULongLong(&ok[0]),
+                              rangeSpec.mid(1 + i).toULongLong(&ok[1]));
 
                 if (!ok[1])
                     range.second = fileSize - 1;
@@ -82,7 +82,7 @@ ranges(const Tufao::Headers &headers, qulonglong fileSize)
                     continue;
 
                 if (range.second >= fileSize)
-                    range.second = fileSize;
+                    range.second = fileSize-1;
 
                 ranges.push_back(range);
             }
