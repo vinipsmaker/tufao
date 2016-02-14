@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="64"
+   height="64"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="tufao_logo.svg"
+   inkscape:export-filename="tufao_logo.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <title
+     id="title2997">Tufão's logo</title>
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="8.8125"
+     inkscape:cx="32"
+     inkscape:cy="32"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1326"
+     inkscape:window-height="745"
+     inkscape:window-x="40"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Tufão's logo</dc:title>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Vinícius dos Santos Oliveira</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by/3.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by/3.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Camada 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-988.36218)">
+    <g
+       id="g3029">
+      <rect
+         ry="2.9211619"
+         transform="translate(0,988.36218)"
+         y="48.453899"
+         x="30.638298"
+         height="13.276596"
+         width="32.113476"
+         id="rect2989"
+         style="fill:#338000;fill-opacity:1;stroke:none" />
+      <rect
+         style="fill:#44aa00;fill-opacity:1;stroke:none"
+         id="rect2986"
+         width="29.321583"
+         height="10.62105"
+         x="32.034294"
+         y="1038.1438"
+         ry="2.3368797" />
+      <path
+         id="rect2988"
+         d="m 34.690191,1038.1433 c -1.477629,0 -2.658812,1.0349 -2.658812,2.3295 l 0,4.9148 c 2.08478,-0.6413 4.576076,-1.1932 7.003699,-1.1932 5.786366,0 9.096226,2.0454 13.780427,2.0454 3.207144,0 6.620292,-0.8283 8.527653,-1.3636 l 0,-4.4034 c 0,-1.2946 -1.181183,-2.3295 -2.658812,-2.3295 l -23.994155,0 z"
+         style="fill:#55d400;fill-opacity:1;stroke:none"
+         inkscape:connector-curvature="0" />
+    </g>
+    <g
+       id="g3024"
+       transform="translate(-1.000001,5.1498413e-5)">
+      <rect
+         style="fill:#447821;fill-opacity:1;stroke:none"
+         id="rect2997"
+         width="32.113476"
+         height="13.276596"
+         x="16.638298"
+         y="1022.816"
+         ry="2.9211619" />
+      <rect
+         ry="2.3368797"
+         y="1024.1438"
+         x="18.034296"
+         height="10.62105"
+         width="29.321583"
+         id="rect3001"
+         style="fill:#5aa02c;fill-opacity:1;stroke:none" />
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#71c837;fill-opacity:1;stroke:none"
+         d="m 20.690191,1024.1433 c -1.477629,0 -2.658812,1.0349 -2.658812,2.3295 l 0,4.9148 c 2.08478,-0.6413 4.576076,-1.1932 7.003699,-1.1932 5.786366,0 9.096226,2.0454 13.780427,2.0454 3.207144,0 6.620292,-0.8283 8.527653,-1.3636 l 0,-4.4034 c 0,-1.2946 -1.181183,-2.3295 -2.658812,-2.3295 l -23.994155,0 z"
+         id="path3003" />
+    </g>
+    <g
+       id="g3019">
+      <rect
+         ry="2.9211619"
+         y="1008.816"
+         x="0.63829803"
+         height="13.276596"
+         width="32.113476"
+         id="rect3005"
+         style="fill:#005500;fill-opacity:1;stroke:none" />
+      <rect
+         style="fill:#008000;fill-opacity:1;stroke:none"
+         id="rect3009"
+         width="29.321583"
+         height="10.62105"
+         x="2.034296"
+         y="1010.1439"
+         ry="2.3368797" />
+      <path
+         id="path3011"
+         d="m 4.6901906,1010.1433 c -1.4776291,0 -2.6588118,1.0349 -2.6588118,2.3295 l 0,4.9148 c 2.0847803,-0.6413 4.5760761,-1.1932 7.0036994,-1.1932 5.7863658,0 9.0962258,2.0454 13.7804268,2.0454 3.207144,0 6.620292,-0.8283 8.527653,-1.3636 l 0,-4.4034 c 0,-1.2946 -1.181183,-2.3295 -2.658812,-2.3295 l -23.9941554,0 z"
+         style="fill:#00aa00;fill-opacity:1;stroke:none"
+         inkscape:connector-curvature="0" />
+    </g>
+    <path
+       style="fill:#000000;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 27.57115,1044.256 c 0.67107,1.6244 5.085018,3.5262 5.11501,0.9981 -0.36023,-12.8219 -1.049814,-31.376 -0.249513,-44.2885 8.896648,-0.6219 22.049344,0.034 22.830409,-0.7485 0.781065,-0.78301 0.757148,-1.7774 -0.124756,-2.61992 -0.881904,-0.84252 -46.7035995,-3.98248 -48.0311888,-3.24366 -1.3275893,0.73881 -0.733309,3.02549 1.2475633,4.86549 1.9808725,1.83999 19.4619875,1.87139 19.4619875,1.87139 1.04276,22.2649 0.114234,39.9319 -0.249512,43.1656 z"
+       id="path3034"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccczzzzcc" />
+  </g>
+</svg>

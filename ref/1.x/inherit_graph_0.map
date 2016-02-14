@@ -1,0 +1,20 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_tufao_1_1_abstract_http_server_request_handler.html" title="This class provides an interface for HttpServerRequest handlers. " alt="" coords="11,140,182,181"/>
+<area shape="rect" id="node2" href="$class_tufao_1_1_class_handler_manager.html" title="This class serves as the HttpServerRequestHandler for all ClassHandler plugins. " alt="" coords="244,173,432,199"/>
+<area shape="rect" id="node3" href="$class_tufao_1_1_http_file_server.html" title="You can use this class to serve static files under Tufão. " alt="" coords="267,223,409,250"/>
+<area shape="rect" id="node4" href="$class_tufao_1_1_http_plugin_server.html" title="This class provides a plugin&#45;based request handler. " alt="" coords="259,274,417,301"/>
+<area shape="rect" id="node5" href="$class_tufao_1_1_http_server_request_router.html" title="This class provides a robust and high performance HTTP request router. " alt="" coords="253,5,423,47"/>
+<area shape="rect" id="node6" href="$class_tufao_1_1_not_found_handler.html" title="A handler that responds with &quot;Not found&quot; to every request. " alt="" coords="257,71,419,98"/>
+<area shape="rect" id="node7" href="$class_tufao_1_1_url_rewriter_handler.html" title="This class provides a handler to internally (only seen by your application) rewrite the URL..." alt="" coords="254,122,422,149"/>
+<area shape="rect" id="node8" href="$class_tufao_1_1_abstract_http_upgrade_handler.html" title="This class provides an interface for HTTP Upgrade handlers. " alt="" coords="5,621,188,663"/>
+<area shape="rect" id="node9" href="$class_tufao_1_1_http_upgrade_router.html" title="This class provides a robust and high performance HTTP request router. " alt="" coords="253,629,423,655"/>
+<area shape="rect" id="node11" href="$class_tufao_1_1_abstract_message_socket.html" title="The Tufao::AbstractMessageSocket class represents a socket that sends and receives messages..." alt="" coords="236,477,440,503"/>
+<area shape="rect" id="node13" href="$class_tufao_1_1_class_handler.html" title="The ClassHandler class Define the interface to implement when creating a plugin. " alt="" coords="269,527,407,554"/>
+<area shape="rect" id="node14" href="$class_tufao_1_1_http_server.html" title="The Tufao::HttpServer class provides an implementation of the HTTP protocol. " alt="" coords="277,578,399,605"/>
+<area shape="rect" id="node16" href="$class_tufao_1_1_http_server_request.html" title="The Tufao::HttpServer represents a HTTP request received by Tufao::HttpServer. " alt="" coords="253,325,423,351"/>
+<area shape="rect" id="node17" href="$class_tufao_1_1_http_server_response.html" title="The Tufao::HttpServerResponse is used to respond to a Tufao::HttpServerRequest. " alt="" coords="249,375,427,402"/>
+<area shape="rect" id="node18" href="$class_tufao_1_1_session_store.html" title="SessionStore class can be used to store data that must persist among different requests. " alt="" coords="269,426,407,453"/>
+<area shape="rect" id="node12" href="$class_tufao_1_1_web_socket.html" title="This class represents a WebSocket connection. " alt="" coords="513,477,642,503"/>
+<area shape="rect" id="node15" href="$class_tufao_1_1_https_server.html" title="Tufao::HttpsServer is a subclass of Tufao::HttpServer that provides secure communication with the cli..." alt="" coords="513,578,641,605"/>
+<area shape="rect" id="node19" href="$class_tufao_1_1_simple_session_store.html" title="SimpleSessionStore implements a simple storage mechanism to SessionStore. " alt="" coords="488,426,667,453"/>
+</map>

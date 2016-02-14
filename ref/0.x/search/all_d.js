@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['parse',['parse',['../namespace_tufao_1_1_query_string.html#a4a1a7075f67475a4abfa33faa5d2839d',1,'Tufao::QueryString']]],
+  ['password',['password',['../class_tufao_1_1_url.html#a875ac7b96b8836fb897c93703d13b1d4',1,'Tufao::Url']]],
+  ['path',['path',['../struct_tufao_1_1_session_settings.html#aae44505df5bc26fddfbe3e24b459f965',1,'Tufao::SessionSettings::path()'],['../class_tufao_1_1_url.html#af5be59c67a95bfd25c6c42cf8261bf7f',1,'Tufao::Url::path()']]],
+  ['peeraddress',['peerAddress',['../class_tufao_1_1_web_socket.html#ad5ea5e9a07a68eb413f6e406e9d5750e',1,'Tufao::WebSocket']]],
+  ['peerport',['peerPort',['../class_tufao_1_1_web_socket.html#a1be2c0e9ddc2a0e18cc82335fd9bdf37',1,'Tufao::WebSocket']]],
+  ['ping',['ping',['../class_tufao_1_1_web_socket.html#a4795778516b1370cf8d50ae0acf9bc67',1,'Tufao::WebSocket']]],
+  ['pong',['pong',['../class_tufao_1_1_web_socket.html#a38dd32a198b69b1754fbc8e6a5b10317',1,'Tufao::WebSocket']]],
+  ['port',['port',['../class_tufao_1_1_url.html#ab97b5970c670b2bba98d60f42811ebe6',1,'Tufao::Url']]],
+  ['properties',['properties',['../class_tufao_1_1_session_store.html#a16bc3c5c767572ffb42d24be5d8b118d',1,'Tufao::SessionStore::properties()'],['../class_tufao_1_1_simple_session_store.html#ac2dfa0ce2f81bb68ba3cdda8e6de11e7',1,'Tufao::SimpleSessionStore::properties()']]],
+  ['property',['property',['../class_tufao_1_1_session_store.html#a9d6bef1faa755b9a8a2a3c6eeba5ef67',1,'Tufao::SessionStore::property()'],['../class_tufao_1_1_simple_session_store.html#a7ec371017487ecbff305f88a8d63532e',1,'Tufao::SimpleSessionStore::property()']]],
+  ['propertywrapper',['PropertyWrapper',['../class_tufao_1_1_session_1_1_property_wrapper.html',1,'Tufao::Session']]],
+  ['propertywrapper',['PropertyWrapper',['../class_tufao_1_1_session_1_1_property_wrapper.html#a320aeb9c7f265d25c4674fc068b72edd',1,'Tufao::Session::PropertyWrapper']]],
+  ['proxy_5fauthentication_5frequired',['PROXY_AUTHENTICATION_REQUIRED',['../class_tufao_1_1_web_socket.html#a532c34ad073b89905d0b4f4d75e262a8aa39e9087c4ecfbe2dbef8d0c9a9d582c',1,'Tufao::WebSocket']]],
+  ['proxy_5fconnection_5fclosed',['PROXY_CONNECTION_CLOSED',['../class_tufao_1_1_web_socket.html#a532c34ad073b89905d0b4f4d75e262a8a0df510ea06daebdc9a82e8254de92148',1,'Tufao::WebSocket']]],
+  ['proxy_5fconnection_5frefused',['PROXY_CONNECTION_REFUSED',['../class_tufao_1_1_web_socket.html#a532c34ad073b89905d0b4f4d75e262a8a9cc250df316c453937fd3c1f263501c0',1,'Tufao::WebSocket']]],
+  ['proxy_5fconnection_5ftimeout',['PROXY_CONNECTION_TIMEOUT',['../class_tufao_1_1_web_socket.html#a532c34ad073b89905d0b4f4d75e262a8aca86010be9789042293cd100c7b32663',1,'Tufao::WebSocket']]],
+  ['proxy_5fnot_5ffound',['PROXY_NOT_FOUND',['../class_tufao_1_1_web_socket.html#a532c34ad073b89905d0b4f4d75e262a8ac7c83e9b2732de6ab9eb878bae0f7d36',1,'Tufao::WebSocket']]],
+  ['proxy_5fprotocol_5ferror',['PROXY_PROTOCOL_ERROR',['../class_tufao_1_1_web_socket.html#a532c34ad073b89905d0b4f4d75e262a8ae9970f819793b2ec876f7fe3b1a41146',1,'Tufao::WebSocket']]]
+];

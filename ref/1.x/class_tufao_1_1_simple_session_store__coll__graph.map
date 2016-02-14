@@ -1,0 +1,4 @@
+<map id="Tufao::SimpleSessionStore" name="Tufao::SimpleSessionStore">
+<area shape="rect" id="node2" href="$class_tufao_1_1_session_store.html" title="SessionStore class can be used to store data that must persist among different requests. " alt="" coords="39,233,178,531"/>
+<area shape="rect" id="node4" href="$struct_tufao_1_1_session_settings.html" title="The SessionSettings class exposes details that sessions use to handle cookies. " alt="" coords="100,5,256,171"/>
+</map>

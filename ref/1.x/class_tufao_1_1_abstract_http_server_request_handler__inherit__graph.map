@@ -1,0 +1,8 @@
+<map id="Tufao::AbstractHttpServerRequestHandler" name="Tufao::AbstractHttpServerRequestHandler">
+<area shape="rect" id="node2" href="$class_tufao_1_1_class_handler_manager.html" title="This class serves as the HttpServerRequestHandler for all ClassHandler plugins. " alt="" coords="5,255,193,391"/>
+<area shape="rect" id="node3" href="$class_tufao_1_1_http_file_server.html" title="You can use this class to serve static files under Tufão. " alt="" coords="217,204,368,443"/>
+<area shape="rect" id="node4" href="$class_tufao_1_1_http_plugin_server.html" title="This class provides a plugin&#45;based request handler. " alt="" coords="393,248,550,399"/>
+<area shape="rect" id="node5" href="$class_tufao_1_1_http_server_request_router.html" title="This class provides a robust and high performance HTTP request router. " alt="" coords="575,226,771,421"/>
+<area shape="rect" id="node6" href="$class_tufao_1_1_not_found_handler.html" title="A handler that responds with &quot;Not found&quot; to every request. " alt="" coords="795,270,956,377"/>
+<area shape="rect" id="node7" href="$class_tufao_1_1_url_rewriter_handler.html" title="This class provides a handler to internally (only seen by your application) rewrite the URL..." alt="" coords="981,255,1149,391"/>
+</map>
