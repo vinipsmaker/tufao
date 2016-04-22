@@ -2,4 +2,9 @@ QT += network
 
 DEFINES += TUFAO_VERSION_MAJOR=@TUFAO_VERSION_MAJOR@
 INCLUDEPATH += "@CMAKE_INSTALL_PREFIX@/@includedir@"
-LIBS += -L"@CMAKE_INSTALL_PREFIX@/@libdir@" -l"@TUFAO_LIBRARY@"
+win32 {
+       CONFIG(debug, debug|release): LIBS += -L"@CMAKE_INSTALL_PREFIX@/@libdir@" -l"@TUFAO_LIBRARY@@CMAKE_DEBUG_POSTFIX@"
+       CONFIG(release, debug|release): LIBS += -L"@CMAKE_INSTALL_PREFIX@/@libdir@" -l"@TUFAO_LIBRARY@"
+} else {
+       LIBS += -L"@CMAKE_INSTALL_PREFIX@/@libdir@" -l"@TUFAO_LIBRARY@"
+}
