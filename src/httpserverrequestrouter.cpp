@@ -92,7 +92,7 @@ bool HttpServerRequestRouter::handleRequest(HttpServerRequest &request,
 
             if (args.size()) {
                 QVariantMap options{backup.toMap()};
-                options["args"] = options["ags"].toStringList() + args;
+                options["args"] = options["args"].toStringList() + args;
                 request.setCustomData(options);
             }
 
