@@ -52,32 +52,32 @@ set, then create a folder for the build and, from there, run:
 
 OPTIONS can be null or have a combination of the following values:
 
-  * -DCMAKE_INSTALL_PREFIX=${INSTALLDIR} sets the directory where to install
+  * `-DCMAKE_INSTALL_PREFIX=${INSTALLDIR}` sets the directory where to install
     Tufão.
-  * -DCMAKE_BUILD_TYPE=Debug
-  * -DCMAKE_BUILD_TYPE=Release
-  * -DCMAKE_BUILD_TYPE=RelWithDebInfo
-  * -DCMAKE_BUILD_TYPE=MinSizeRel
-  * -DLIB_SUFFIX=${LIB_SUFFIX} set the suffix for the install destination. If
+  * `-DCMAKE_BUILD_TYPE=Debug`
+  * `-DCMAKE_BUILD_TYPE=Release`
+  * `-DCMAKE_BUILD_TYPE=RelWithDebInfo`
+  * `-DCMAKE_BUILD_TYPE=MinSizeRel`
+  * `-DLIB_SUFFIX=${LIB_SUFFIX}` set the suffix for the install destination. If
     you are compiling Tufão under a 64 bit system using a 32 bit "environment",
     maybe you want to set this variable to 32, then Tufão libs will be installed
-    under "${INSTALLDIR}/lib32". This setting is highly dependent on your
+    under `"${INSTALLDIR}/lib32"`. This setting is highly dependent on your
     operating system conventions and I do not try to put any auto magic
     detection.
-  * -DGENERATE_DOC=YES generate documentation using Doxygen
-  * -DENABLE_TESTS=YES generate and run tests
-  * -DUSE_QT5=YES build Tufão against Qt5 (see below for more info)
-  * -DDISABLE_EXCEPTIONS=YES will completely disable exceptions during build
+  * `-DGENERATE_DOC=YES` generate documentation using Doxygen
+  * `-DENABLE_TESTS=YES` generate and run tests
+  * `-DUSE_QT5=YES` build Tufão against Qt5 (see below for more info)
+  * `-DDISABLE_EXCEPTIONS=YES` will completely disable exceptions during build
 
 OPTIONS available on Windows:
 
-  * -G"MinGW Makefiles" to generate Makefiles for use with MinGW environment
-  * -G"Visual Studio 10" to generate project files for Visual Studio 10
+  * `-G"MinGW Makefiles"` to generate Makefiles for use with MinGW environment
+  * `-G"Visual Studio 10"` to generate project files for Visual Studio 10
 
 MAKEOPTIONS can be null or have a combination of the following values:
 
-  * install installs Tufão
-  * DESTDIR=${PKGDIR} sets the directory where to install Tufão. This options
+  * `install` installs Tufão
+  * `DESTDIR=${PKGDIR}` sets the directory where to install Tufão. This options
     should be used if you intend to package Tufão to set the package directory.
     To choose another installation directory, see options in OPTIONS, above.
 
@@ -179,6 +179,9 @@ To install to a different prefix, run:
 
     $ cmake -DCMAKE_INSTALL_PREFIX=${DESTDIR}
     $ make install
+
+NOTE: You may need to run `ldconfig` after installation depending on your
+system.
 
 ## USAGE
 
