@@ -51,7 +51,10 @@ QByteArray SessionStore::session(const HttpServerRequest &request) const
     // try to find a compatible cookie...
     // ...and returns the first
     for (int i = 0;i != headers.size();++i) {
-        QList<QNetworkCookie> cookies(QNetworkCookie::parseCookies(headers[i]));
+        QList<QByteArray> cookiePairs = headers[i].split(';');
+        QList<QNetworkCookie> cookies;
+        for (int i = 0;i != cookiePairs.size();++i)
+            cookies.append(QNetworkCookie::parseCookies(cookiePairs[i]));
 
         for (int i = 0;i != cookies.size();++i) {
             if (cookies[i].name() == settings.name)
