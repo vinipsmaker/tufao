@@ -264,6 +264,9 @@ void HttpFileServer::serveFile(const QString &fileName,
             //request.socket().flush();
             response.flush();
             remaining -= chunk.size();
+
+            if (!request.socket().isOpen())
+                return;
         }
 
         response.end();
