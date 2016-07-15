@@ -33,7 +33,7 @@ bool HttpsConnectionHandler::incomingConnection(qintptr socketDescriptor)
     Priv* p = ((Priv*)_priv());
 
     QSslSocket *socket = new QSslSocket;
-    socket->setProtocol(QSsl::TlsV1_0);
+    socket->setProtocol(QSsl::SecureProtocols);
     socket->setLocalCertificate(p->localCertificate);
     socket->setPrivateKey(p->privateKey);
 
