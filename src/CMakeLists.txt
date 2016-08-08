@@ -49,6 +49,10 @@ set_target_properties(
     INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${libdir}"
 )
 
+target_include_directories("${TUFAO_LIBRARY}"
+  PRIVATE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../3rd/boost.http/include" ${Boost_INCLUDE_DIR})
+
 # CXX_STANDARD was introduced in CMake 3.1
 if("${CMAKE_VERSION}" VERSION_GREATER "3.0")
     set_target_properties(

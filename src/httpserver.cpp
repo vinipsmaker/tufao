@@ -131,6 +131,8 @@ void HttpServer::onRequestReady()
     connect(&socket, &QAbstractSocket::disconnected,
             response, &QObject::deleteLater);
     connect(response, &HttpServerResponse::finished,
+            request, &HttpServerRequest::resume);
+    connect(response, &HttpServerResponse::finished,
             response, &QObject::deleteLater);
 
     if (request->headers().contains("Expect", "100-continue"))

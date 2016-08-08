@@ -1,0 +1,4 @@
+[submodule "boost.http"]
+	path = 3rd/boost.http
+	url = https://github.com/BoostGSoC14/boost.http.git
+	branch = parser

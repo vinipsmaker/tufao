@@ -19,21 +19,20 @@
 #ifndef TUFAO_PRIV_HTTPSERVERREQUEST_H
 #define TUFAO_PRIV_HTTPSERVERREQUEST_H
 
+#define BOOST_ERROR_CODE_HEADER_ONLY
+#include <boost/http/reader.hpp>
+
 #include "../headers.h"
 #include "../httpserverrequest.h"
-
-#include "http_parser.h"
-#undef int8_t
-#undef uint8_t
-#undef uint32_t
-#undef int64_t
-#undef uint64_t
 
 #include <QtNetwork/QAbstractSocket>
 #include <QtCore/QTimer>
 #include <QtCore/QUrl>
 
 namespace Tufao {
+
+namespace http = boost::http;
+namespace asio = boost::asio;
 
 struct HttpServerRequest::Priv
 {
@@ -45,36 +44,20 @@ struct HttpServerRequest::Priv
     };
     Q_DECLARE_FLAGS(Signals, Signal)
 
-    Priv(Tufao::HttpServerRequest *request, QAbstractSocket &socket) :
+    Priv(QAbstractSocket &socket) :
         socket(socket),
-        lastWasValue(true),
         useTrailers(false),
-        whatEmit(0),
         responseOptions(0),
         timeout(0)
     {
-        http_parser_init(&parser, HTTP_REQUEST);
         timer.setSingleShot(true);
-        parser.data = request;
     }
-
-    static http_parser_settings httpSettings();
-    static int on_message_begin(http_parser *);
-    static int on_url(http_parser *, const char *, size_t);
-    static int on_header_field(http_parser *, const char *, size_t);
-    static int on_header_value(http_parser *, const char *, size_t);
-    static int on_headers_complete(http_parser *);
-    static int on_body(http_parser *, const char *, size_t);
-    static int on_message_complete(http_parser *);
 
     QAbstractSocket &socket;
     QByteArray buffer;
-    http_parser parser;
-    QByteArray urlData;
+    http::request_reader parser;
     QByteArray lastHeader;
-    bool lastWasValue;
     bool useTrailers;
-    Signals whatEmit;
     QByteArray body;
 
     QByteArray method;
@@ -87,20 +70,6 @@ struct HttpServerRequest::Priv
 
     int timeout;
     QTimer timer;
-
-    static const http_parser_settings httpSettingsInstance;
-};
-
-struct RawData
-{
-    template<int N>
-    Q_DECL_CONSTEXPR RawData(const char (&data)[N]) :
-        data(data),
-        size(N - 1)
-    {}
-
-    const char *data;
-    int size;
 };
 
 } // namespace Tufao

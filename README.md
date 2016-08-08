@@ -26,8 +26,6 @@ system (signals & slots). It features:
   * Timeout support
   * C++11
 
-It uses Ryan Dahl's HTTP parser to provide good performance.
-
 You can generate documentation from the source code using Doxygen. The
 documentation will be put on the doc folder in the html and tex formats. There
 is also experimental support for Qt compressed help files.
@@ -40,9 +38,9 @@ examples are under MIT license.
 The Tufão logo is licensed under [Creative Commons Attribution 3.0 Unported]
 (http://creativecommons.org/licenses/by/3.0/).
 
-The library is dynamic linked against Qt and include code from Ryan Dahl's HTTP
-parser. Qt library is licensed under LGPL and Ryan Dahl's HTTP parser is
-licensed under MIT license.
+The library is dynamic linked against Qt and include code from Boost.Http
+parser. Qt library is licensed under LGPL and Boost.Http is licensed under the
+Boost Software License.
 
 So, you can create commercial applications (the *only* restriction is that *if*
 you do any modifications to *Tufão*, these modifications must be redistributed).
@@ -182,6 +180,11 @@ If you want use Tufão in other build system, just add the compiler option
 You can also see Tufão documentation integrated in QtAssistant.
 
 ## NEWS
+
+Version 1.4
+
+- Replaces Ryan Dahl's HTTP parser. Now Boost.Http parser is used.
+- Fixes HTTP pipelining support.
 
 Version 1.3
 

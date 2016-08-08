@@ -20,12 +20,9 @@
 
 namespace Tufao {
 
-const http_parser_settings HttpServerRequest::Priv::httpSettingsInstance
-= HttpServerRequest::Priv::httpSettings();
-
 HttpServerRequest::HttpServerRequest(QAbstractSocket &socket, QObject *parent) :
     QObject(parent),
-    priv(new Priv(this, socket))
+    priv(new Priv(socket))
 {
     connect(&socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(&socket, SIGNAL(disconnected()), this, SIGNAL(close()));
@@ -117,43 +114,149 @@ void HttpServerRequest::setCustomData(const QVariant &data)
     priv->customData = data;
 }
 
+void HttpServerRequest::resume()
+{
+    connect(&priv->socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+
+    if (priv->buffer.size())
+        onReadyRead();
+}
+
 void HttpServerRequest::onReadyRead()
 {
     if (priv->timeout)
         priv->timer.start(priv->timeout);
 
     priv->buffer += priv->socket.readAll();
-    size_t nparsed = http_parser_execute(&priv->parser,
-                                         &Priv::httpSettingsInstance,
-                                         priv->buffer.constData(),
-                                         priv->buffer.size());
+    priv->parser.set_buffer(asio::buffer(priv->buffer.data(),
+                                         priv->buffer.size()));
 
-    if (priv->parser.http_errno) {
-        priv->socket.close();
-        return;
-    }
+    std::size_t nparsed = 0;
+    Priv::Signals whatEmit(0);
+    bool is_upgrade = false;
 
-    if (priv->whatEmit.testFlag(Priv::READY)) {
-        priv->whatEmit &= ~Priv::Signals(Priv::READY);
-        this->disconnect(SIGNAL(data()));
-        this->disconnect(SIGNAL(end()));
-        emit ready();
-    }
+    do {
+        priv->parser.next();
+        switch(priv->parser.code()) {
+        case http::token::code::error_insufficient_data:
+            continue;
+        case http::token::code::error_invalid_data:
+        case http::token::code::error_no_host:
+        case http::token::code::error_invalid_content_length:
+        case http::token::code::error_content_length_overflow:
+        case http::token::code::error_invalid_transfer_encoding:
+        case http::token::code::error_chunk_size_overflow:
+            priv->socket.close();
+            return;
+        case http::token::code::skip:
+            break;
+        case http::token::code::method:
+            {
+                clearRequest();
+                priv->responseOptions = 0;
+                auto value = priv->parser.value<http::token::method>();
+                QByteArray method(value.data(), value.size());
+                priv->method = std::move(method);
+            }
+            break;
+        case http::token::code::request_target:
+            {
+                auto value = priv->parser.value<http::token::request_target>();
+                QByteArray url(value.data(), value.size());
+                priv->url = std::move(url);
+            }
+            break;
+        case http::token::code::version:
+            {
+                auto value = priv->parser.value<http::token::version>();
+                if (value == 0) {
+                    priv->httpVersion = HttpVersion::HTTP_1_0;
+                    priv->responseOptions |= HttpServerResponse::HTTP_1_0;
+                } else {
+                    priv->httpVersion = HttpVersion::HTTP_1_1;
+                    priv->responseOptions |= HttpServerResponse::HTTP_1_1;
+                }
+            }
+            break;
+        case http::token::code::status_code:
+            qFatal("unreachable");
+            break;
+        case http::token::code::reason_phrase:
+            qFatal("unreachable");
+            break;
+        case http::token::code::field_name:
+            {
+                auto value = priv->parser.value<http::token::field_name>();
+                QByteArray header(value.data(), value.size());
+                priv->lastHeader = std::move(header);
+            }
+            break;
+        case http::token::code::field_value:
+            {
+                auto value = priv->parser.value<http::token::field_value>();
+                QByteArray header(value.data(), value.size());
+                priv->lastHeader = std::move(header);
+                (priv->useTrailers ? priv->trailers : priv->headers)
+                    .insert(priv->lastHeader, std::move(header));
+                priv->lastHeader.clear();
+            }
+            break;
+        case http::token::code::end_of_headers:
+            {
+                auto it = priv->headers.find("connection");
+                bool close_found = false;
+                bool keep_alive_found = false;
+                for (;it != priv->headers.end();++it) {
+                    auto value = boost::string_ref(it->data(), it->size());
+                    http::header_value_any_of(value, [&](boost::string_ref v) {
+                        if (iequals(v, "close"))
+                            close_found = true;
 
-    if (priv->whatEmit.testFlag(Priv::DATA)) {
-        priv->whatEmit &= ~Priv::Signals(Priv::DATA);
-        emit data();
-    }
+                        if (iequals(v, "keep-alive"))
+                            keep_alive_found = true;
 
+                        if (iequals(v, "upgrade"))
+                            is_upgrade = true;
+
+                        return false;
+                    });
+                    if (close_found)
+                        break;
+                }
+                if (!close_found
+                    && (priv->httpVersion == HttpVersion::HTTP_1_1
+                        || keep_alive_found)) {
+                    priv->responseOptions |= HttpServerResponse::KEEP_ALIVE;
+                }
+                whatEmit = Priv::READY;
+            }
+            break;
+        case http::token::code::body_chunk:
+            {
+                auto value = priv->parser.value<http::token::body_chunk>();
+                priv->body.append(asio::buffer_cast<const char*>(value),
+                                  asio::buffer_size(value));
+                whatEmit |= Priv::DATA;
+            }
+            break;
+        case http::token::code::end_of_body:
+            priv->useTrailers = true;
+            break;
+        case http::token::code::end_of_message:
+            priv->useTrailers = false;
+            priv->parser.set_buffer(asio::buffer(priv->buffer.data() + nparsed,
+                                                 priv->parser.token_size()));
+            whatEmit |= Priv::END;
+            disconnect(&priv->socket, SIGNAL(readyRead()),
+                       this, SLOT(onReadyRead()));
+            break;
+        }
+
+        nparsed += priv->parser.token_size();
+    } while(priv->parser.code() != http::token::code::end_of_message);
     priv->buffer.remove(0, nparsed);
 
-    if (priv->whatEmit.testFlag(Priv::END)) {
-        priv->whatEmit &= ~Priv::Signals(Priv::END);
-        emit end();
-        return;
-    }
-
-    if (priv->parser.upgrade) {
+    if (is_upgrade) {
         disconnect(&priv->socket, SIGNAL(readyRead()),
                    this, SLOT(onReadyRead()));
         disconnect(&priv->socket, SIGNAL(disconnected()),
@@ -162,21 +265,31 @@ void HttpServerRequest::onReadyRead()
 
         priv->body.swap(priv->buffer);
         emit upgrade();
+        return;
+    }
+
+    if (whatEmit.testFlag(Priv::READY)) {
+        whatEmit &= ~Priv::Signals(Priv::READY);
+        this->disconnect(SIGNAL(data()));
+        this->disconnect(SIGNAL(end()));
+        emit ready();
+    }
+
+    if (whatEmit.testFlag(Priv::DATA)) {
+        whatEmit &= ~Priv::Signals(Priv::DATA);
+        emit data();
+    }
+
+    if (whatEmit.testFlag(Priv::END)) {
+        whatEmit &= ~Priv::Signals(Priv::END);
+        emit end();
+        return;
     }
 }
 
 void HttpServerRequest::onTimeout()
 {
     priv->socket.close();
-}
-
-inline void HttpServerRequest::clearBuffer()
-{
-    priv->buffer.clear();
-    priv->urlData.clear();
-    priv->lastHeader.clear();
-    priv->lastWasValue = true;
-    priv->useTrailers = false;
 }
 
 inline void HttpServerRequest::clearRequest()
@@ -187,218 +300,6 @@ inline void HttpServerRequest::clearRequest()
     priv->body.clear();
     priv->trailers.clear();
     priv->customData.clear();
-}
-
-http_parser_settings HttpServerRequest::Priv::httpSettings()
-{
-    http_parser_settings settings;
-
-    http_parser_settings_init(&settings);
-
-    settings.on_message_begin
-            = Tufao::HttpServerRequest::Priv::on_message_begin;
-    settings.on_url = Tufao::HttpServerRequest::Priv::on_url;
-    settings.on_header_field = Tufao::HttpServerRequest::Priv::on_header_field;
-    settings.on_header_value = Tufao::HttpServerRequest::Priv::on_header_value;
-    settings.on_headers_complete
-            = Tufao::HttpServerRequest::Priv::on_headers_complete;
-    settings.on_body = Tufao::HttpServerRequest::Priv::on_body;
-    settings.on_message_complete
-            = Tufao::HttpServerRequest::Priv::on_message_complete;
-
-    return settings;
-}
-
-int HttpServerRequest::Priv::on_message_begin(http_parser *parser)
-{
-    Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
-            (parser->data);
-    Q_ASSERT(request);
-    request->clearRequest();
-    return 0;
-}
-
-int HttpServerRequest::Priv::on_url(http_parser *parser, const char *at,
-                                    size_t length)
-{
-    Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
-            (parser->data);
-    Q_ASSERT(request);
-    request->priv->urlData.append(at, length);
-    return 0;
-}
-
-int HttpServerRequest::Priv::on_header_field(http_parser *parser, const char *at,
-                                             size_t length)
-{
-    Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
-            (parser->data);
-    Q_ASSERT(request);
-    if (request->priv->lastWasValue) {
-        request->priv->lastHeader = QByteArray(at, length);
-        request->priv->lastWasValue = false;
-    } else {
-        request->priv->lastHeader.append(at, length);
-    }
-    return 0;
-}
-
-int HttpServerRequest::Priv::on_header_value(http_parser *parser, const char *at,
-                                             size_t length)
-{
-    Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
-            (parser->data);
-    Q_ASSERT(request);
-    if (request->priv->lastWasValue) {
-        if (request->priv->useTrailers) {
-            request->priv->trailers
-                    .replace(request->priv->lastHeader,
-                             request->priv->trailers.value(request->priv
-                                                           ->lastHeader)
-                             + QByteArray(at, length));
-        } else {
-            request->priv->headers
-                    .replace(request->priv->lastHeader,
-                             request->priv->headers.value(request->priv
-                                                          ->lastHeader)
-                             + QByteArray(at, length));
-        }
-    } else {
-        if (request->priv->useTrailers) {
-            request->priv->trailers
-                    .insert(request->priv->lastHeader, QByteArray(at, length));
-        } else {
-            request->priv->headers
-                    .insert(request->priv->lastHeader, QByteArray(at, length));
-        }
-        request->priv->lastWasValue = true;
-    }
-    return 0;
-}
-
-int HttpServerRequest::Priv::on_headers_complete(http_parser *parser)
-{
-    Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
-            (parser->data);
-    Q_ASSERT(request);
-
-    request->priv->url = request->priv->urlData;
-    request->priv->urlData.clear();
-
-    request->priv->lastHeader.clear();
-    request->priv->lastWasValue = true;
-    request->priv->useTrailers = true;
-
-    {
-        typedef RawData MT;
-        static const MT methods[] {
-            MT{"DELETE"},
-            MT{"GET"},
-            MT{"HEAD"},
-            MT{"POST"},
-            MT{"PUT"},
-            MT{"CONNECT"},
-            MT{"OPTIONS"},
-            MT{"TRACE"},
-            MT{"COPY"},
-            MT{"LOCK"},
-            MT{"MKCOL"},
-            MT{"MOVE"},
-            MT{"PROPFIND"},
-            MT{"PROPPATCH"},
-            MT{"SEARCH"},
-            MT{"UNLOCK"},
-            MT{"BIND"},
-            MT{"REBIND"},
-            MT{"UNBIND"},
-            MT{"ACL"},
-            MT{"REPORT"},
-            MT{"MKACTIVITY"},
-            MT{"CHECKOUT"},
-            MT{"MERGE"},
-            MT{"M-SEARCH"},
-            MT{"NOTIFY"},
-            MT{"SUBSCRIBE"},
-            MT{"UNSUBSCRIBE"},
-            MT{"PATCH"},
-            MT{"PURGE"},
-            MT{"MKCALENDAR"},
-            MT{"LINK"},
-            MT{"UNLINK"}
-        };
-
-        const auto &m = methods[parser->method];
-        request->priv->method.setRawData(m.data, m.size);
-    }
-
-    {
-        static const char errorMessage[]
-                = "HTTP/1.1 505 HTTP Version Not Supported\r\n"
-                "Connection: close\r\n"
-                "\r\n"
-                "This server only offers support to HTTP/1.0 and HTTP/1.1\n";
-        switch (parser->http_major) {
-        case 1:
-            switch (parser->http_minor) {
-            case 0:
-                request->priv->httpVersion = HttpVersion::HTTP_1_0;
-                break;
-            case 1:
-                request->priv->httpVersion = HttpVersion::HTTP_1_1;
-                break;
-            default:
-                request->priv->socket.write(errorMessage,
-                                            sizeof(errorMessage) - 1);
-                request->clearBuffer();
-                request->clearRequest();
-                return -1;
-            }
-            break;
-        default:
-            request->priv->socket.write(errorMessage, sizeof(errorMessage) - 1);
-            request->clearBuffer();
-            request->clearRequest();
-            return -1;
-        }
-    }
-
-    request->priv->responseOptions = 0;
-
-    if (parser->http_minor == 1)
-        request->priv->responseOptions |= HttpServerResponse::HTTP_1_1;
-    else
-        request->priv->responseOptions |= HttpServerResponse::HTTP_1_0;
-
-    if (http_should_keep_alive(&request->priv->parser))
-        request->priv->responseOptions |= HttpServerResponse::KEEP_ALIVE;
-
-    if (!parser->upgrade)
-        request->priv->whatEmit = READY;
-
-    return 0;
-}
-
-int HttpServerRequest::Priv::on_body(http_parser *parser, const char *at,
-                                     size_t length)
-{
-    Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
-            (parser->data);
-    Q_ASSERT(request);
-    request->priv->body.append(at, length);
-    request->priv->whatEmit |= Priv::DATA;
-    return 0;
-}
-
-int HttpServerRequest::Priv::on_message_complete(http_parser *parser)
-{
-    Tufao::HttpServerRequest *request = static_cast<Tufao::HttpServerRequest *>
-            (parser->data);
-    Q_ASSERT(request);
-    if (!parser->upgrade) {
-        request->clearBuffer();
-        request->priv->whatEmit |= Priv::END;
-    }
-    return 0;
 }
 
 } // namespace Tufao

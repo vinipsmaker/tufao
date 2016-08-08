@@ -12,6 +12,7 @@ set(TUFAO_BRIEF "An asynchronous web framework for C++ built on top of Qt")
 cmake_minimum_required(VERSION 2.8.11)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
+find_package(Boost 1.55 REQUIRED)
 
 # CMake since 3.1 has ability to use particular C/C++ standarts.
 # For versions before 3.1 use FindCXX11 module as fallback.

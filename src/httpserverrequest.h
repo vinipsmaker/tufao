@@ -261,6 +261,23 @@ public:
      */
     void setCustomData(const QVariant &data);
 
+public slots:
+    /*!
+      This function exists to support HTTP pipelining.
+
+      HTTP protocol allows several requests to be sent before the reply to the
+      first one is issued. HttpServerRequest will stop processing its internal
+      buffer once the end of some message is reached. You should call this
+      function once you issue the reply to a message.
+
+      HttpServer will automatically connect the HttpServerResponse::finished
+      signal to this slot, so you shouldn't need to worry about anything if
+      you're using Tufão's standard abstractions.
+
+      \since 1.4
+     */
+    void resume();
+
 signals:
     /*!
       This signal is emitted when most of the data about the request is
