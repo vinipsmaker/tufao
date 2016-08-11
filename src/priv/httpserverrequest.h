@@ -19,8 +19,7 @@
 #ifndef TUFAO_PRIV_HTTPSERVERREQUEST_H
 #define TUFAO_PRIV_HTTPSERVERREQUEST_H
 
-#define BOOST_ERROR_CODE_HEADER_ONLY
-#include <boost/http/reader.hpp>
+#include <boost/http/reader/request.hpp>
 
 #include "../headers.h"
 #include "../httpserverrequest.h"
@@ -32,6 +31,7 @@
 namespace Tufao {
 
 namespace http = boost::http;
+namespace reader = http::reader;
 namespace asio = boost::asio;
 
 struct HttpServerRequest::Priv
@@ -55,7 +55,7 @@ struct HttpServerRequest::Priv
 
     QAbstractSocket &socket;
     QByteArray buffer;
-    http::request_reader parser;
+    reader::request parser;
     QByteArray lastHeader;
     bool useTrailers;
     QByteArray body;
