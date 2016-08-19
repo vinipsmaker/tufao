@@ -19,8 +19,8 @@
 #ifndef TUFAO_PRIV_WEBSOCKET_H
 #define TUFAO_PRIV_WEBSOCKET_H
 
+#include <boost/http/reader/response.hpp>
 #include "../websocket.h"
-#include "http_parser.h"
 
 #include <QtNetwork/QAbstractSocket>
 #include <QtCore/QtEndian>
@@ -32,7 +32,9 @@
 
 namespace Tufao {
 
-struct HttpClientSettings;
+namespace http = boost::http;
+namespace reader = http::reader;
+namespace asio = boost::asio;
 
 namespace FrameType
 {
@@ -70,11 +72,8 @@ class WebSocketHttpClient
 public:
     WebSocketHttpClient() :
         ready(false),
-        lastWasValue(true)
-    {
-        http_parser_init(&parser, HTTP_RESPONSE);
-        parser.data = this;
-    }
+        errored(false)
+    {}
 
     /*!
       Return true if the request is complete and got a Upgrade response.
@@ -93,16 +92,10 @@ public:
     bool ready;
 
 private:
-    static int on_header_field(http_parser *, const char *, size_t);
-    static int on_header_value(http_parser *, const char *, size_t);
-    static int on_headers_complete(http_parser *);
-    static int on_message_complete(http_parser *);
-
-    http_parser parser;
+    reader::response parser;
     QByteArray lastHeader;
-    bool lastWasValue;
-
-    friend struct HttpClientSettings;
+    int status_code;
+    bool errored;
 };
 
 struct WebSocketClientNode

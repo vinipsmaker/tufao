@@ -893,39 +893,102 @@ inline void WebSocket::evaluateControlFrame()
     priv->payload.clear();
 }
 
-struct HttpClientSettings
-{
-    HttpClientSettings();
-
-    http_parser_settings settings;
-};
-
-inline HttpClientSettings::HttpClientSettings()
-{
-    settings.on_header_field = WebSocketHttpClient::on_header_field;
-    settings.on_header_value = WebSocketHttpClient::on_header_value;
-    settings.on_headers_complete = WebSocketHttpClient::on_headers_complete;
-    settings.on_message_complete = WebSocketHttpClient::on_message_complete;
-}
-
-static const HttpClientSettings httpClientSettings;
-
 inline bool WebSocketHttpClient::execute(QByteArray &chunk)
 {
-    size_t nparsed = http_parser_execute(&parser,
-                                         &httpClientSettings.settings,
-                                         chunk.constData(),
-                                         chunk.size());
+    if (errored)
+        return false;
 
+    parser.set_buffer(asio::buffer(chunk.data(), chunk.size()));
+
+    std::size_t nparsed = 0;
+
+    do {
+        parser.next();
+        switch(parser.code()) {
+        case http::token::code::error_insufficient_data:
+            continue;
+        case http::token::code::error_set_method:
+            qFatal("unreachable: we did call `set_method`");
+            break;
+        case http::token::code::error_use_another_connection:
+            errored = true;
+            return false;
+        case http::token::code::error_invalid_data:
+            errored = true;
+            return false;
+        case http::token::code::error_no_host:
+            qFatal("unreachable");
+            break;
+        case http::token::code::error_invalid_content_length:
+            errored = true;
+            return false;
+        case http::token::code::error_content_length_overflow:
+            errored = true;
+            return false;
+        case http::token::code::error_invalid_transfer_encoding:
+            errored = true;
+            return false;
+        case http::token::code::error_chunk_size_overflow:
+            errored = true;
+            return false;
+        case http::token::code::skip:
+            break;
+        case http::token::code::method:
+            qFatal("unreachable");
+            break;
+        case http::token::code::request_target:
+            qFatal("unreachable");
+            break;
+        case http::token::code::version:
+            if (parser.value<http::token::version>() == 0) {
+                errored = true;
+                return false;
+            }
+
+            break;
+        case http::token::code::status_code:
+            status_code = parser.value<http::token::status_code>();
+            if (status_code != 101) {
+                errored = true;
+                return false;
+            }
+
+            parser.set_method("GET");
+            break;
+        case http::token::code::reason_phrase:
+            break;
+        case http::token::code::field_name:
+            {
+                auto value = parser.value<http::token::field_name>();
+                lastHeader = QByteArray(value.data(), value.size());
+            }
+            break;
+        case http::token::code::field_value:
+            {
+                auto value = parser.value<http::token::field_value>();
+                QByteArray header(value.data(), value.size());
+                headers.insert(lastHeader, std::move(header));
+                lastHeader.clear();
+            }
+            break;
+        case http::token::code::end_of_headers:
+            break;
+        case http::token::code::body_chunk:
+            break;
+        case http::token::code::end_of_body:
+            break;
+        case http::token::code::end_of_message:
+            ready = true;
+            parser.set_buffer(asio::buffer(chunk.data() + nparsed,
+                                           parser.token_size()));
+            break;
+        }
+
+        nparsed += parser.token_size();
+    } while(parser.code() != http::token::code::end_of_message);
     chunk.remove(0, nparsed);
 
-    if (parser.http_errno)
-        return false;
-
-    if (statusCode() != 101)
-        return false;
-
-    if (parser.upgrade)
+    if (ready && headers.contains("Upgrade"))
         return true;
 
     return false;
@@ -933,81 +996,12 @@ inline bool WebSocketHttpClient::execute(QByteArray &chunk)
 
 inline bool WebSocketHttpClient::error()
 {
-    return parser.http_errno;
+    return errored;
 }
 
 inline int WebSocketHttpClient::statusCode()
 {
-    return parser.status_code;
-}
-
-int WebSocketHttpClient::on_header_field(http_parser *parser, const char *at,
-                                      size_t length)
-{
-    WebSocketHttpClient *wsr = static_cast<WebSocketHttpClient *>(parser->data);
-    Q_ASSERT(wsr);
-
-    if (wsr->lastWasValue) {
-        wsr->lastHeader = QByteArray(at, length);
-        wsr->lastWasValue = false;
-    } else {
-        wsr->lastHeader.append(at, length);
-    }
-
-    return 0;
-}
-
-int WebSocketHttpClient::on_header_value(http_parser *parser, const char *at,
-                                      size_t length)
-{
-    WebSocketHttpClient *wsr = static_cast<WebSocketHttpClient *>(parser->data);
-    Q_ASSERT(wsr);
-
-    if (wsr->lastWasValue) {
-        wsr->headers.replace(wsr->lastHeader,
-                             wsr->headers.value(wsr->lastHeader)
-                             + QByteArray(at, length));
-    } else {
-        wsr->headers.insert(wsr->lastHeader, QByteArray(at, length));
-        wsr->lastWasValue = true;
-    }
-
-    return 0;
-}
-
-int WebSocketHttpClient::on_headers_complete(http_parser *parser)
-{
-    WebSocketHttpClient *wsr = static_cast<WebSocketHttpClient *>(parser->data);
-    Q_ASSERT(wsr);
-
-    wsr->lastHeader.clear();
-    wsr->lastWasValue = true;
-
-    switch (parser->http_major) {
-    case 1:
-        switch (parser->http_minor) {
-        case 0:
-        case 1:
-            break;
-        default:
-            return -1;
-        }
-        break;
-    default:
-        return -1;
-    }
-
-    return 0;
-}
-
-int WebSocketHttpClient::on_message_complete(http_parser *parser)
-{
-    WebSocketHttpClient *wsr = static_cast<WebSocketHttpClient *>(parser->data);
-    Q_ASSERT(wsr);
-
-    wsr->ready = true;
-
-    return 0;
+    return status_code;
 }
 
 } // namespace Tufao

@@ -6,7 +6,6 @@ set(tufao_SRC
     httpsserver.cpp
     priv/tcpserverwrapper.cpp
     priv/reasonphrase.cpp
-    priv/http_parser.c
     websocket.cpp
     abstractmessagesocket.cpp
     httpfileserver.cpp
