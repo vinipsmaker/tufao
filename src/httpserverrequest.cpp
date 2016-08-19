@@ -193,15 +193,13 @@ void HttpServerRequest::onReadyRead()
         case http::token::code::field_name:
             {
                 auto value = priv->parser.value<http::token::field_name>();
-                QByteArray header(value.data(), value.size());
-                priv->lastHeader = std::move(header);
+                priv->lastHeader = QByteArray(value.data(), value.size());
             }
             break;
         case http::token::code::field_value:
             {
                 auto value = priv->parser.value<http::token::field_value>();
                 QByteArray header(value.data(), value.size());
-                priv->lastHeader = std::move(header);
                 (priv->useTrailers ? priv->trailers : priv->headers)
                     .insert(priv->lastHeader, std::move(header));
                 priv->lastHeader.clear();
