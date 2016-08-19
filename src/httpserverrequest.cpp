@@ -140,6 +140,12 @@ void HttpServerRequest::onReadyRead()
         switch(priv->parser.code()) {
         case http::token::code::error_insufficient_data:
             continue;
+        case http::token::code::error_set_method:
+            qFatal("unreachable");
+            break;
+        case http::token::code::error_use_another_connection:
+            qFatal("unreachable");
+            break;
         case http::token::code::error_invalid_data:
         case http::token::code::error_no_host:
         case http::token::code::error_invalid_content_length:
