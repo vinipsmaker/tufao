@@ -1,3 +1,5 @@
+!!! I can no longer maintain this project. If you're interessed, please contact me and I can move the projetct to you !!!
+
 # Tufão - an asynchronous web framework for C++ built on top of Qt
 
 [![Join the chat at https://gitter.im/vinipsmaker/tufao](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vinipsmaker/tufao?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
