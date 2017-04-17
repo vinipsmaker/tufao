@@ -257,7 +257,8 @@ void HttpServerRequest::onReadyRead()
         }
 
         nparsed += priv->parser.token_size();
-    } while(priv->parser.code() != http::token::code::end_of_message);
+    } while(priv->parser.code() != http::token::code::error_insufficient_data
+            && priv->parser.code() != http::token::code::end_of_message);
     priv->buffer.remove(0, nparsed);
 
     if (is_upgrade) {
