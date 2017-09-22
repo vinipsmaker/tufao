@@ -985,7 +985,8 @@ inline bool WebSocketHttpClient::execute(QByteArray &chunk)
         }
 
         nparsed += parser.token_size();
-    } while(parser.code() != http::token::code::end_of_message);
+    } while(parser.code() != http::token::code::error_insufficient_data
+            && parser.code() != http::token::code::end_of_message);
     chunk.remove(0, nparsed);
 
     if (ready && headers.contains("Upgrade"))
