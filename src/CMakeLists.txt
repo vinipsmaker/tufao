@@ -50,7 +50,9 @@ set_target_properties(
 
 target_include_directories("${TUFAO_LIBRARY}"
   PRIVATE
-  "${CMAKE_CURRENT_SOURCE_DIR}/../3rd/boost.http/include" ${Boost_INCLUDE_DIR})
+  "${CMAKE_CURRENT_SOURCE_DIR}/../3rd/boost.http/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../3rd/boost.beast/include"
+  ${Boost_INCLUDE_DIR})
 
 # CXX_STANDARD was introduced in CMake 3.1
 if("${CMAKE_VERSION}" VERSION_GREATER "3.0")
