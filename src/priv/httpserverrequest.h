@@ -46,7 +46,6 @@ struct HttpServerRequest::Priv
 
     Priv(QAbstractSocket &socket) :
         socket(socket),
-        useTrailers(false),
         responseOptions(0),
         timeout(0)
     {
@@ -57,7 +56,6 @@ struct HttpServerRequest::Priv
     QByteArray buffer;
     reader::request parser;
     QByteArray lastHeader;
-    bool useTrailers;
     QByteArray body;
 
     QByteArray method;

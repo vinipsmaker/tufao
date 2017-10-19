@@ -365,8 +365,6 @@ private:
 
     struct Priv;
     Priv *priv;
-
-    friend struct Tufao::HttpServerRequest::Priv;
 };
 
 } // namespace Tufao

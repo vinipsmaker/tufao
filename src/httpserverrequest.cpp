@@ -191,6 +191,7 @@ void HttpServerRequest::onReadyRead()
             qFatal("unreachable");
             break;
         case http::token::code::field_name:
+        case http::token::code::trailer_name:
             {
                 auto value = priv->parser.value<http::token::field_name>();
                 priv->lastHeader = QByteArray(value.data(), value.size());
@@ -200,8 +201,15 @@ void HttpServerRequest::onReadyRead()
             {
                 auto value = priv->parser.value<http::token::field_value>();
                 QByteArray header(value.data(), value.size());
-                (priv->useTrailers ? priv->trailers : priv->headers)
-                    .insert(priv->lastHeader, std::move(header));
+                priv->headers.insert(priv->lastHeader, std::move(header));
+                priv->lastHeader.clear();
+            }
+            break;
+        case http::token::code::trailer_value:
+            {
+                auto value = priv->parser.value<http::token::trailer_value>();
+                QByteArray header(value.data(), value.size());
+                priv->trailers.insert(priv->lastHeader, std::move(header));
                 priv->lastHeader.clear();
             }
             break;
@@ -244,10 +252,8 @@ void HttpServerRequest::onReadyRead()
             }
             break;
         case http::token::code::end_of_body:
-            priv->useTrailers = true;
             break;
         case http::token::code::end_of_message:
-            priv->useTrailers = false;
             priv->parser.set_buffer(asio::buffer(priv->buffer.data() + nparsed,
                                                  priv->parser.token_size()));
             whatEmit |= Priv::END;

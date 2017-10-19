@@ -977,6 +977,10 @@ inline bool WebSocketHttpClient::execute(QByteArray &chunk)
             break;
         case http::token::code::end_of_body:
             break;
+        case http::token::code::trailer_name:
+            break;
+        case http::token::code::trailer_value:
+            break;
         case http::token::code::end_of_message:
             ready = true;
             parser.set_buffer(asio::buffer(chunk.data() + nparsed,
