@@ -902,11 +902,9 @@ inline bool WebSocketHttpClient::execute(QByteArray &chunk)
 
     std::size_t nparsed = 0;
 
-    do {
-        parser.next();
+    while(parser.code() != http::token::code::error_insufficient_data
+          && parser.code() != http::token::code::end_of_message) {
         switch(parser.code()) {
-        case http::token::code::error_insufficient_data:
-            continue;
         case http::token::code::error_set_method:
             qFatal("unreachable: we did call `set_method`");
             break;
@@ -989,8 +987,10 @@ inline bool WebSocketHttpClient::execute(QByteArray &chunk)
         }
 
         nparsed += parser.token_size();
-    } while(parser.code() != http::token::code::error_insufficient_data
-            && parser.code() != http::token::code::end_of_message);
+        parser.next();
+    }
+    nparsed += parser.token_size();
+    parser.next();
     chunk.remove(0, nparsed);
 
     if (ready && headers.contains("Upgrade"))
