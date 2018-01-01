@@ -135,8 +135,7 @@ void HttpServerRequest::onReadyRead()
     Priv::Signals whatEmit(0);
     bool is_upgrade = false;
 
-    while(priv->parser.code() != http::token::code::error_insufficient_data
-          && priv->parser.code() != http::token::code::end_of_message) {
+    while(priv->parser.code() != http::token::code::error_insufficient_data) {
         switch(priv->parser.code()) {
         case http::token::code::error_set_method:
             qFatal("unreachable");

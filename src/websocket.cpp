@@ -902,8 +902,7 @@ inline bool WebSocketHttpClient::execute(QByteArray &chunk)
 
     std::size_t nparsed = 0;
 
-    while(parser.code() != http::token::code::error_insufficient_data
-          && parser.code() != http::token::code::end_of_message) {
+    while(parser.code() != http::token::code::error_insufficient_data) {
         switch(parser.code()) {
         case http::token::code::error_set_method:
             qFatal("unreachable: we did call `set_method`");
