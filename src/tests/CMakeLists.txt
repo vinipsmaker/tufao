@@ -20,7 +20,6 @@ set(tests
 )
 
 macro(setup_test_target target)
-    qt5_use_modules("${target}" Core Network Test)
     set_target_properties(
         "${target}"
         PROPERTIES
@@ -43,7 +42,7 @@ macro(setup_test_target target)
 endif()
 
 
-    target_link_libraries("${target}" "${TUFAO_LIBRARY}")
+target_link_libraries("${target}" "${TUFAO_LIBRARY}" Qt5::Core Qt5::Network Qt5::Test)
 
     add_test(NAME "${target}"
         WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src"

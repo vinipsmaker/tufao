@@ -13,5 +13,4 @@ find_package(CXX11 REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS}")
 
 add_executable(${PROJECT_NAME} main.cpp)
-qt5_use_modules(${PROJECT_NAME} Core Network)
-target_link_libraries(${PROJECT_NAME} ${TUFAO_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${TUFAO_LIBRARIES} Qt5::Core Qt5::Network)

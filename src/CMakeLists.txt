@@ -36,7 +36,7 @@ endif()
 
 add_library("${TUFAO_LIBRARY}" SHARED ${tufao_SRC})
 
-qt5_use_modules("${TUFAO_LIBRARY}" Core Network)
+target_link_libraries("${TUFAO_LIBRARY}" Qt5::Core Qt5::Network)
 
 set_target_properties(
     "${TUFAO_LIBRARY}"
