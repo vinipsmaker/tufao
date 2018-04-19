@@ -9,5 +9,4 @@ set(${PROJECT_NAME}_HEADERS
 )
 
 add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_HEADERS} ${${PROJECT_NAME}_SOURCE})
-qt5_use_modules(${PROJECT_NAME} Core Network)
-target_link_libraries(${PROJECT_NAME} ${TUFAO_LIBRARIES} ${Test})
+target_link_libraries(${PROJECT_NAME} ${TUFAO_LIBRARIES} ${Test} Qt5::Core Qt5::Network)
