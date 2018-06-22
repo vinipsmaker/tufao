@@ -47,6 +47,9 @@ Boost Software License.
 So, you can create commercial applications (the *only* restriction is that *if*
 you do any modifications to *Tufão*, these modifications must be redistributed).
 
+## Getting dependencies
+    $ git submodule update --init
+
 ## BUILD
 
 Make sure you have Qt and CMake installed and with the PATH to its executables
