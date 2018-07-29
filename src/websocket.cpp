@@ -900,8 +900,6 @@ inline bool WebSocketHttpClient::execute(QByteArray &chunk)
 
     parser.set_buffer(asio::buffer(chunk.data(), chunk.size()));
 
-    std::size_t nparsed = 0;
-
     while(parser.code() != http::token::code::error_insufficient_data) {
         switch(parser.symbol()) {
         case http::token::symbol::error:
@@ -959,17 +957,16 @@ inline bool WebSocketHttpClient::execute(QByteArray &chunk)
             break;
         case http::token::symbol::end_of_message:
             ready = true;
-            parser.set_buffer(asio::buffer(chunk.data() + nparsed,
+            chunk.remove(0, parser.parsed_count());
+            parser.set_buffer(asio::buffer(chunk.data(),
                                            parser.token_size()));
             break;
         }
 
-        nparsed += parser.token_size();
         parser.next();
     }
-    nparsed += parser.token_size();
     parser.next();
-    chunk.remove(0, nparsed);
+    chunk.remove(0, parser.parsed_count());
 
     if (ready && headers.contains("Upgrade"))
         return true;

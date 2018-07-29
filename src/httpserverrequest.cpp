@@ -131,7 +131,6 @@ void HttpServerRequest::onReadyRead()
     priv->parser.set_buffer(asio::buffer(priv->buffer.data(),
                                          priv->buffer.size()));
 
-    std::size_t nparsed = 0;
     Priv::Signals whatEmit(0);
     bool is_upgrade = false;
 
@@ -240,7 +239,8 @@ void HttpServerRequest::onReadyRead()
         case http::token::symbol::end_of_body:
             break;
         case http::token::symbol::end_of_message:
-            priv->parser.set_buffer(asio::buffer(priv->buffer.data() + nparsed,
+            priv->buffer.remove(0, priv->parser.parsed_count());
+            priv->parser.set_buffer(asio::buffer(priv->buffer.data(),
                                                  priv->parser.token_size()));
             whatEmit |= Priv::END;
             disconnect(&priv->socket, SIGNAL(readyRead()),
@@ -248,12 +248,10 @@ void HttpServerRequest::onReadyRead()
             break;
         }
 
-        nparsed += priv->parser.token_size();
         priv->parser.next();
     }
-    nparsed += priv->parser.token_size();
     priv->parser.next();
-    priv->buffer.remove(0, nparsed);
+    priv->buffer.remove(0, priv->parser.parsed_count());
 
     if (is_upgrade) {
         disconnect(&priv->socket, SIGNAL(readyRead()),
