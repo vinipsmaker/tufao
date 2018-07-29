@@ -216,8 +216,8 @@ void HttpServerRequest::onReadyRead()
                 bool close_found = false;
                 bool keep_alive_found = false;
                 for (;it != priv->headers.end();++it) {
-                    auto value = boost::string_ref(it->data(), it->size());
-                    http::header_value_any_of(value, [&](boost::string_ref v) {
+                    auto value = boost::string_view(it->data(), it->size());
+                    http::header_value_any_of(value, [&](boost::string_view v) {
                         if (iequals(v, "close"))
                             close_found = true;
 
