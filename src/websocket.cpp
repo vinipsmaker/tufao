@@ -965,7 +965,6 @@ inline bool WebSocketHttpClient::execute(QByteArray &chunk)
 
         parser.next();
     }
-    parser.next();
     chunk.remove(0, parser.parsed_count());
 
     if (ready && headers.contains("Upgrade"))

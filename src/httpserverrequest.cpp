@@ -250,7 +250,6 @@ void HttpServerRequest::onReadyRead()
 
         priv->parser.next();
     }
-    priv->parser.next();
     priv->buffer.remove(0, priv->parser.parsed_count());
 
     if (is_upgrade) {
