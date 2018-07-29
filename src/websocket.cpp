@@ -903,47 +903,26 @@ inline bool WebSocketHttpClient::execute(QByteArray &chunk)
     std::size_t nparsed = 0;
 
     while(parser.code() != http::token::code::error_insufficient_data) {
-        switch(parser.code()) {
-        case http::token::code::error_set_method:
-            qFatal("unreachable: we did call `set_method`");
+        switch(parser.symbol()) {
+        case http::token::symbol::error:
+            errored = true;
+            return false;
+        case http::token::symbol::skip:
             break;
-        case http::token::code::error_use_another_connection:
-            errored = true;
-            return false;
-        case http::token::code::error_invalid_data:
-            errored = true;
-            return false;
-        case http::token::code::error_no_host:
+        case http::token::symbol::method:
             qFatal("unreachable");
             break;
-        case http::token::code::error_invalid_content_length:
-            errored = true;
-            return false;
-        case http::token::code::error_content_length_overflow:
-            errored = true;
-            return false;
-        case http::token::code::error_invalid_transfer_encoding:
-            errored = true;
-            return false;
-        case http::token::code::error_chunk_size_overflow:
-            errored = true;
-            return false;
-        case http::token::code::skip:
-            break;
-        case http::token::code::method:
+        case http::token::symbol::request_target:
             qFatal("unreachable");
             break;
-        case http::token::code::request_target:
-            qFatal("unreachable");
-            break;
-        case http::token::code::version:
+        case http::token::symbol::version:
             if (parser.value<http::token::version>() == 0) {
                 errored = true;
                 return false;
             }
 
             break;
-        case http::token::code::status_code:
+        case http::token::symbol::status_code:
             status_code = parser.value<http::token::status_code>();
             if (status_code != 101) {
                 errored = true;
@@ -952,15 +931,15 @@ inline bool WebSocketHttpClient::execute(QByteArray &chunk)
 
             parser.set_method("GET");
             break;
-        case http::token::code::reason_phrase:
+        case http::token::symbol::reason_phrase:
             break;
-        case http::token::code::field_name:
+        case http::token::symbol::field_name:
             {
                 auto value = parser.value<http::token::field_name>();
                 lastHeader = QByteArray(value.data(), value.size());
             }
             break;
-        case http::token::code::field_value:
+        case http::token::symbol::field_value:
             {
                 auto value = parser.value<http::token::field_value>();
                 QByteArray header(value.data(), value.size());
@@ -968,17 +947,17 @@ inline bool WebSocketHttpClient::execute(QByteArray &chunk)
                 lastHeader.clear();
             }
             break;
-        case http::token::code::end_of_headers:
+        case http::token::symbol::end_of_headers:
             break;
-        case http::token::code::body_chunk:
+        case http::token::symbol::body_chunk:
             break;
-        case http::token::code::end_of_body:
+        case http::token::symbol::end_of_body:
             break;
-        case http::token::code::trailer_name:
+        case http::token::symbol::trailer_name:
             break;
-        case http::token::code::trailer_value:
+        case http::token::symbol::trailer_value:
             break;
-        case http::token::code::end_of_message:
+        case http::token::symbol::end_of_message:
             ready = true;
             parser.set_buffer(asio::buffer(chunk.data() + nparsed,
                                            parser.token_size()));
