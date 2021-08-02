@@ -824,7 +824,9 @@ inline bool WebSocket::parsePayloadData()
             if (priv->frame.opcode() == FrameType::CONTINUATION) {
                 // CONTINUATION
                 QByteArray chunk(priv->fragment);
+                chunk.append(priv->payload);
                 priv->fragment.clear();
+                priv->payload.clear();
                 emit newMessage(chunk);
             } else {
                 // NON-CONTINUATION
